@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 54
-last_page: 60
+first_page: 48
+last_page: 54
 pdf_page: 54
 pdf: "/uploads/articles/v5/right-to-information-through-efoi.pdf"
 keywords:

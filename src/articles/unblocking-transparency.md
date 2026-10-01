@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 140
-last_page: 150
+first_page: 134
+last_page: 144
 pdf_page: 140
 pdf: "/uploads/articles/v5/unblocking-transparency.pdf"
 keywords:

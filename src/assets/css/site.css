@@ -130,6 +130,21 @@ h2.title{font-size:2.4rem;font-weight:400;line-height:1.15;letter-spacing:-.01em
 .fulltext p,.fulltext ul,.fulltext ol,.fulltext blockquote{margin-bottom:1rem}
 .fulltext h2,.fulltext h3{margin-top:1.8rem}
 .fulltext ul,.fulltext ol{padding-left:1.5rem}
+.fulltext-title{font-size:1.9rem!important;font-weight:400!important;margin-top:0!important}
+.fulltext h2[id],.fulltext h3[id]{scroll-margin-top:5rem}
+.article-toc{border:1px solid var(--rule);padding:1rem 1.2rem;margin:0 0 2rem;font:.92rem/1.5 var(--sans)}
+.article-toc p{font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-size:.78rem;margin-bottom:.4rem}
+.article-toc ol{list-style:none;padding:0;margin:0}
+.article-toc li{padding:.2rem 0}.article-toc li.lvl3{padding-left:1.1rem}
+.fulltext p{text-align:left;hyphens:auto}
+.footnote-ref a,.footnote-backref{text-decoration:none;font-family:var(--sans)}
+.footnote-ref{font-size:.7em;line-height:0}
+.footnotes-sep{border:0;border-top:1px solid var(--rule);margin:2.5rem 0 1rem}
+.footnotes{font:.86rem/1.55 var(--sans);color:var(--muted)}
+.footnotes ol{padding-left:1.6rem}
+.footnotes li{margin-bottom:.45rem;word-break:break-word}
+.footnotes li p{display:inline;margin:0}
+.footnote-item:target{background:var(--wash)}
 .side{background:var(--wash);padding:1.4rem;border-top:5px solid var(--gold);font:.92rem/1.55 var(--sans)}
 .side dt{font-weight:600;color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.04em;margin-top:.8rem}
 .side dt:first-child{margin-top:0}
@@ -215,4 +230,4 @@ footer .note{display:block;margin-top:2rem;font-size:.82rem;color:#a99fba}
 }
 @media (max-width:520px){.two{grid-template-columns:1fr}.toc{padding:1.3rem 1.1rem 1rem}}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}#toast{transition:none}.toc li{animation:none}}
-@media print{.nav,#bar,.ann,.btns,.filters,.search,.acts,.form,#toast,footer{display:none}.hero,.pagehead{background:#fff;color:#000}.hero *,.pagehead *{color:#000!important}}
+@media print{.nav,#bar,.ann,.btns,.filters,.search,.acts,.form,#toast,footer,.side,.article-toc,.citebox .acts{display:none}.meta-grid{display:block}.footnotes{color:#000}.hero,.pagehead{background:#fff;color:#000}.hero *,.pagehead *{color:#000!important}}

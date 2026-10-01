@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import markdownItFootnote from "markdown-it-footnote";
 import { generateShareCards } from "./og-cards.js";
 
 export default function (eleventyConfig) {
@@ -15,6 +16,21 @@ export default function (eleventyConfig) {
 
   const num = (v) => Number(v) || 0;
   const slugify = (s) => eleventyConfig.getFilter("slugify")(s);
+
+  // ---- Full-text articles: footnotes ([^1]) and a table of contents from h2/h3 ----
+  eleventyConfig.amendLibrary("md", (md) => md.use(markdownItFootnote));
+  const stripTags = (s) => s.replace(/<[^>]+>/g, "").trim();
+  eleventyConfig.addFilter("headingIds", (html) => {
+    const seen = new Set();
+    return String(html || "").replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level, inner) => {
+      let id = slugify(stripTags(inner)) || "section"; while (seen.has(id)) id += "-";
+      seen.add(id);
+      return `<h${level} id="${id}">${inner}</h${level}>`;
+    });
+  });
+  eleventyConfig.addFilter("headings", (html) =>
+    [...String(html || "").matchAll(/<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)].map(([, level, id, inner]) => ({ level: +level, id, text: stripTags(inner) }))
+  );
 
   // Newest issue first, then by first page (or `order` for unpaginated issues)
   const position = (a) => num(a.data.first_page) || num(a.data.order);

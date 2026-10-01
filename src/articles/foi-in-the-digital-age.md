@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 61
-last_page: 66
+first_page: 55
+last_page: 60
 pdf_page: 61
 pdf: "/uploads/articles/v5/foi-in-the-digital-age.pdf"
 keywords:

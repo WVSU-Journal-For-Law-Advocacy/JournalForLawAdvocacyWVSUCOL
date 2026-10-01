@@ -43,8 +43,20 @@ layout: layouts/base.njk
     </div>
     {%- if not pdf %}<p class="off">The PDF of this article has not been uploaded yet.</p>{% endif %}
     {%- if content | trim %}
-    <div class="fulltext prose">
-      {{ content | safe }}
+    {%- set body = content | headingIds %}
+    {%- set toc = body | headings %}
+    <div class="fulltext prose" id="fulltext">
+      <h2 class="fulltext-title">Full text</h2>
+      {%- if fulltext_status == "proofread-needed" %}
+      <p class="notice"><strong>Web version not yet proofread.</strong> This text was converted from the published PDF and may contain errors. Quote and cite from the <a href="{{ pdf }}">PDF</a>, which is the version of record.</p>
+      {%- endif %}
+      {%- if toc.length > 2 %}
+      <nav class="article-toc" aria-label="Contents">
+        <p>Contents</p>
+        <ol>{% for h in toc %}<li class="lvl{{ h.level }}"><a href="#{{ h.id }}">{{ h.text }}</a></li>{% endfor %}</ol>
+      </nav>
+      {%- endif %}
+      {{ body | safe }}
     </div>
     {%- endif %}
   </article>

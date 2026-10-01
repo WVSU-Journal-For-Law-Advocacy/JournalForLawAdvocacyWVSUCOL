@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 27
-last_page: 53
+first_page: 21
+last_page: 47
 pdf_page: 27
 pdf: "/uploads/articles/v5/watching-the-watchers.pdf"
 keywords:

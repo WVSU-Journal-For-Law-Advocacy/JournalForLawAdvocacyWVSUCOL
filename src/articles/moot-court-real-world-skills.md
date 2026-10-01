@@ -6,8 +6,8 @@ kind: "Essay"
 volume: 5
 issue: 1
 year: 2025
-first_page: 230
-last_page: 230
+first_page: 224
+last_page: 224
 pdf_page: 230
 pdf: "/uploads/articles/v5/moot-court-real-world-skills.pdf"
 keywords:

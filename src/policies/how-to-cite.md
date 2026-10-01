@@ -13,13 +13,13 @@ The journal's abbreviation is **J. Law Advoc.** Every article page has a **Cite*
 
 Example:
 
-> Elmo V. Ador Jr., *CCTV and Privacy in the Philippines: A Need for a Comprehensive Law on CCTV*, 5 J. Law Advoc. 96 (2025).
+> Elmo V. Ador Jr., *CCTV and Privacy in the Philippines: A Need for a Comprehensive Law on CCTV*, 5 J. Law Advoc. 90 (2025).
 
 ## Pinpoint citations
 
 To cite a specific page, add it after the first page:
 
-> Elmo V. Ador Jr., *CCTV and Privacy in the Philippines: A Need for a Comprehensive Law on CCTV*, 5 J. Law Advoc. 96, 101 (2025).
+> Elmo V. Ador Jr., *CCTV and Privacy in the Philippines: A Need for a Comprehensive Law on CCTV*, 5 J. Law Advoc. 90, 95 (2025).
 
 ## Volume 1
 

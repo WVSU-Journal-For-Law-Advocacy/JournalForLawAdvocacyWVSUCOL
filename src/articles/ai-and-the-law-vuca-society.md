@@ -6,8 +6,8 @@ kind: "Essay"
 volume: 5
 issue: 1
 year: 2025
-first_page: 220
-last_page: 229
+first_page: 214
+last_page: 223
 pdf_page: 220
 pdf: "/uploads/articles/v5/ai-and-the-law-vuca-society.pdf"
 keywords:

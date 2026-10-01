@@ -53,7 +53,14 @@ collections:
       - { label: Keywords, name: keywords, widget: list, required: false, hint: "Separate with commas." }
       - { label: Abstract, name: abstract, widget: text }
       - { label: Draft (hide from the site), name: draft, widget: boolean, default: false, required: false }
-      - { label: Full text (optional), name: body, widget: markdown, required: false, hint: "Leave empty if readers should use the PDF." }
+      - label: Full text status
+        name: fulltext_status
+        widget: select
+        required: false
+        options:
+          - { label: "Proofread (no notice shown)", value: proofread }
+          - { label: "Needs proofreading (shows a notice)", value: proofread-needed }
+      - { label: Full text (optional), name: body, widget: markdown, required: false, hint: "Leave empty if readers should use the PDF. Use ## for section headings and [^1] for footnotes, with the note at the end as [^1]: Text." }
 
   - name: issues
     label: Volumes

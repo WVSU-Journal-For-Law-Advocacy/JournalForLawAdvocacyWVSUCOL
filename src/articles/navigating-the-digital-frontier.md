@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 76
-last_page: 86
+first_page: 70
+last_page: 80
 pdf_page: 76
 pdf: "/uploads/articles/v5/navigating-the-digital-frontier.pdf"
 keywords:

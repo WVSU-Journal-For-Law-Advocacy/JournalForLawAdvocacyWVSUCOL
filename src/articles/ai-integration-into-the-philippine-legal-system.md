@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 152
-last_page: 170
+first_page: 146
+last_page: 164
 pdf_page: 152
 pdf: "/uploads/articles/v5/ai-integration-into-the-philippine-legal-system.pdf"
 keywords:

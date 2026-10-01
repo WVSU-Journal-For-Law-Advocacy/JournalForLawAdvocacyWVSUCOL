@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 20
-last_page: 26
+first_page: 14
+last_page: 20
 pdf_page: 20
 pdf: "/uploads/articles/v5/free-and-fair-elections-age-of-automation.pdf"
 keywords:

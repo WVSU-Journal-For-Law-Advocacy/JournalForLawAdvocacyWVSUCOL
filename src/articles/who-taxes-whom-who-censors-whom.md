@@ -6,8 +6,8 @@ kind: "Article"
 volume: 5
 issue: 1
 year: 2025
-first_page: 133
-last_page: 139
+first_page: 127
+last_page: 133
 pdf_page: 133
 pdf: "/uploads/articles/v5/who-taxes-whom-who-censors-whom.pdf"
 keywords:

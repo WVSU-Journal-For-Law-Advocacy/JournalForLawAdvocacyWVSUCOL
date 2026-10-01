@@ -99,6 +99,49 @@ if (citebox) {
   group.hidden = false; $$('[data-export]', citebox).forEach((b) => (b.hidden = false));
 }
 
+/* footnotes: preview on hover/focus (tap on touch), and open the panel when jumping to a note */
+const fnPanel = $('#footnotes');
+if (fnPanel) {
+  const openPanel = () => { fnPanel.open = true; };
+  const fromHash = () => { if (/^#fn\d+$/.test(location.hash) || location.hash === '#footnotes') openPanel(); };
+  addEventListener('hashchange', fromHash); fromHash();
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-open-footnotes]')) openPanel(); });
+
+  let pop = null, owner = null, hideT;
+  const hide = () => { if (pop) { pop.remove(); pop = null; owner = null; } };
+  const show = (a) => {
+    const note = document.getElementById(a.getAttribute('href').slice(1));
+    if (!note || owner === a) return;
+    hide(); owner = a;
+    const copyEl = note.cloneNode(true); $$('.footnote-backref', copyEl).forEach((x) => x.remove());
+    pop = document.createElement('div'); pop.className = 'fn-pop'; pop.setAttribute('role', 'tooltip');
+    pop.innerHTML = `<b>${a.textContent.replace(/\D/g, '')}</b>${copyEl.innerHTML}`;
+    document.body.appendChild(pop);
+    const r = a.getBoundingClientRect(), w = pop.offsetWidth;
+    const left = Math.max(12, Math.min(scrollX + r.left - w / 2, scrollX + innerWidth - w - 12));
+    const below = r.bottom + pop.offsetHeight + 12 > innerHeight;
+    pop.style.left = left + 'px';
+    pop.style.top = (below ? scrollY + r.top - pop.offsetHeight - 8 : scrollY + r.bottom + 8) + 'px';
+    pop.addEventListener('mouseenter', () => clearTimeout(hideT));
+    pop.addEventListener('mouseleave', () => { hideT = setTimeout(hide, 200); });
+  };
+  const refs = $$('.footnote-ref a');
+  const touch = matchMedia('(hover: none)').matches;
+  refs.forEach((a) => {
+    if (touch) {
+      a.addEventListener('click', (e) => { if (owner !== a) { e.preventDefault(); show(a); } });
+    } else {
+      a.addEventListener('mouseenter', () => { clearTimeout(hideT); show(a); });
+      a.addEventListener('mouseleave', () => { hideT = setTimeout(hide, 250); });
+      a.addEventListener('focus', () => show(a));
+      a.addEventListener('blur', () => { hideT = setTimeout(hide, 250); });
+    }
+    a.addEventListener('click', openPanel);
+  });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
+  document.addEventListener('click', (e) => { if (pop && !e.target.closest('.fn-pop, .footnote-ref')) hide(); });
+}
+
 /* count PDF downloads in GoatCounter, when analytics is enabled */
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a[href$=".pdf"], a[href*=".pdf#"]');

@@ -122,7 +122,53 @@ h2.title{font-size:2.4rem;font-weight:400;line-height:1.15;letter-spacing:-.01em
 .entry p{max-width:46rem;font-size:1.05rem}
 .empty{font:1rem var(--sans);color:var(--muted);padding:1.5rem 0;border-top:1px solid var(--rule)}
 
-/* single article */
+/* single article: HLR-style editorial header and reading column */
+.art-wrap{max-width:46rem}
+.breadcrumb{background:var(--wash);border-bottom:1px solid var(--rule);font:.85rem var(--sans);padding:.7rem 0}
+.breadcrumb .art-wrap{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;color:var(--muted)}
+.breadcrumb a{color:var(--muted);text-decoration:none}.breadcrumb a:hover{color:var(--violet);text-decoration:underline}
+.art-head{padding:3rem 0 2.4rem;border-bottom:1px solid var(--rule)}
+.art-eyebrow{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;flex-wrap:wrap;font:600 .82rem var(--sans);text-transform:uppercase;letter-spacing:.07em;color:var(--violet)}
+.art-eyebrow a{color:var(--violet);text-decoration:none}.art-eyebrow a:hover{text-decoration:underline}
+.art-eyebrow .star{color:var(--gold);margin:0 .55rem}
+.art-eyebrow span[data-pagefind-filter]{color:var(--muted)}
+.art-cite{font:italic 400 1.05rem var(--serif);text-transform:none;letter-spacing:0;color:var(--muted)}
+.art-head h1{font-size:clamp(2.1rem,4.6vw,3.2rem);line-height:1.12;font-weight:600;letter-spacing:-.015em;margin:.9rem 0 1rem}
+.art-authors{font:600 .9rem var(--sans);text-transform:uppercase;letter-spacing:.08em}
+.art-authors a{color:var(--violet);text-decoration:none}.art-authors a:hover{text-decoration:underline}
+.art-meta{margin-top:1.6rem;padding-top:1rem;border-top:1px solid var(--rule);font:500 .82rem var(--sans);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:flex;flex-wrap:wrap;gap:.2rem .6rem;align-items:center}
+.art-meta .dot{color:var(--gold)}
+.art-meta a{color:var(--violet);text-decoration:none}.art-meta a:hover{text-decoration:underline}
+.art-actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.5rem}
+.art-actions .btn{display:inline-flex;align-items:center;gap:.45rem}
+main .art-actions .btn.alt{color:var(--violet)}
+.art-body{padding:2.6rem 0 4rem;border-bottom:0}
+.art-body .abstract{background:var(--wash);border-left:4px solid var(--gold);padding:1.2rem 1.4rem;margin-bottom:2.2rem}
+.art-body .abstract h2{font:600 .78rem var(--sans);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:.4rem}
+.art-body .abstract p{font-size:1.12rem;line-height:1.6}
+.art-body .fulltext{margin:0;padding:0;border:0;font-size:1.16rem;line-height:1.75}
+.art-body .fulltext h2{font-size:1.65rem;margin-top:2.6rem}
+.fn-panel{margin-top:2.6rem;border-top:2px solid var(--ink);padding-top:.4rem}
+.fn-panel summary{font:600 .85rem var(--sans);text-transform:uppercase;letter-spacing:.08em;padding:.6rem 0;cursor:pointer}
+.fn-panel summary span{color:var(--muted);font-weight:500}
+.fn-panel .footnotes{margin-top:.6rem}
+.art-foot{margin-top:2.4rem;font:.9rem var(--sans);color:var(--muted)}
+.topics{display:flex;flex-wrap:wrap;gap:.45rem;align-items:center;margin-bottom:1rem}
+.topics span{font-weight:600;text-transform:uppercase;letter-spacing:.07em;font-size:.78rem;margin-right:.4rem;color:var(--ink)}
+.topics a{border:1px solid var(--rule);border-radius:999px;padding:.25rem .8rem;color:var(--ink);text-decoration:none;font-size:.85rem}
+.topics a:hover{border-color:var(--violet);color:var(--violet)}
+.related{margin-top:2.8rem;padding-top:1.6rem;border-top:1px solid var(--rule)}
+.related h2{font-size:1.35rem;font-weight:600;margin-bottom:.8rem}
+.related ul{list-style:none}
+.related li{padding:.8rem 0;border-bottom:1px solid var(--rule)}
+.related li a{display:block;font-size:1.1rem;line-height:1.35;color:var(--ink);text-decoration:none}.related li a:hover{color:var(--violet);text-decoration:underline}
+.related li span{display:block;font:.82rem var(--sans);color:var(--muted);margin-top:.25rem}
+/* footnote preview popover */
+.fn-pop{position:absolute;z-index:25;max-width:min(26rem,calc(100vw - 2rem));background:var(--paper);color:var(--ink);border:1px solid var(--rule);border-top:3px solid var(--gold);box-shadow:0 10px 30px rgba(20,8,35,.18);padding:.75rem .9rem;font:.86rem/1.5 var(--sans)}
+.fn-pop b{color:var(--violet);margin-right:.3rem}
+.fn-pop p{display:inline;margin:0}
+
+/* single article (legacy pieces still used by citebox, side panel) */
 .meta-grid{display:grid;grid-template-columns:1fr 18rem;gap:3.5rem;align-items:start}
 .abstract h2,.fulltext h2{font-size:1.5rem;font-weight:600;margin:0 0 .6rem}
 .abstract p{font-size:1.15rem}

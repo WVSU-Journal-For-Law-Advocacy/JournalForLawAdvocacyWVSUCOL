@@ -5,7 +5,7 @@ summary: Citation formats for articles in the journal.
 draft_notice: true
 ---
 
-The journal's abbreviation is **J. Law Advoc.** Every article page has a **Cite** box that gives the citation in several formats and lets you download it for Zotero, Mendeley, or EndNote.
+The journal's abbreviation is **J. Law Advoc.** and its ISSN is **1908-532X** (Print). Every article page has a **Cite** box that gives the citation in several formats and lets you download it for Zotero, Mendeley, or EndNote.
 
 ## House style
 

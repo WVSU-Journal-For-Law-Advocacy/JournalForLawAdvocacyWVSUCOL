@@ -28,6 +28,15 @@ export default function (eleventyConfig) {
       return `<h${level} id="${id}">${inner}</h${level}>`;
     });
   });
+  // Separate markdown-it-footnote's notes section so the page can show it in its own panel
+  eleventyConfig.addFilter("splitFootnotes", (html) => {
+    const s = String(html || "");
+    const at = s.indexOf('<hr class="footnotes-sep">');
+    if (at < 0) return { main: s, notes: "", count: 0 };
+    const notes = s.slice(at).replace('<hr class="footnotes-sep">', "");
+    return { main: s.slice(0, at), notes, count: (notes.match(/<li id="fn\d+"/g) || []).length };
+  });
+  eleventyConfig.addFilter("exceptUrl", (items, url) => (items || []).filter((x) => x.url !== url));
   eleventyConfig.addFilter("headings", (html) =>
     [...String(html || "").matchAll(/<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)].map(([, level, id, inner]) => ({ level: +level, id, text: stripTags(inner) }))
   );

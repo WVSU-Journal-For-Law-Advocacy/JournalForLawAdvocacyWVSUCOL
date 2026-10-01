@@ -40,7 +40,7 @@ An article's *Full text* field shows the article as a web page under the abstrac
 3. **Custom domain (optional)**: add it in Netlify → Domain management, then update *Site address* in CMS Settings.
 4. **Analytics (optional, free)**: create a site at [goatcounter.com](https://www.goatcounter.com/) (free for non-commercial sites). Enter its code (the part before `.goatcounter.com`) in CMS Settings → *GoatCounter code*. Page views and PDF downloads (listed as `download/…` events) then appear in the GoatCounter dashboard. It uses no cookies, so no consent banner is needed.
 5. **Google Scholar and Search Console**: verify the site in [Google Search Console](https://search.google.com/search-console) and submit `/sitemap.xml`. Article pages already carry the `citation_*` tags Google Scholar reads.
-6. **ISSN**: apply to the National Library of the Philippines (ISSN National Centre) for a print and/or online ISSN, then enter it in CMS Settings. It appears in the footer and in article metadata.
+6. **ISSN**: the print edition has ISSN **1908-532X** ([ISSN Portal record](https://portal.issn.org/resource/ISSN/1908-532X)), already entered in CMS Settings. The website counts as a separate medium: to get an online ISSN, apply to the National Library of the Philippines (ISSN National Centre) and enter it as *ISSN (online)*.
 7. **DOIs**: either join Crossref (ask whether WVSU already has membership; fees apply per DOI) or deposit each article in [Zenodo](https://zenodo.org/) (free) to get a DOI. Enter the DOI on each article in the CMS (just `10.xxxx/…`); it's added to the citation and metadata.
 
 ## Project layout

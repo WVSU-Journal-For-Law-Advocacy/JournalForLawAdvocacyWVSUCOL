@@ -18,8 +18,10 @@ export default function (eleventyConfig) {
   const slugify = (s) => eleventyConfig.getFilter("slugify")(s);
 
   // ---- Full-text articles: footnotes ([^1]) and a table of contents from h2/h3 ----
-  eleventyConfig.amendLibrary("md", (md) => md.use(markdownItFootnote));
-  const stripTags = (s) => s.replace(/<[^>]+>/g, "").trim();
+  // linkify: bare URLs in bibliographies become links
+  eleventyConfig.amendLibrary("md", (md) => md.set({ linkify: true }).use(markdownItFootnote));
+  // footnote markers inside a heading must not leak into its id or the contents list
+  const stripTags = (s) => s.replace(/<sup class="footnote-ref">[\s\S]*?<\/sup>/g, "").replace(/<[^>]+>/g, "").trim();
   eleventyConfig.addFilter("headingIds", (html) => {
     const seen = new Set();
     return String(html || "").replace(/<h([23])>([\s\S]*?)<\/h\1>/g, (_, level, inner) => {

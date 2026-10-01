@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/about/">About</a></p>
+  <h1>{{ title }}</h1>
+  <p>{{ site.institution }} · Est. {{ founded }}</p>
+</div></header>
+
+<section><div class="wrap cols">
+  <div class="prose narrow">
+    {%- if draft_notice %}
+    <p class="notice"><strong>Draft.</strong> This history is pending review by the Editorial Board and the Advisorship.</p>
+    {%- endif %}
+    {{ content | safe }}
+  </div>
+  <aside>
+    <dl class="side">
+      <dt>Publisher</dt><dd>{{ site.institution }}<br>{{ site.city }}</dd>
+      <dt>Founded</dt><dd>{{ founded }}</dd>
+      {%- if site.issn_print %}<dt>ISSN</dt><dd>{{ site.issn_print }} (Print){% if site.issn_online %}<br>{{ site.issn_online }} (Online){% endif %}</dd>{% endif %}
+      <dt>Contact</dt><dd><a href="mailto:{{ site.email }}">{{ site.email }}</a></dd>
+      <dt>More</dt><dd><a href="/board/">Editorial board</a><br><a href="/about/numbers/">By the numbers</a><br><a href="/policies/">Journal policies</a></dd>
+    </dl>
+  </aside>
+</div></section>
+
+<section class="wash"><div class="wrap">
+  <h2 class="title">Volumes</h2>
+  <ol class="timeline">
+    {%- for i in collections.issues.slice().reverse() %}
+    {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
+    <li>
+      <span class="when">AY {{ i.data.academic_year }}</span>
+      <div>
+        <h3><a href="{{ i.url }}">{{ i.data.title }}{% if i.data.theme %}: {{ i.data.theme }}{% endif %}</a></h3>
+        <p>{{ n }} {{ "piece" if n == 1 else "pieces" }}{% if i.data.status == "current" %} · Current volume{% endif %}{% if i.data.pdf %} · <a href="{{ i.data.pdf }}">Original PDF</a>{% endif %}</p>
+      </div>
+    </li>
+    {%- endfor %}
+  </ol>
+  {%- if board.boards.length %}
+  <p class="more"><a href="/board/">Meet the {{ board.boards[0].academic_year }} Editorial Board →</a></p>
+  {%- endif %}
+</div></section>

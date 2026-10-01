@@ -75,7 +75,7 @@
 <a class="skip" href="#main">Skip to content</a>
 <div id="bar" aria-hidden="true"></div>
 {%- if site.announcement %}
-<div class="ann">{{ site.announcement }}{% if site.deadline %} Deadline: {{ site.deadline }}.{% endif %} <a href="/submit/">How to submit</a></div>
+<div class="ann">{{ site.announcement }}{% if site.deadline %} Deadline: {{ site.deadline }}.{% endif %} {% if cfp.active %}<a href="/call-for-papers/">See the {{ cfp.kind | lower }}</a>{% else %}<a href="/submit/">How to submit</a>{% endif %}</div>
 {%- endif %}
 
 <nav class="nav" aria-label="Main"><div class="wrap">
@@ -104,7 +104,7 @@
     {%- if site.issn_print %}<p class="issn">ISSN {{ site.issn_print }} (Print)</p>{% endif %}
     {%- if site.issn_online %}<p class="issn">ISSN {{ site.issn_online }} (Online)</p>{% endif %}
   </div>
-  <div><h2>Journal</h2><ul><li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/authors/">Authors</a></li><li><a href="/news/">News</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/submit/">Submit</a></li></ul></div>
+  <div><h2>Journal</h2><ul><li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/authors/">Authors</a></li><li><a href="/news/">News</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/about/history/">History</a></li><li><a href="/about/numbers/">By the numbers</a></li><li><a href="/call-for-papers/">Call for papers</a></li><li><a href="/submit/">Submit</a></li></ul></div>
   <div><h2>Policies</h2><ul>
     {%- for p in collections.policies %}<li><a href="{{ p.url }}">{{ p.data.title }}</a></li>{% endfor %}
   </ul></div>

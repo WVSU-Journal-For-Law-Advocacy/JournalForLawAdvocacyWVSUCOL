@@ -1,0 +1,45 @@
+---
+layout: layouts/base.njk
+title: Call for papers
+permalink: /call-for-papers/
+description: Calls for papers and writing competitions of the Journal for Law Advocacy, WVSU College of Law.
+---
+<header class="pagehead"><div class="wrap">
+  <h1>{% if cfp.active and cfp.title %}{{ cfp.title }}{% else %}Call for papers{% endif %}</h1>
+  <p>{% if cfp.active %}{{ cfp.kind }}{% if cfp.deadline %} · Deadline: {{ cfp.deadline }}{% endif %}{% else %}Write for the Journal for Law Advocacy.{% endif %}</p>
+</div></header>
+
+{%- if cfp.active %}
+<section><div class="wrap cols">
+  <div class="prose narrow">
+    {%- if cfp.theme %}<p class="lede">{{ cfp.theme }}</p>{% endif %}
+    {{ cfp.details | md | safe }}
+    <p class="btns"><a class="btn" href="/submit/">Submit your manuscript</a></p>
+  </div>
+  <aside>
+    <dl class="side">
+      {%- if cfp.deadline %}<dt>Deadline</dt><dd>{{ cfp.deadline }}</dd>{% endif %}
+      {%- if cfp.eligibility %}<dt>Who may enter</dt><dd>{{ cfp.eligibility }}</dd>{% endif %}
+      {%- if cfp.prizes %}<dt>Recognition</dt><dd>{{ cfp.prizes }}</dd>{% endif %}
+      <dt>Questions</dt><dd><a href="mailto:{{ site.email }}">{{ site.email }}</a></dd>
+    </dl>
+  </aside>
+</div></section>
+{%- endif %}
+
+<section{% if cfp.active %} class="wash"{% endif %}><div class="wrap cols">
+  <div class="prose narrow">
+    <h2>We publish year-round</h2>
+    <p>{{ guidelines.intro }} Manuscripts are reviewed as they arrive and considered for the next volume of the journal.</p>
+    <p>We welcome articles, essays, case comments, and student notes on Philippine law, legal practice, and the public interest, from students, alumni, faculty, and practitioners.</p>
+    <p class="btns"><a class="btn" href="/submit/">Submission guidelines and form</a><a class="btn alt" href="/policies/peer-review/">How we review</a></p>
+  </div>
+  <div>
+    <h2 class="title" style="font-size:1.5rem">Recent volumes</h2>
+    <ul class="vols">
+      {%- for i in collections.issues.slice(0, 3) %}
+      <li><b><a href="{{ i.url }}">{{ i.data.title }}</a></b><span class="dots"></span><span class="st">AY {{ i.data.academic_year }}</span></li>
+      {%- endfor %}
+    </ul>
+  </div>
+</div></section>

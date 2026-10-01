@@ -139,6 +139,32 @@ collections:
           - { label: Banner image, name: image, widget: image, required: false }
           - { label: Banner description (for screen readers), name: image_alt, widget: string, required: false }
           - { label: Body, name: body, widget: markdown }
+      - name: history
+        label: Organization and history
+        file: src/history.md
+        fields:
+          - { label: Layout, name: layout, widget: hidden, default: layouts/history.njk }
+          - { label: Permalink, name: permalink, widget: hidden, default: /about/history/ }
+          - { label: Title, name: title, widget: string }
+          - { label: Search description, name: description, widget: string }
+          - { label: Year founded, name: founded, widget: number, value_type: int }
+          - { label: Show draft notice, name: draft_notice, widget: boolean, default: true, required: false }
+          - { label: Body, name: body, widget: markdown }
+      - name: cfp
+        label: Call for papers / writing competition
+        file: src/_data/cfp.json
+        fields:
+          - { label: Active (show on the site and link from the banner), name: active, widget: boolean, default: false }
+          - label: Kind
+            name: kind
+            widget: select
+            options: ["Call for papers", "Writing competition", "Essay competition"]
+          - { label: Title, name: title, widget: string, required: false, hint: "e.g. Call for Papers: Volume 6" }
+          - { label: Theme, name: theme, widget: text, required: false }
+          - { label: Deadline, name: deadline, widget: string, required: false, hint: "e.g. 15 January 2027" }
+          - { label: Who may enter, name: eligibility, widget: string, required: false }
+          - { label: Prizes or recognition, name: prizes, widget: string, required: false }
+          - { label: Details and rules, name: details, widget: markdown, required: false }
       - name: guidelines
         label: Submission guidelines
         file: src/_data/guidelines.json

@@ -12,3 +12,11 @@ image_alt: "Members of the Journal for Law Advocacy with faculty of the WVSU Col
 The Journal for Law Advocacy is the official publication of the West Visayas State University College of Law. It publishes original legal scholarship from students, faculty, and practitioners, with a focus on questions that matter to Philippine courts, communities, and the practice of law.
 
 Articles are selected and edited by the Editorial Board and reviewed by faculty advisers. The journal is committed to rigorous research, clear writing, and advocacy grounded in the law.
+
+## More about the journal
+
+- [Organization and history](/about/history/): how the journal began and how it is run
+- [By the numbers](/about/numbers/): volumes, pieces, authors, and areas of law
+- [Editorial board](/board/), current and past
+- [Journal policies](/policies/): peer review, ethics, open access, and copyright
+- [Call for papers](/call-for-papers/)

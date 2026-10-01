@@ -1,0 +1,37 @@
+---
+layout: layouts/base.njk
+title: By the numbers
+permalink: /about/numbers/
+description: The Journal for Law Advocacy in figures — volumes, pieces, authors, and areas of law.
+searchExclude: true
+---
+{%- set s = collections.articles | journalStats(collections.issues, collections.authors, site.areas) %}
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/about/">About</a></p>
+  <h1>By the numbers</h1>
+  <p>The journal's published record, counted from the archive on this site. These figures update automatically as volumes are added.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="tiles">
+    <div class="tile"><span class="big">{{ s.pieces }}</span><span>pieces published</span></div>
+    <div class="tile"><span class="big">{{ s.authors }}</span><span>authors</span></div>
+    <div class="tile"><span class="big">{{ s.volumes }}</span><span>volumes online</span></div>
+    {%- if s.pages %}<div class="tile"><span class="big">{{ s.pages }}</span><span>printed pages{% if s.volumes > 1 %} (paginated volumes){% endif %}</span></div>{% endif %}
+    <div class="tile"><span class="big">2021</span><span>year founded</span></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart">
+      {%- set rows = s.byArea %}{% set max = s.maxArea %}{% set caption = "Pieces by area of law" %}{% set unit = "pieces" %}{% set unitOne = "piece" %}{% set colLabel = "Area of law" %}
+      {%- include "bars.njk" %}
+    </div>
+    <div class="chart">
+      {%- set rows = s.byVolume %}{% set max = s.maxVolume %}{% set caption = "Pieces per volume" %}{% set colLabel = "Volume" %}
+      {%- include "bars.njk" %}
+      {%- set rows = s.byKind %}{% set max = s.maxKind %}{% set caption = "Pieces by kind" %}{% set colLabel = "Kind" %}
+      {%- include "bars.njk" %}
+    </div>
+  </div>
+  <p class="sub" style="margin-top:2rem">Counts cover the volumes available on this site{% if s.fullText %}; {{ s.fullText }} pieces can also be read as full text on the web{% endif %}. Volumes 2 and 3 will be added when they are available.</p>
+</div></section>

@@ -19,7 +19,32 @@ export default function (eleventyConfig) {
 
   // ---- Full-text articles: footnotes ([^1]) and a table of contents from h2/h3 ----
   // linkify: bare URLs in bibliographies become links
-  eleventyConfig.amendLibrary("md", (md) => md.set({ linkify: true }).use(markdownItFootnote));
+  let mdLib;
+  eleventyConfig.amendLibrary("md", (md) => { mdLib = md.set({ linkify: true }).use(markdownItFootnote); });
+  // Markdown stored in data files (e.g. the call for papers)
+  eleventyConfig.addFilter("md", (s) => (s && mdLib ? mdLib.render(String(s)) : ""));
+
+  // ---- "By the numbers": everything computed from the collections at build time ----
+  eleventyConfig.addFilter("journalStats", (articles, issues, authors, areas) => {
+    const count = (key, order) => {
+      const m = new Map((order || []).map((k) => [k, 0]));
+      for (const a of articles) m.set(a.data[key], (m.get(a.data[key]) || 0) + 1);
+      return [...m].filter(([, n]) => n > 0).map(([label, n]) => ({ label, n }));
+    };
+    const byArea = count("area", areas).sort((a, b) => b.n - a.n);
+    const byKind = count("kind").sort((a, b) => b.n - a.n);
+    const byVolume = issues.map((i) => ({
+      label: `Volume ${i.data.volume}`, sub: i.data.academic_year, url: i.url,
+      n: articles.filter((a) => num(a.data.volume) === num(i.data.volume)).length,
+    })).sort((a, b) => num(a.label.slice(7)) - num(b.label.slice(7)));
+    const pages = articles.reduce((s, a) => s + (a.data.first_page && a.data.last_page ? a.data.last_page - a.data.first_page + 1 : 0), 0);
+    const fullText = articles.filter((a) => a.data.fulltext_status).length; // every web full text carries a status
+    const max = (list) => Math.max(1, ...list.map((x) => x.n));
+    return {
+      pieces: articles.length, authors: authors.length, volumes: issues.length, pages, fullText,
+      byArea, byKind, byVolume, maxArea: max(byArea), maxKind: max(byKind), maxVolume: max(byVolume),
+    };
+  });
   // footnote markers inside a heading must not leak into its id or the contents list
   const stripTags = (s) => s.replace(/<sup class="footnote-ref">[\s\S]*?<\/sup>/g, "").replace(/<[^>]+>/g, "").trim();
   eleventyConfig.addFilter("headingIds", (html) => {

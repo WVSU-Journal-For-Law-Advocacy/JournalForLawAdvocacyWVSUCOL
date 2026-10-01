@@ -5,4 +5,4 @@ _site/
 Thumbs.db
 
 # Source originals (published copies live in src/)
-assets/
+/assets/

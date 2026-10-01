@@ -16,7 +16,8 @@
 [[headers]]
   for = "/assets/*"
   [headers.values]
-    Cache-Control = "public, max-age=604800"
+    # Revalidate on every visit so CSS/JS changes show up right after a deploy
+    Cache-Control = "public, max-age=0, must-revalidate"
 
 [[headers]]
   for = "/uploads/*"

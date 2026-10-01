@@ -1,0 +1,23 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.authors
+  size: 1
+  alias: person
+permalink: "/authors/{{ person.slug }}/"
+eleventyComputed:
+  title: "{{ person.name }}"
+  description: "Articles by {{ person.name }} in the Journal for Law Advocacy."
+searchExclude: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/authors/">Authors</a></p>
+  <h1>{{ person.name }}</h1>
+  <p>{{ person.articles.length }} {{ "piece" if person.articles.length == 1 else "pieces" }} in the Journal for Law Advocacy</p>
+</div></header>
+
+<section><div class="wrap">
+  {%- for a in person.articles %}
+  {%- include "entry.njk" %}
+  {%- endfor %}
+</div></section>

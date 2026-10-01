@@ -81,6 +81,26 @@ collections:
         hint: "Only one volume should be Current. Change the old one to Published."
       - { label: Full volume PDF (original), name: pdf, widget: file, required: false, hint: "The complete volume exactly as published." }
 
+  - name: news
+    label: News
+    label_singular: News post
+    description: Announcements, calls for papers, and events. The newest three appear on the home page.
+    folder: src/news
+    create: true
+    slug: "{{year}}-{{month}}-{{slug}}"
+    summary: "{{date}} · {{title}}"
+    sortable_fields: [date, title]
+    media_folder: /src/uploads/news
+    public_folder: /uploads/news
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+      - { label: Summary, name: summary, widget: string, hint: "One sentence shown in lists and link previews." }
+      - { label: Image, name: image, widget: image, required: false }
+      - { label: Image description (for screen readers), name: image_alt, widget: string, required: false }
+      - { label: Draft (hide from the site), name: draft, widget: boolean, default: false, required: false }
+      - { label: Body, name: body, widget: markdown }
+
   - name: policies
     label: Policies
     label_singular: Policy

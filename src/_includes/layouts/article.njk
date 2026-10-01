@@ -4,9 +4,9 @@ layout: layouts/base.njk
 {%- set d = { author: author, title: title, volume: volume, first_page: first_page, year: year, doi: doi } %}
 {%- set vol = collections.issues | issueOf(volume, issue) %}
 <header class="pagehead"><div class="wrap">
-  <p class="crumb"><a href="/articles/?area={{ area | urlencode }}">{{ area }}</a> · {{ kind }}</p>
+  <p class="crumb"><a href="/areas/{{ area | slugify }}/" data-pagefind-filter="Area">{{ area }}</a> · <span data-pagefind-filter="Type">{{ kind }}</span></p>
   <h1>{{ title }}</h1>
-  <p>{{ author }}</p>
+  <p class="byline">{% for au in author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/" data-pagefind-filter="Author">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</p>
 </div></header>
 
 <section><div class="wrap meta-grid">
@@ -51,13 +51,13 @@ layout: layouts/base.njk
   <aside class="side" aria-label="Article details">
     <dl>
       <dt>Published in</dt>
-      <dd>{% if vol %}<a href="{{ vol.url }}">Volume {{ volume }}</a> ({{ vol.data.academic_year }}){% else %}Volume {{ volume }} ({{ year }}){% endif %}</dd>
+      <dd>{% if vol %}<a href="{{ vol.url }}" data-pagefind-filter="Volume">Volume {{ volume }}</a> ({{ vol.data.academic_year }}){% else %}Volume {{ volume }} ({{ year }}){% endif %}</dd>
       {%- if first_page %}
       <dt>First page</dt>
       <dd>{{ first_page }}</dd>
       {%- endif %}
       <dt>Area of law</dt>
-      <dd>{{ area }}</dd>
+      <dd><a href="/areas/{{ area | slugify }}/">{{ area }}</a></dd>
       {%- if keywords and keywords.length %}
       <dt>Keywords</dt>
       <dd>{{ keywords | join(", ") }}</dd>

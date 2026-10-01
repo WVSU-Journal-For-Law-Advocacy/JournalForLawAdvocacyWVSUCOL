@@ -1,0 +1,30 @@
+---
+layout: layouts/base.njk
+title: Search
+permalink: /search/
+description: Search every article, policy, and announcement of the Journal for Law Advocacy.
+searchExclude: true
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Search</h1>
+  <p>Search titles, authors, abstracts, policies, and news. Filter results by area of law, volume, or author.</p>
+</div></header>
+
+<section><div class="wrap">
+  <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
+  <div id="search"></div>
+  <noscript><p class="empty">Search needs JavaScript. You can also browse the <a href="/articles/">articles list</a> or the <a href="/archive/">archive</a>.</p></noscript>
+  <script src="/pagefind/pagefind-ui.js"></script>
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!window.PagefindUI) {
+        document.getElementById('search').innerHTML = '<p class="empty">Search is built when the site is deployed, so it isn\'t available in local preview.</p>';
+        return;
+      }
+      const ui = new PagefindUI({ element: '#search', showSubResults: true, showImages: false, resetStyles: false,
+        translations: { placeholder: 'Search the journal' } });
+      const q = new URLSearchParams(location.search).get('q');
+      if (q) ui.triggerSearch(q);
+    });
+  </script>
+</div></section>

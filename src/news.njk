@@ -1,0 +1,22 @@
+---
+layout: layouts/base.njk
+title: News
+permalink: /news/
+description: Announcements, calls for papers, and events of the Journal for Law Advocacy.
+searchExclude: true
+---
+<header class="pagehead"><div class="wrap">
+  <h1>News</h1>
+  <p>Announcements, calls for papers, and events.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="news-list">
+    {%- for n in collections.news %}
+    {%- include "news-item.njk" %}
+    {%- else %}
+    <p class="empty">No announcements yet.</p>
+    {%- endfor %}
+  </div>
+  {%- if site.facebook %}<p class="more">More updates on our <a href="{{ site.facebook }}" rel="noopener">Facebook page →</a></p>{% endif %}
+</div></section>

@@ -1,0 +1,9 @@
+{#- One news post in a list. Expects `n` (a collection item). -#}
+<article class="news-card">
+  {%- if n.data.image %}<a href="{{ n.url }}" tabindex="-1" aria-hidden="true"><img src="{{ n.data.image }}" alt="" loading="lazy"></a>{% endif %}
+  <div>
+    <time datetime="{{ n.date | isoDate }}">{{ n.date | readableDate }}</time>
+    <h3><a href="{{ n.url }}">{{ n.data.title }}</a></h3>
+    {%- if n.data.summary %}<p>{{ n.data.summary }}</p>{% endif %}
+  </div>
+</article>

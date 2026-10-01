@@ -1,0 +1,19 @@
+---
+layout: layouts/base.njk
+title: Authors
+permalink: /authors/
+description: Every author published in the Journal for Law Advocacy.
+searchExclude: true
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Authors</h1>
+  <p>{{ collections.authors.length }} authors published in the journal, by family name.</p>
+</div></header>
+
+<section><div class="wrap">
+  <ul class="authors">
+    {%- for p in collections.authors %}
+    <li><a href="/authors/{{ p.slug }}/">{{ p.name }}</a> <span>{{ p.articles.length }}</span></li>
+    {%- endfor %}
+  </ul>
+</div></section>

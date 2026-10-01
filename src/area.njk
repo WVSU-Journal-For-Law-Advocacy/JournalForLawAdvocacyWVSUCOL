@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: site.areas
+  size: 1
+  alias: area
+permalink: "/areas/{{ area | slugify }}/"
+eleventyComputed:
+  title: "{{ area }}"
+  description: "Articles on {{ area | lower }} in the Journal for Law Advocacy."
+searchExclude: true
+---
+{%- set list = collections.articles | byArea(area) %}
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/articles/">Articles</a> · Area of law</p>
+  <h1>{{ area }}</h1>
+  <p>{{ list.length }} {{ "piece" if list.length == 1 else "pieces" }}</p>
+</div></header>
+
+<section><div class="wrap">
+  {%- for a in list %}
+  {%- include "entry.njk" %}
+  {%- else %}
+  <p class="empty">Nothing published in this area yet.</p>
+  {%- endfor %}
+  <p class="more"><a href="/articles/">All articles →</a></p>
+</div></section>

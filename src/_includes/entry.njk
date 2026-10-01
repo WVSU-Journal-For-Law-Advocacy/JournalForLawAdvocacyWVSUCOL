@@ -1,9 +1,9 @@
 {#- One article in a list. Expects `a` (a collection item). -#}
 <article class="entry" data-area="{{ a.data.area }}" data-search="{{ [a.data.title, a.data.author, a.data.abstract, a.data.area, a.data.kind, (a.data.keywords or []) | join(' ')] | join(' ') | lower }}">
-  <div class="tag">{{ a.data.area }}<small>{{ a.data.kind }}<br>Vol. {{ a.data.volume }} ({{ a.data.year }}){% if a.data.first_page %}, p. {{ a.data.first_page }}{% endif %}</small></div>
+  <div class="tag"><a href="/areas/{{ a.data.area | slugify }}/">{{ a.data.area }}</a><small>{{ a.data.kind }}<br>Vol. {{ a.data.volume }} ({{ a.data.year }}){% if a.data.first_page %}, p. {{ a.data.first_page }}{% endif %}</small></div>
   <div>
     <h3><a href="{{ a.url }}">{{ a.data.title }}</a></h3>
-    <p class="by">{{ a.data.author }}</p>
+    <p class="by">{% for au in a.data.author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</p>
     <p>{{ a.data.abstract }}</p>
   </div>
 </article>

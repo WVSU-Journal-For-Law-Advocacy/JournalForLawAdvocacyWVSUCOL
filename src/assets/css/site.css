@@ -42,7 +42,33 @@ img{max-width:100%;height:auto}
 .pagehead h1{font-size:clamp(2.1rem,5vw,3.2rem);font-weight:400;line-height:1.1;letter-spacing:-.01em}
 .pagehead p{font:1rem/1.6 var(--sans);color:#e6def0;margin-top:.7rem;max-width:44rem}
 .pagehead .crumb{font:600 .85rem var(--sans);color:var(--goldl);margin:0 0 .8rem}
-.pagehead .crumb a{color:var(--goldl)}
+.pagehead .crumb a,.pagehead .byline a{color:var(--goldl)}
+.pagehead .byline a:hover{color:#fff}
+
+/* news */
+.news-list{display:grid;gap:1.6rem}
+.news-row{grid-template-columns:repeat(auto-fill,minmax(18rem,1fr))}
+.news-card{display:grid;grid-template-columns:12rem 1fr;gap:1.4rem;align-items:start;padding-top:1.2rem;border-top:1px solid var(--rule)}
+.news-row .news-card{grid-template-columns:1fr;gap:.8rem}
+.news-card:not(:has(img)){grid-template-columns:1fr}
+.news-card img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.news-card time{font:600 .8rem var(--sans);color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.news-card h3{font-size:1.35rem;line-height:1.25;font-weight:600;margin:.25rem 0 .4rem}
+.news-card h3 a{color:var(--ink);text-decoration:none}.news-card h3 a:hover{color:var(--violet);text-decoration:underline}
+.news-card p{font-size:1rem;color:var(--muted)}
+.news-img{width:100%;margin-bottom:1.6rem}
+@media (max-width:640px){.news-card{grid-template-columns:1fr}}
+
+/* authors index */
+.authors{list-style:none;columns:3 16rem;column-gap:2.5rem;font-size:1.05rem}
+.authors li{break-inside:avoid;padding:.35rem 0;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;gap:1rem}
+.authors span{font:600 .85rem var(--sans);color:var(--muted)}
+
+/* search (Pagefind UI, themed with site tokens) */
+#search{--pagefind-ui-scale:.9;--pagefind-ui-primary:var(--violet);--pagefind-ui-text:var(--ink);--pagefind-ui-background:var(--paper);
+  --pagefind-ui-border:var(--rule);--pagefind-ui-tag:var(--wash);--pagefind-ui-border-width:1px;--pagefind-ui-border-radius:0;--pagefind-ui-font:var(--sans);max-width:52rem}
+#search .pagefind-ui__result-link{font-family:var(--serif);font-size:1.25rem;color:var(--ink)}
+#search mark{background:var(--goldl);color:#2a1245}
 
 /* buttons */
 .btns{margin-top:2rem;display:flex;gap:.8rem;flex-wrap:wrap;font-family:var(--sans)}

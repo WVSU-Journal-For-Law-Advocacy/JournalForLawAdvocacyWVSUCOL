@@ -1,0 +1,16 @@
+---
+layout: layouts/base.njk
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/news/">News</a> · <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate }}</time></p>
+  <h1>{{ title }}</h1>
+  {%- if summary %}<p>{{ summary }}</p>{% endif %}
+</div></header>
+
+<section><div class="wrap">
+  <article class="prose narrow">
+    {%- if image %}<img class="news-img" src="{{ image }}" alt="{{ image_alt }}" loading="lazy">{% endif %}
+    {{ content | safe }}
+  </article>
+  <p class="more"><a href="/news/">All news →</a></p>
+</div></section>

@@ -1,0 +1,16 @@
+{
+  "name": "journal-for-law-advocacy",
+  "private": true,
+  "description": "Website of the Journal for Law Advocacy, WVSU College of Law",
+  "type": "module",
+  "scripts": {
+    "build": "eleventy",
+    "start": "eleventy --serve"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

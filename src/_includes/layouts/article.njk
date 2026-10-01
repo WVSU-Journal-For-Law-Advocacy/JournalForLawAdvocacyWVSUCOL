@@ -1,0 +1,44 @@
+---
+layout: layouts/base.njk
+---
+{%- set d = { author: author, title: title, volume: volume, first_page: first_page, year: year } %}
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/articles/?area={{ area | urlencode }}">{{ area }}</a> · {{ kind }}</p>
+  <h1>{{ title }}</h1>
+  <p>{{ author }}</p>
+</div></header>
+
+<section><div class="wrap meta-grid">
+  <article>
+    <div class="abstract">
+      <h2>Abstract</h2>
+      <p>{{ abstract }}</p>
+    </div>
+    <p class="cite" id="cite">{{ d | cite(site.short) }}</p>
+    <div class="acts">
+      {%- if pdf %}<a class="btn sm" href="{{ pdf }}" download>Download PDF</a>{% endif %}
+      <button class="btn sm alt" type="button" data-copy="#cite">Copy citation</button>
+      <button class="btn sm alt" type="button" data-copy-link>Copy link</button>
+    </div>
+    {%- if not pdf %}<p class="off">The PDF of this article has not been uploaded yet.</p>{% endif %}
+    {%- if content | trim %}
+    <div class="fulltext prose">
+      {{ content | safe }}
+    </div>
+    {%- endif %}
+  </article>
+  <aside class="side" aria-label="Article details">
+    <dl>
+      <dt>Published in</dt>
+      <dd><a href="/archive/volume-{{ volume }}-issue-{{ issue }}/">Volume {{ volume }}, Issue {{ issue }}</a> ({{ year }})</dd>
+      <dt>First page</dt>
+      <dd>{{ first_page }}</dd>
+      <dt>Area of law</dt>
+      <dd>{{ area }}</dd>
+      {%- if keywords and keywords.length %}
+      <dt>Keywords</dt>
+      <dd>{{ keywords | join(", ") }}</dd>
+      {%- endif %}
+    </dl>
+  </aside>
+</div></section>

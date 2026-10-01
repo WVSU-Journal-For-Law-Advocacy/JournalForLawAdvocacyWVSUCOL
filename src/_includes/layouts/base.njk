@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{%- set pageTitle = (title + " | " + site.title) if title else (site.title + " | " + site.institution) %}
+{%- set pageDesc = abstract or description or site.description %}
+<title>{{ pageTitle }}</title>
+<meta name="description" content="{{ pageDesc }}">
+<link rel="canonical" href="{{ site.url }}{{ page.url }}">
+<meta property="og:type" content="{{ 'article' if isArticle else 'website' }}">
+<meta property="og:site_name" content="{{ site.title }}">
+<meta property="og:title" content="{{ title or site.title }}">
+<meta property="og:description" content="{{ pageDesc }}">
+<meta property="og:url" content="{{ site.url }}{{ page.url }}">
+<meta property="og:image" content="{{ site.url }}/assets/img/seal-240.png">
+<meta name="theme-color" content="#2a1245">
+<meta name="color-scheme" content="light dark">
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("jla-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/site.css">
+{%- if isArticle %}
+{# Google Scholar indexing tags #}
+<meta name="citation_title" content="{{ title }}">
+<meta name="citation_author" content="{{ author }}">
+<meta name="citation_journal_title" content="{{ site.title }}">
+<meta name="citation_journal_abbrev" content="{{ site.short }}">
+<meta name="citation_publisher" content="{{ site.institution }}">
+<meta name="citation_publication_date" content="{{ year }}">
+<meta name="citation_volume" content="{{ volume }}">
+<meta name="citation_issue" content="{{ issue }}">
+<meta name="citation_firstpage" content="{{ first_page }}">
+{%- for k in keywords %}<meta name="citation_keywords" content="{{ k }}">{% endfor %}
+{%- if pdf %}<meta name="citation_pdf_url" content="{{ site.url }}{{ pdf }}">{% endif %}
+<script type="application/ld+json">{{ {
+  "@context": "https://schema.org",
+  "@type": "ScholarlyArticle",
+  "headline": title,
+  "author": { "@type": "Person", "name": author },
+  "abstract": abstract,
+  "keywords": (keywords or []) | join(", "),
+  "datePublished": year | string,
+  "url": site.url + page.url,
+  "isPartOf": { "@type": "PublicationIssue", "issueNumber": issue | string,
+    "isPartOf": { "@type": "PublicationVolume", "volumeNumber": volume | string,
+      "isPartOf": { "@type": "Periodical", "name": site.title } } }
+} | jsonScript | safe }}</script>
+{%- else %}
+<script type="application/ld+json">{{ {
+  "@context": "https://schema.org",
+  "@type": "Periodical",
+  "name": site.title,
+  "url": site.url,
+  "inLanguage": "en",
+  "publisher": { "@type": "CollegeOrUniversity", "name": site.institution, "address": site.city }
+} | jsonScript | safe }}</script>
+{%- endif %}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div id="bar" aria-hidden="true"></div>
+{%- if site.announcement %}
+<div class="ann">{{ site.announcement }}{% if site.deadline %} Deadline: {{ site.deadline }}.{% endif %} <a href="/submit/">How to submit</a></div>
+{%- endif %}
+
+<nav class="nav" aria-label="Main"><div class="wrap">
+  <a class="brand" href="/"><img src="/assets/img/seal-240.png" alt="" width="42" height="42">{{ site.title }}</a>
+  <button class="menu" id="menu" type="button" aria-expanded="false" aria-controls="navlinks">Menu</button>
+  <ul id="navlinks">
+    {%- set links = [["/articles/", "Articles"], ["/archive/", "Archive"], ["/about/", "About"], ["/board/", "Editorial board"], ["/submit/", "Submit"]] %}
+    {%- for l in links %}
+    <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
+    {%- endfor %}
+    <li><button class="tbtn" id="tb" type="button">Dark mode</button></li>
+  </ul>
+</div></nav>
+
+<main id="main">
+{{ content | safe }}
+</main>
+
+<footer id="contact"><div class="wrap">
+  <div>
+    <img src="/assets/img/seal-240.png" alt="Seal of the Journal for Law Advocacy" width="80" height="80" loading="lazy">
+    <h2>{{ site.title }}</h2>
+    <p>{{ site.institution }}<br>{{ site.city }}</p>
+    <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+  </div>
+  <div><h2>Journal</h2><ul><li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/submit/">Submit</a></li></ul></div>
+  {%- if site.facebook or site.instagram %}
+  <div><h2>Follow</h2><ul>
+    {%- if site.facebook %}<li><a href="{{ site.facebook }}" rel="noopener">Facebook</a></li>{% endif %}
+    {%- if site.instagram %}<li><a href="{{ site.instagram }}" rel="noopener">Instagram</a></li>{% endif %}
+  </ul></div>
+  {%- endif %}
+</div>
+<div class="wrap"><small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Views expressed are those of the authors.</small></div>
+</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/assets/js/site.js" defer></script>
+</body>
+</html>

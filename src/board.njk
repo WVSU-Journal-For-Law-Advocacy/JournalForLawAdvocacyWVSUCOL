@@ -1,0 +1,18 @@
+---
+layout: layouts/base.njk
+title: Editorial board
+permalink: /board/
+description: The Editorial Board of the Journal for Law Advocacy.
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Editorial board</h1>
+  <p>Academic Year {{ site.academic_year }}</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="board">
+    {%- for m in board.members %}
+    <div><h3>{{ m.name }}</h3><p class="role">{{ m.role }}</p>{% if m.detail %}<p>{{ m.detail }}</p>{% endif %}</div>
+    {%- endfor %}
+  </div>
+</div></section>

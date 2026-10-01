@@ -1,0 +1,58 @@
+---
+layout: layouts/base.njk
+title: Submit to the journal
+permalink: /submit/
+description: Submission guidelines and manuscript form for the Journal for Law Advocacy.
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Submit to the journal</h1>
+  <p>{{ guidelines.intro }}</p>
+</div></header>
+
+<section><div class="wrap subgrid">
+  <div>
+    <h2 class="title">Guidelines</h2>
+    {%- for g in guidelines.items %}
+    <details{% if loop.first %} open{% endif %}><summary>{{ g.heading }}</summary><p>{{ g.text }}</p></details>
+    {%- endfor %}
+    <p class="sub" style="margin-top:1.5rem">Questions? Email <a href="mailto:{{ site.email }}">{{ site.email }}</a>.</p>
+  </div>
+
+  <form class="form" name="submission" method="POST" action="/submit/thanks/" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="company">
+    <input type="hidden" name="form-name" value="submission">
+    <p class="hp"><label>Leave this empty: <input name="company" tabindex="-1" autocomplete="off"></label></p>
+    <h2>Manuscript form</h2>
+
+    <div class="two">
+      <div class="field"><label for="f-name">Full name</label><input id="f-name" name="name" required autocomplete="name"></div>
+      <div class="field"><label for="f-email">Email</label><input id="f-email" name="email" type="email" required autocomplete="email"></div>
+      <div class="field"><label for="f-aff">Year level or affiliation</label><input id="f-aff" name="affiliation" required placeholder="e.g. 3rd year JD, WVSU"></div>
+      <div class="field"><label for="f-phone">Contact number</label><input id="f-phone" name="phone" type="tel" required autocomplete="tel"></div>
+    </div>
+
+    <div class="field"><label for="f-title">Manuscript title</label><input id="f-title" name="title" required></div>
+    <div class="two">
+      <div class="field"><label for="f-kind">Type</label>
+        <select id="f-kind" name="kind" required>
+          <option value="">Choose…</option>
+          {%- for k in site.kinds %}<option>{{ k }}</option>{% endfor %}
+        </select></div>
+      <div class="field"><label for="f-area">Area of law</label>
+        <select id="f-area" name="area" required>
+          <option value="">Choose…</option>
+          {%- for c in site.areas %}<option>{{ c }}</option>{% endfor %}
+          <option>Other</option>
+        </select></div>
+    </div>
+    <div class="field"><label for="f-abstract">Abstract</label><textarea id="f-abstract" name="abstract" required maxlength="1600" aria-describedby="f-abstract-h"></textarea><p class="hint" id="f-abstract-h">Up to 200 words.</p></div>
+    <div class="field"><label for="manuscript">Manuscript file</label><input id="manuscript" name="manuscript" type="file" required accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document" aria-describedby="manuscript-h"><p class="hint" id="manuscript-h">Word document (.doc or .docx), 8 MB or smaller.</p></div>
+
+    <h3>Before you send</h3>
+    <div class="check">
+      <label><input type="checkbox" name="confirm_length" value="yes" required> The manuscript is 5,000 to 12,000 words.</label>
+      <label><input type="checkbox" name="confirm_footnotes" value="yes" required> All footnotes follow the journal's citation style.</label>
+      <label><input type="checkbox" name="confirm_original" value="yes" required> The work is original and not under review elsewhere.</label>
+    </div>
+    <button class="btn" type="submit">Send manuscript</button>
+  </form>
+</div></section>

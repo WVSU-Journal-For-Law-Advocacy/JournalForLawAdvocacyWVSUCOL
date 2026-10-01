@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+title: Articles
+permalink: /articles/
+description: Every article published in the Journal for Law Advocacy, by area of law.
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Articles</h1>
+  <p>Filter by area of law or search by title, author, or keyword. Open an article to read the abstract, download the PDF, and copy its citation.</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="filters" role="group" aria-label="Filter by area of law" id="filters" hidden>
+    {%- for c in ["All"].concat(site.areas) %}
+    <button type="button" data-cat="{{ c }}" aria-pressed="false">{{ c }}</button>
+    {%- endfor %}
+  </div>
+  <label for="q" class="sr">Search articles</label>
+  <input class="search" id="q" type="search" placeholder="Search articles (press / to focus)" hidden>
+  <p id="count" aria-live="polite"></p>
+  <div id="list">
+    {%- for a in collections.articles %}
+    {%- include "entry.njk" %}
+    {%- endfor %}
+  </div>
+  <p class="empty" id="empty" hidden>No articles match. Choose another area of law or clear the search.</p>
+</div></section>

@@ -1,0 +1,17 @@
+---
+layout: layouts/base.njk
+---
+<header class="pagehead"><div class="wrap">
+  <h1>{{ title }}</h1>
+</div></header>
+
+<section><div class="wrap{% if quote %} cols{% endif %}">
+  <div class="prose narrow">
+    {{ content | safe }}
+  </div>
+  {%- if quote %}
+  <div>
+    <blockquote class="pull">{{ quote }}{% if quote_by %}<cite>{{ quote_by }}</cite>{% endif %}</blockquote>
+  </div>
+  {%- endif %}
+</div></section>

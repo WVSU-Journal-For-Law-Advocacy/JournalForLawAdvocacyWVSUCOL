@@ -1,0 +1,26 @@
+---
+layout: layouts/base.njk
+---
+{%- set contents = collections.articles | inIssue(volume, issue) %}
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/archive/">Archive</a></p>
+  <h1>{{ title }}</h1>
+  <p>Academic Year {{ academic_year }}{% if status == "forthcoming" %} · Forthcoming{% elif status == "current" %} · Current issue{% endif %}</p>
+</div></header>
+
+<section><div class="wrap">
+  {%- if pdf %}<p class="btns" style="margin:0 0 2rem"><a class="btn" href="{{ pdf }}" download>Download the full issue (PDF)</a></p>{% endif %}
+  {%- if contents.length %}
+  <div class="toc" style="max-width:46rem">
+    <h2>Contents</h2>
+    <p class="meta">{{ contents.length }} {{ "item" if contents.length == 1 else "items" }}</p>
+    <ol>
+      {%- for a in contents %}
+      <li style="--n:{{ loop.index0 }}"><a href="{{ a.url }}"><span class="tt">{{ a.data.title }}<small>{{ a.data.author }} · {{ a.data.kind }}</small></span><span class="dots"></span><span class="pg">{{ a.data.first_page }}</span></a></li>
+      {%- endfor %}
+    </ol>
+  </div>
+  {%- else %}
+  <p class="sub">The contents of this issue will be posted when it is published.</p>
+  {%- endif %}
+</div></section>

@@ -1,0 +1,9 @@
+{
+  "members": [
+    { "name": "[Name]", "role": "Editor-in-Chief", "detail": "Juris Doctor candidate" },
+    { "name": "[Name]", "role": "Managing Editor", "detail": "Juris Doctor candidate" },
+    { "name": "[Name]", "role": "Senior Articles Editor", "detail": "Juris Doctor candidate" },
+    { "name": "[Name]", "role": "Board member", "detail": "Juris Doctor candidate" },
+    { "name": "[Name]", "role": "Faculty adviser", "detail": "College of Law" }
+  ]
+}

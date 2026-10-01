@@ -1,0 +1,17 @@
+{
+  "title": "Journal for Law Advocacy",
+  "short": "J. Law Advoc.",
+  "institution": "West Visayas State University College of Law",
+  "city": "Iloilo City, Philippines",
+  "tagline": "The official law journal of the West Visayas State University College of Law, Iloilo City",
+  "description": "Student and faculty scholarship on Philippine law, legal practice, and the public interest, edited by the students of the College of Law.",
+  "url": "https://journalforlawadvocacy.netlify.app",
+  "email": "journal@example.edu.ph",
+  "academic_year": "2026–2027",
+  "announcement": "Now accepting manuscripts for Volume 1, Issue 2.",
+  "deadline": "",
+  "areas": ["Constitutional law", "Criminal law", "Civil law", "Remedial law", "Legal ethics"],
+  "kinds": ["Article", "Essay", "Comment", "Student note", "Case comment"],
+  "facebook": "",
+  "instagram": ""
+}

@@ -1,0 +1,9 @@
+{
+  "intro": "We accept articles, case comments, and student notes year-round.",
+  "items": [
+    { "heading": "Who can submit", "text": "Students and alumni of the College of Law, faculty members, and practitioners. Edit this to match your journal's policy." },
+    { "heading": "Manuscript format", "text": "Word document, 5,000 to 12,000 words, with an abstract of up to 200 words. Cite in the format your board follows and include all footnotes." },
+    { "heading": "Review process", "text": "The Editorial Board screens each manuscript, then assigns it for faculty review. Authors are notified of the decision by email." },
+    { "heading": "Rights and permissions", "text": "Authors keep their copyright and grant the journal the right to publish the work in print and online." }
+  ]
+}

@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 110
+last_page: 119
 pdf_page: 110
 pdf: "/uploads/articles/v5/are-the-children-safe-at-home.pdf"
 keywords:

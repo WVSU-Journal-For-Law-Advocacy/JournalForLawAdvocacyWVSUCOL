@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 165
+last_page: 173
 pdf_page: 171
 pdf: "/uploads/articles/v4/braving-the-storm.pdf"
 keywords:

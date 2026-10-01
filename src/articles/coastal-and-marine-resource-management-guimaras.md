@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 81
+last_page: 88
 pdf_page: 87
 pdf: "/uploads/articles/v4/coastal-and-marine-resource-management-guimaras.pdf"
 keywords:

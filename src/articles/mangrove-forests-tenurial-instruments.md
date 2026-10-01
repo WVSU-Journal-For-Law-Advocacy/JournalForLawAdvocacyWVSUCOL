@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 43
+last_page: 48
 pdf_page: 49
 pdf: "/uploads/articles/v4/mangrove-forests-tenurial-instruments.pdf"
 keywords:

@@ -1,7 +1,7 @@
 ---
 layout: layouts/base.njk
 ---
-{%- set d = { author: author, title: title, volume: volume, first_page: first_page, year: year } %}
+{%- set d = { author: author, title: title, volume: volume, first_page: first_page, year: year, doi: doi } %}
 {%- set vol = collections.issues | issueOf(volume, issue) %}
 <header class="pagehead"><div class="wrap">
   <p class="crumb"><a href="/articles/?area={{ area | urlencode }}">{{ area }}</a> · {{ kind }}</p>
@@ -15,12 +15,31 @@ layout: layouts/base.njk
       <h2>Abstract</h2>
       <p>{{ abstract }}</p>
     </div>
-    <p class="cite" id="cite">{{ d | cite(site.short) }}</p>
-    <div class="acts">
+    <div class="acts acts-main">
       {%- if pdf %}<a class="btn sm" href="{{ pdf }}">Read the PDF</a>{% endif %}
       {%- if vol and vol.data.pdf and pdf_page %}<a class="btn sm alt" href="{{ vol.data.pdf }}#page={{ pdf_page }}">View in the original volume</a>{% endif %}
-      <button class="btn sm alt" type="button" data-copy="#cite">Copy citation</button>
       <button class="btn sm alt" type="button" data-copy-link>Copy link</button>
+    </div>
+    {%- if doi %}<p class="doi">DOI: <a href="https://doi.org/{{ doi }}">https://doi.org/{{ doi }}</a></p>{% endif %}
+
+    <div class="citebox" id="citebox"
+      data-authors="{{ author | splitAuthors | dump }}" data-title="{{ title }}" data-journal="{{ site.title }}"
+      data-abbrev="{{ site.short }}" data-volume="{{ volume }}" data-year="{{ year }}"
+      data-first="{{ first_page }}" data-last="{{ last_page }}" data-doi="{{ doi }}"
+      data-issn="{{ site.issn_online or site.issn_print }}" data-url="{{ site.url }}{{ page.url }}" data-key="{{ page.fileSlug }}">
+      <h2>Cite this article</h2>
+      <div class="filters cite-formats" role="group" aria-label="Citation format" hidden>
+        <button type="button" data-fmt="house" aria-pressed="true">House style</button>
+        <button type="button" data-fmt="bluebook" aria-pressed="false">Bluebook</button>
+        <button type="button" data-fmt="apa" aria-pressed="false">APA 7</button>
+        <button type="button" data-fmt="chicago" aria-pressed="false">Chicago</button>
+      </div>
+      <p class="cite" id="cite" aria-live="polite">{{ d | cite(site.short) }}</p>
+      <div class="acts">
+        <button class="btn sm" type="button" data-copy="#cite">Copy citation</button>
+        <button class="btn sm alt" type="button" data-export="bib" hidden>Download BibTeX</button>
+        <button class="btn sm alt" type="button" data-export="ris" hidden>Download RIS</button>
+      </div>
     </div>
     {%- if not pdf %}<p class="off">The PDF of this article has not been uploaded yet.</p>{% endif %}
     {%- if content | trim %}

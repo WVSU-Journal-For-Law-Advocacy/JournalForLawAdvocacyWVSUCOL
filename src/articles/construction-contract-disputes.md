@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 193
+last_page: 206
 pdf_page: 199
 pdf: "/uploads/articles/v4/construction-contract-disputes.pdf"
 keywords:

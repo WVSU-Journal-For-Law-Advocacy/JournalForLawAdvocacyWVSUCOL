@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 196
+last_page: 204
 pdf_page: 196
 pdf: "/uploads/articles/v5/drag-and-queer-rights.pdf"
 keywords:

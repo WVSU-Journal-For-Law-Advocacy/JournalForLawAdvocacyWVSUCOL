@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 8
+last_page: 15
 pdf_page: 8
 pdf: "/uploads/articles/v5/right-to-privacy-digital-governance.pdf"
 keywords:

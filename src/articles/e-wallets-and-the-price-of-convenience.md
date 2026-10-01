@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 121
+last_page: 132
 pdf_page: 121
 pdf: "/uploads/articles/v5/e-wallets-and-the-price-of-convenience.pdf"
 keywords:

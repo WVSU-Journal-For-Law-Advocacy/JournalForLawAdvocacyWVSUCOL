@@ -106,12 +106,24 @@ h2.title{font-size:2.4rem;font-weight:400;line-height:1.15;letter-spacing:-.01em
 .side dt:first-child{margin-top:0}
 .cite{font-size:.98rem;margin:.7rem 0 1rem;padding:.7rem .9rem;background:var(--paper);border-left:4px solid var(--gold)}
 .acts{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem}
+.acts-main{margin:1.6rem 0 0}
+.doi{font:.9rem var(--sans);margin-top:.9rem;color:var(--muted)}
+.citebox{margin-top:2.2rem;padding:1.3rem 1.4rem 1.4rem;background:var(--wash);border-top:4px solid var(--gold)}
+.citebox h2{font-size:1.2rem;font-weight:600;margin-bottom:.8rem}
+.citebox .cite{margin:.4rem 0 0;word-break:break-word}
+.cite-formats{margin-bottom:.4rem}
 .off{font:.85rem var(--sans);color:var(--muted);padding:.5rem 0}
 
 /* about / archive / board */
 .banner{display:block;width:100%;margin-top:2.5rem;border-bottom:5px solid var(--gold)}
 .cols{display:grid;grid-template-columns:1.2fr 1fr;gap:4rem}
 .cols p+p,.prose p+p{margin-top:1rem}
+.prose h2{font-size:1.6rem;font-weight:600;line-height:1.25;margin:2.2rem 0 .7rem}
+.prose h3{font-size:1.25rem;font-weight:600;margin:1.6rem 0 .5rem}
+.prose ul,.prose ol{padding-left:1.4rem;margin:.8rem 0}.prose li+li{margin-top:.35rem}
+.prose blockquote{border-left:4px solid var(--gold);padding:.4rem 0 .4rem 1rem;margin:1rem 0;background:var(--wash)}
+.notice{font:.92rem/1.5 var(--sans);background:var(--wash);border-left:4px solid var(--gold);padding:.75rem 1rem;margin-bottom:1.5rem}
+.side dd a[aria-current]{font-weight:600;color:var(--ink)}
 blockquote.pull{border-left:5px solid var(--gold);padding-left:1.5rem;font-size:1.7rem;font-style:italic;line-height:1.35}
 blockquote.pull cite{display:block;margin-top:.9rem;font:normal .88rem var(--sans);color:var(--muted)}
 .vols{list-style:none;max-width:46rem;border-top:1px solid var(--ink)}
@@ -148,7 +160,13 @@ details p{margin-top:.6rem;font-size:1.02rem}
 
 /* footer */
 footer{background:var(--deep);color:#d9d2e3;padding:3.5rem 0;font:.92rem var(--sans)}
-footer .wrap{display:grid;grid-template-columns:2fr 1fr 1fr;gap:2rem}
+footer .wrap{display:grid;grid-template-columns:1.5fr 1fr 1.2fr 1.5fr;gap:2rem}
+footer .issn{font-size:.85rem;color:#a99fba;margin:0}
+.subscribe{display:flex;gap:.5rem;flex-wrap:wrap;margin:.8rem 0 1rem}
+.subscribe input[type=email]{flex:1;min-width:12rem;font:.9rem var(--sans);padding:.5rem .7rem;border:1px solid #6b5a85;background:#1b0f2c;color:#fff}
+.subscribe .btn{margin:0}
+footer .social{display:flex;gap:1.2rem}
+.searchlink{display:inline-flex;align-items:center;gap:.35rem}
 footer img{width:80px;height:80px;margin-bottom:1rem}
 footer h2{color:#fff;font:600 1.1rem var(--serif);margin-bottom:.6rem}
 footer a{color:var(--goldl)}footer a:hover{color:#fff}footer ul{list-style:none;line-height:2}

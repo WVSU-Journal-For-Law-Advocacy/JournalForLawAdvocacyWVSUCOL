@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 112
+last_page: 121
 pdf_page: 118
 pdf: "/uploads/articles/v4/navigating-the-nexus-nabaoy-river.pdf"
 keywords:

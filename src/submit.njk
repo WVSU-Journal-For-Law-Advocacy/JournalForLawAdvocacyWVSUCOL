@@ -15,7 +15,8 @@ description: Submission guidelines and manuscript form for the Journal for Law A
     {%- for g in guidelines.items %}
     <details{% if loop.first %} open{% endif %}><summary>{{ g.heading }}</summary><p>{{ g.text }}</p></details>
     {%- endfor %}
-    <p class="sub" style="margin-top:1.5rem">Questions? Email <a href="mailto:{{ site.email }}">{{ site.email }}</a>.</p>
+    <p class="sub" style="margin-top:1.5rem">Before submitting, read our <a href="/policies/peer-review/">peer review process</a>, <a href="/policies/publication-ethics/">publication ethics</a>, and <a href="/policies/copyright/">copyright</a> policies.</p>
+    <p class="sub">Questions? Email <a href="mailto:{{ site.email }}">{{ site.email }}</a>.</p>
   </div>
 
   <form class="form" name="submission" method="POST" action="/submit/thanks/" enctype="multipart/form-data" data-netlify="true" netlify-honeypot="company">

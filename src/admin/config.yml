@@ -45,6 +45,8 @@ collections:
       - { label: Issue, name: issue, widget: hidden, default: 1 }
       - { label: Year published, name: year, widget: number, value_type: int, min: 2021 }
       - { label: First page (printed), name: first_page, widget: number, value_type: int, min: 1, required: false, hint: "The page number printed in the volume. Used in the citation." }
+      - { label: Last page (printed), name: last_page, widget: number, value_type: int, min: 1, required: false }
+      - { label: DOI, name: doi, widget: string, required: false, hint: "Only the DOI itself, e.g. 10.12345/jla.2025.5.96 (no https://doi.org/). Leave empty until registered." }
       - { label: Page in the volume PDF, name: pdf_page, widget: number, value_type: int, min: 1, required: false, hint: "Where the article starts in the full-volume PDF file, for the “View in the original volume” link. Often differs from the printed page." }
       - { label: Order, name: order, widget: number, value_type: int, required: false, hint: "Only for volumes without page numbers: position in the table of contents." }
       - { label: Article PDF, name: pdf, widget: file, required: false, hint: "The PDF of this article alone." }
@@ -78,6 +80,21 @@ collections:
           - { label: Forthcoming, value: forthcoming }
         hint: "Only one volume should be Current. Change the old one to Published."
       - { label: Full volume PDF (original), name: pdf, widget: file, required: false, hint: "The complete volume exactly as published." }
+
+  - name: policies
+    label: Policies
+    label_singular: Policy
+    description: Journal policies (peer review, ethics, open access, copyright, citation). Untick “Show draft notice” once the board approves a policy.
+    folder: src/policies
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [order, title]
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Summary, name: summary, widget: string }
+      - { label: Order, name: order, widget: number, value_type: int }
+      - { label: Show draft notice, name: draft_notice, widget: boolean, default: true, required: false }
+      - { label: Body, name: body, widget: markdown }
 
   - name: pages
     label: Pages
@@ -113,18 +130,24 @@ collections:
         media_folder: /src/assets/img/board
         public_folder: /assets/img/board
         fields:
-          - { label: Academic year, name: academic_year, widget: string }
-          - { label: Groups (in display order), name: groups, widget: list }
-          - label: Members
-            name: members
+          - label: Boards by academic year
+            name: boards
             widget: list
-            summary: "{{fields.group}} · {{fields.name}}"
+            hint: "Newest year first. The first entry is shown as the current board; the rest appear under Past boards."
+            summary: "AY {{fields.academic_year}}"
             fields:
-              - { label: Name, name: name, widget: string }
-              - { label: Role, name: role, widget: string }
-              - { label: Group, name: group, widget: string, hint: "Must match one of the groups above exactly." }
-              - { label: Photo, name: photo, widget: image, required: false, hint: "Square photo, at least 320 × 320 pixels." }
-              - { label: Detail, name: detail, widget: string, required: false }
+              - { label: Academic year, name: academic_year, widget: string, hint: "e.g. 2026–2027" }
+              - { label: Groups (in display order), name: groups, widget: list }
+              - label: Members
+                name: members
+                widget: list
+                summary: "{{fields.group}} · {{fields.name}}"
+                fields:
+                  - { label: Name, name: name, widget: string }
+                  - { label: Role, name: role, widget: string }
+                  - { label: Group, name: group, widget: string, hint: "Must match one of the groups above exactly." }
+                  - { label: Photo, name: photo, widget: image, required: false, hint: "Square photo, at least 320 × 320 pixels." }
+                  - { label: Detail, name: detail, widget: string, required: false }
 
   - name: settings
     label: Settings
@@ -146,5 +169,8 @@ collections:
           - { label: Submission deadline, name: deadline, widget: string, required: false }
           - { label: Areas of law, name: areas, widget: list, hint: "Also update the list in the Article form (ask the web admin)." }
           - { label: Kinds of work, name: kinds, widget: list }
+          - { label: ISSN (print), name: issn_print, widget: string, required: false, hint: "Shown in the footer and article metadata once assigned." }
+          - { label: ISSN (online), name: issn_online, widget: string, required: false }
+          - { label: GoatCounter code, name: goatcounter, widget: string, required: false, hint: "The part before .goatcounter.com, e.g. jla. Leave empty to turn analytics off." }
           - { label: Facebook page URL, name: facebook, widget: string, required: false }
           - { label: Instagram URL, name: instagram, widget: string, required: false }

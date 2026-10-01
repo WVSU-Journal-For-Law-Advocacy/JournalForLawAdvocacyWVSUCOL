@@ -1,17 +1,23 @@
 ---
 layout: layouts/base.njk
-title: Editorial board
-permalink: /board/
+pagination:
+  data: board.boards
+  size: 1
+  alias: b
+permalink: "{% if pagination.pageNumber == 0 %}/board/{% else %}/board/{{ b.academic_year | slugify }}/{% endif %}"
+eleventyComputed:
+  title: "{% if pagination.pageNumber == 0 %}Editorial board{% else %}Editorial board {{ b.academic_year }}{% endif %}"
 description: The Board of Editors, Contribution Editors, and Editorial Apprentices of the Journal for Law Advocacy.
 ---
 <header class="pagehead"><div class="wrap">
+  {%- if pagination.pageNumber > 0 %}<p class="crumb"><a href="/board/">Editorial board</a></p>{% endif %}
   <h1>Editorial board</h1>
-  <p>Academic Year {{ board.academic_year }}</p>
+  <p>Academic Year {{ b.academic_year }}{% if pagination.pageNumber == 0 %} · Current board{% endif %}</p>
 </div></header>
 
 <section><div class="wrap">
-  {%- for g in board.groups %}
-  {%- set people = board.members | where("group", g) %}
+  {%- for g in b.groups %}
+  {%- set people = b.members | where("group", g) %}
   {%- if people.length %}
   <h2 class="title board-group">{{ g }}</h2>
   <div class="board">
@@ -26,4 +32,15 @@ description: The Board of Editors, Contribution Editors, and Editorial Apprentic
   </div>
   {%- endif %}
   {%- endfor %}
+
+  {%- if board.boards.length > 1 %}
+  <h2 class="title board-group" style="margin-top:3.5rem">Past boards</h2>
+  <ul class="vols">
+    {%- for past in board.boards %}
+    {%- if loop.index0 > 0 %}
+    <li><b><a href="/board/{{ past.academic_year | slugify }}/">Academic Year {{ past.academic_year }}</a></b><span class="dots"></span><span class="st">{{ past.members.length }} members</span></li>
+    {%- endif %}
+    {%- endfor %}
+  </ul>
+  {%- endif %}
 </div></section>

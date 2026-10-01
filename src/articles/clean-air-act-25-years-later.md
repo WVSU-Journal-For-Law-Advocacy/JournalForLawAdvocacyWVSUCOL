@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 101
+last_page: 110
 pdf_page: 107
 pdf: "/uploads/articles/v4/clean-air-act-25-years-later.pdf"
 keywords:

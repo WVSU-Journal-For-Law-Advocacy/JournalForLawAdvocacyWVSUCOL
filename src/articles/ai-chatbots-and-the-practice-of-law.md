@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 171
+last_page: 180
 pdf_page: 171
 pdf: "/uploads/articles/v5/ai-chatbots-and-the-practice-of-law.pdf"
 keywords:

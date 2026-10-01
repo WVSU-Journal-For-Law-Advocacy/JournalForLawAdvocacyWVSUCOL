@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 211
+last_page: 218
 pdf_page: 211
 pdf: "/uploads/articles/v5/god-is-with-us-even-on-the-internet.pdf"
 keywords:

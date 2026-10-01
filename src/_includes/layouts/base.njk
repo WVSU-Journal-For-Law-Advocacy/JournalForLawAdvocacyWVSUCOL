@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {%- set pageTitle = (title + " | " + site.title) if title else (site.title + " | " + site.institution) %}
-{%- set pageDesc = abstract or description or site.description %}
+{%- set pageDesc = abstract or summary or description or site.description %}
+{%- set ogImage = ("/og/" + page.fileSlug + ".png") if isArticle else "/og/site.png" %}
 <title>{{ pageTitle }}</title>
 <meta name="description" content="{{ pageDesc }}">
 <link rel="canonical" href="{{ site.url }}{{ page.url }}">
@@ -13,7 +14,11 @@
 <meta property="og:title" content="{{ title or site.title }}">
 <meta property="og:description" content="{{ pageDesc }}">
 <meta property="og:url" content="{{ site.url }}{{ page.url }}">
-<meta property="og:image" content="{{ site.url }}/assets/img/seal-240.png">
+<meta property="og:image" content="{{ site.url }}{{ ogImage }}">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="{{ title or site.title }}">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#2a1245">
 <meta name="color-scheme" content="light dark">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("jla-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
@@ -26,26 +31,30 @@
 {%- if isArticle %}
 {# Google Scholar indexing tags #}
 <meta name="citation_title" content="{{ title }}">
-<meta name="citation_author" content="{{ author }}">
+{%- for au in author | splitAuthors %}<meta name="citation_author" content="{{ au }}">{% endfor %}
 <meta name="citation_journal_title" content="{{ site.title }}">
 <meta name="citation_journal_abbrev" content="{{ site.short }}">
 <meta name="citation_publisher" content="{{ site.institution }}">
 <meta name="citation_publication_date" content="{{ year }}">
 <meta name="citation_volume" content="{{ volume }}">
 {%- if first_page %}<meta name="citation_firstpage" content="{{ first_page }}">{% endif %}
+{%- if last_page %}<meta name="citation_lastpage" content="{{ last_page }}">{% endif %}
+{%- if doi %}<meta name="citation_doi" content="{{ doi }}">{% endif %}
+{%- if site.issn_online or site.issn_print %}<meta name="citation_issn" content="{{ site.issn_online or site.issn_print }}">{% endif %}
 {%- for k in keywords %}<meta name="citation_keywords" content="{{ k }}">{% endfor %}
 {%- if pdf %}<meta name="citation_pdf_url" content="{{ site.url }}{{ pdf }}">{% endif %}
 <script type="application/ld+json">{{ {
   "@context": "https://schema.org",
   "@type": "ScholarlyArticle",
   "headline": title,
-  "author": { "@type": "Person", "name": author },
+  "author": author | splitAuthors | personList,
   "abstract": abstract,
   "keywords": (keywords or []) | join(", "),
   "datePublished": year | string,
   "url": site.url + page.url,
+  "sameAs": ("https://doi.org/" + doi) if doi else undefined,
   "isPartOf": { "@type": "PublicationVolume", "volumeNumber": volume | string,
-    "isPartOf": { "@type": "Periodical", "name": site.title } }
+    "isPartOf": { "@type": "Periodical", "name": site.title, "issn": (site.issn_online or site.issn_print) or undefined } }
 } | jsonScript | safe }}</script>
 {%- else %}
 <script type="application/ld+json">{{ {
@@ -54,8 +63,12 @@
   "name": site.title,
   "url": site.url,
   "inLanguage": "en",
+  "issn": (site.issn_online or site.issn_print) or undefined,
   "publisher": { "@type": "CollegeOrUniversity", "name": site.institution, "address": site.city }
 } | jsonScript | safe }}</script>
+{%- endif %}
+{%- if site.goatcounter %}
+<script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 {%- endif %}
 </head>
 <body>
@@ -69,15 +82,16 @@
   <a class="brand" href="/"><img src="/assets/img/seal-240.png" alt="" width="42" height="42">{{ site.title }}</a>
   <button class="menu" id="menu" type="button" aria-expanded="false" aria-controls="navlinks">Menu</button>
   <ul id="navlinks">
-    {%- set links = [["/articles/", "Articles"], ["/archive/", "Archive"], ["/about/", "About"], ["/board/", "Editorial board"], ["/submit/", "Submit"]] %}
+    {%- set links = [["/articles/", "Articles"], ["/archive/", "Archive"], ["/news/", "News"], ["/about/", "About"], ["/board/", "Editorial board"], ["/submit/", "Submit"]] %}
     {%- for l in links %}
     <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
     {%- endfor %}
+    <li><a class="searchlink" href="/search/"{% if page.url == "/search/" %} aria-current="page"{% endif %}><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Search</a></li>
     <li><button class="tbtn" id="tb" type="button">Dark mode</button></li>
   </ul>
 </div></nav>
 
-<main id="main">
+<main id="main"{% if not searchExclude %} data-pagefind-body{% endif %}>
 {{ content | safe }}
 </main>
 
@@ -87,16 +101,32 @@
     <h2>{{ site.title }}</h2>
     <p>{{ site.institution }}<br>{{ site.city }}</p>
     <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
+    {%- if site.issn_print %}<p class="issn">ISSN {{ site.issn_print }} (Print)</p>{% endif %}
+    {%- if site.issn_online %}<p class="issn">ISSN {{ site.issn_online }} (Online)</p>{% endif %}
   </div>
-  <div><h2>Journal</h2><ul><li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/submit/">Submit</a></li></ul></div>
-  {%- if site.facebook or site.instagram %}
-  <div><h2>Follow</h2><ul>
-    {%- if site.facebook %}<li><a href="{{ site.facebook }}" rel="noopener">Facebook</a></li>{% endif %}
-    {%- if site.instagram %}<li><a href="{{ site.instagram }}" rel="noopener">Instagram</a></li>{% endif %}
+  <div><h2>Journal</h2><ul><li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/authors/">Authors</a></li><li><a href="/news/">News</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/submit/">Submit</a></li></ul></div>
+  <div><h2>Policies</h2><ul>
+    {%- for p in collections.policies %}<li><a href="{{ p.url }}">{{ p.data.title }}</a></li>{% endfor %}
   </ul></div>
-  {%- endif %}
+  <div>
+    <h2>Stay informed</h2>
+    <p>Get an email when a new volume is published.</p>
+    <form class="subscribe" name="newsletter" method="POST" action="/subscribed/" data-netlify="true" netlify-honeypot="website">
+      <input type="hidden" name="form-name" value="newsletter">
+      <p class="hp"><label>Leave this empty: <input name="website" tabindex="-1" autocomplete="off"></label></p>
+      <label for="nl-email" class="sr">Email address</label>
+      <input id="nl-email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+      <button class="btn sm" type="submit">Subscribe</button>
+    </form>
+    {%- if site.facebook or site.instagram %}
+    <ul class="social">
+      {%- if site.facebook %}<li><a href="{{ site.facebook }}" rel="noopener">Facebook</a></li>{% endif %}
+      {%- if site.instagram %}<li><a href="{{ site.instagram }}" rel="noopener">Instagram</a></li>{% endif %}
+    </ul>
+    {%- endif %}
+  </div>
 </div>
-<div class="wrap"><small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Views expressed are those of the authors.</small></div>
+<div class="wrap"><small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Articles are open access under <a href="/policies/open-access/">CC BY-NC 4.0</a> unless stated otherwise. Views expressed are those of the authors.</small></div>
 </footer>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="/assets/js/site.js" defer></script>

@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 61
+last_page: 67
 pdf_page: 67
 pdf: "/uploads/articles/v4/mangayon-shot-dead.pdf"
 keywords:

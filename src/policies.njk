@@ -1,0 +1,18 @@
+---
+layout: layouts/base.njk
+title: Journal policies
+permalink: /policies/
+description: Peer review, publication ethics, open access, copyright, and citation policies of the Journal for Law Advocacy.
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Journal policies</h1>
+  <p>How we review, publish, and license the scholarship in the journal.</p>
+</div></header>
+
+<section><div class="wrap">
+  <ul class="vols">
+    {%- for p in collections.policies %}
+    <li><b><a href="{{ p.url }}">{{ p.data.title }}</a></b><span class="dots"></span><span class="st">{{ p.data.summary }}</span></li>
+    {%- endfor %}
+  </ul>
+</div></section>

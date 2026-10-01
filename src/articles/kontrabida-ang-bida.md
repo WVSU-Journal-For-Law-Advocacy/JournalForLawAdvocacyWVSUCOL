@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 69
+last_page: 78
 pdf_page: 75
 pdf: "/uploads/articles/v4/kontrabida-ang-bida.pdf"
 keywords:

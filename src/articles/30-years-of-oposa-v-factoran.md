@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 7
+last_page: 19
 pdf_page: 13
 pdf: "/uploads/articles/v4/30-years-of-oposa-v-factoran.pdf"
 keywords:

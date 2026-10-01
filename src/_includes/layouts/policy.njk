@@ -1,0 +1,27 @@
+---
+layout: layouts/base.njk
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/policies/">Journal policies</a></p>
+  <h1>{{ title }}</h1>
+  {%- if summary %}<p>{{ summary }}</p>{% endif %}
+</div></header>
+
+<section><div class="wrap cols">
+  <div class="prose narrow">
+    {%- if draft_notice %}
+    <p class="notice"><strong>Draft policy.</strong> This text is pending approval by the Editorial Board and faculty adviser.</p>
+    {%- endif %}
+    {{ content | safe }}
+  </div>
+  <aside>
+    <nav class="side" aria-label="Journal policies">
+      <dl>
+        <dt>Journal policies</dt>
+        {%- for p in collections.policies %}
+        <dd><a href="{{ p.url }}"{% if p.url == page.url %} aria-current="page"{% endif %}>{{ p.data.title }}</a></dd>
+        {%- endfor %}
+      </dl>
+    </nav>
+  </aside>
+</div></section>

@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 181
+last_page: 188
 pdf_page: 181
 pdf: "/uploads/articles/v5/machine-learning-algorithms-and-bail.pdf"
 keywords:

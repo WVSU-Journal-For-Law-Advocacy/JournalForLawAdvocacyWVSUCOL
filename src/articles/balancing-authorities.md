@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 91
+last_page: 99
 pdf_page: 97
 pdf: "/uploads/articles/v4/balancing-authorities.pdf"
 keywords:

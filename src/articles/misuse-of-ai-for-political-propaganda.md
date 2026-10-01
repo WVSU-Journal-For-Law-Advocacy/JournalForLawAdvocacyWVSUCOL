@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 16
+last_page: 19
 pdf_page: 16
 pdf: "/uploads/articles/v5/misuse-of-ai-for-political-propaganda.pdf"
 keywords:

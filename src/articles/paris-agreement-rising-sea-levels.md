@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 124
+last_page: 146
 pdf_page: 130
 pdf: "/uploads/articles/v4/paris-agreement-rising-sea-levels.pdf"
 keywords:

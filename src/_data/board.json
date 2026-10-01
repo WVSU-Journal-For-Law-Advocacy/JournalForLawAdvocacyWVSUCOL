@@ -1,17 +1,25 @@
 {
-  "academic_year": "2026–2027",
-  "groups": ["Board of Editors", "Contribution Editors", "Editorial Apprentices"],
-  "members": [
-    { "name": "Felice Marie P. Nafarrete", "role": "Executive Editor", "group": "Board of Editors", "photo": "/assets/img/board/nafarrete.jpg" },
-    { "name": "Angeline S. Acantilado", "role": "Member, Board of Editors", "group": "Board of Editors", "photo": "/assets/img/board/acantilado.jpg" },
-    { "name": "Elmo V. Ador Jr.", "role": "Member, Board of Editors", "group": "Board of Editors", "photo": "/assets/img/board/ador.jpg" },
-    { "name": "Emmanuelle Anne V. Besonia", "role": "Executive Contribution Editor", "group": "Contribution Editors", "photo": "/assets/img/board/besonia.jpg" },
-    { "name": "Jose Emilio Luis T. Combatir", "role": "Contribution Editor", "group": "Contribution Editors", "photo": "/assets/img/board/combatir.jpg" },
-    { "name": "John Patrick S. Palquiran", "role": "Contribution Editor", "group": "Contribution Editors", "photo": "/assets/img/board/palquiran.jpg" },
-    { "name": "Xavier Bagongon", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/bagongon.jpg" },
-    { "name": "Jaymar S. Chavez", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/chavez.jpg" },
-    { "name": "Ericca D. De la Paz", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/de-la-paz.jpg" },
-    { "name": "Ciania Belle Gloria", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/gloria.jpg" },
-    { "name": "Val Marie Magracia", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/magracia.jpg" }
+  "boards": [
+    {
+      "academic_year": "2026–2027",
+      "groups": [
+        "Board of Editors",
+        "Contribution Editors",
+        "Editorial Apprentices"
+      ],
+      "members": [
+        { "name": "Felice Marie P. Nafarrete", "role": "Executive Editor", "group": "Board of Editors", "photo": "/assets/img/board/nafarrete.jpg" },
+        { "name": "Angeline S. Acantilado", "role": "Member, Board of Editors", "group": "Board of Editors", "photo": "/assets/img/board/acantilado.jpg" },
+        { "name": "Elmo V. Ador Jr.", "role": "Member, Board of Editors", "group": "Board of Editors", "photo": "/assets/img/board/ador.jpg" },
+        { "name": "Emmanuelle Anne V. Besonia", "role": "Executive Contribution Editor", "group": "Contribution Editors", "photo": "/assets/img/board/besonia.jpg" },
+        { "name": "Jose Emilio Luis T. Combatir", "role": "Contribution Editor", "group": "Contribution Editors", "photo": "/assets/img/board/combatir.jpg" },
+        { "name": "John Patrick S. Palquiran", "role": "Contribution Editor", "group": "Contribution Editors", "photo": "/assets/img/board/palquiran.jpg" },
+        { "name": "Xavier Bagongon", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/bagongon.jpg" },
+        { "name": "Jaymar S. Chavez", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/chavez.jpg" },
+        { "name": "Ericca D. De la Paz", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/de-la-paz.jpg" },
+        { "name": "Ciania Belle Gloria", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/gloria.jpg" },
+        { "name": "Val Marie Magracia", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/magracia.jpg" }
+      ]
+    }
   ]
 }

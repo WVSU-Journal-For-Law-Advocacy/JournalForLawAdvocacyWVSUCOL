@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 68
+last_page: 75
 pdf_page: 68
 pdf: "/uploads/articles/v5/the-deepfake-dilemma.pdf"
 keywords:

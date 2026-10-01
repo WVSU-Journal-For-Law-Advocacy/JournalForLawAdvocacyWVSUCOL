@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 176
+last_page: 191
 pdf_page: 182
 pdf: "/uploads/articles/v4/quarrying-environmental-ethic-crisis.pdf"
 keywords:

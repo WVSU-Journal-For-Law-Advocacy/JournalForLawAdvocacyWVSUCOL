@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 21
+last_page: 30
 pdf_page: 27
 pdf: "/uploads/articles/v4/speak-for-the-trees.pdf"
 keywords:

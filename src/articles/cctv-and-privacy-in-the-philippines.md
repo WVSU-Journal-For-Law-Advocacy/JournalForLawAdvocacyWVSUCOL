@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 96
+last_page: 109
 pdf_page: 96
 pdf: "/uploads/articles/v5/cctv-and-privacy-in-the-philippines.pdf"
 keywords:

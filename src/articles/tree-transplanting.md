@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 33
+last_page: 40
 pdf_page: 39
 pdf: "/uploads/articles/v4/tree-transplanting.pdf"
 keywords:

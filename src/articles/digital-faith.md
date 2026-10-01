@@ -7,6 +7,7 @@ volume: 5
 issue: 1
 year: 2025
 first_page: 206
+last_page: 210
 pdf_page: 206
 pdf: "/uploads/articles/v5/digital-faith.pdf"
 keywords:

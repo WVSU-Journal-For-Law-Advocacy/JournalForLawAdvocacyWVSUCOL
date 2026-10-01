@@ -28,6 +28,10 @@ export default function (eleventyConfig) {
     )
   );
 
+  eleventyConfig.addCollection("policies", (api) =>
+    api.getFilteredByGlob("src/policies/*.md").sort((a, b) => num(a.data.order) - num(b.data.order))
+  );
+
   // The issue marked "current", otherwise the newest published one
   eleventyConfig.addFilter("currentIssue", (issues) =>
     issues.find((i) => i.data.status === "current") ||
@@ -39,6 +43,11 @@ export default function (eleventyConfig) {
     articles.filter((a) => num(a.data.volume) === num(volume) && num(a.data.issue) === num(issue))
   );
 
+  // "A and B" / "A, B and C" -> ["A", "B", "C"]; credentials like ", JD" stay attached
+  const splitAuthors = (s) => String(s || "").split(/\s+and\s+|;\s*/).map((x) => x.trim()).filter(Boolean);
+  eleventyConfig.addFilter("splitAuthors", splitAuthors);
+  eleventyConfig.addFilter("personList", (names) => names.map((name) => ({ "@type": "Person", name })));
+
   eleventyConfig.addFilter("where", (items, key, value) => (items || []).filter((x) => x[key] === value));
 
   eleventyConfig.addFilter("issueOf", (issues, volume, issue) =>
@@ -47,7 +56,8 @@ export default function (eleventyConfig) {
 
   // Edit this to match the journal's house citation style
   eleventyConfig.addFilter("cite", (d, abbrev) =>
-    `${d.author}, ${d.title}, ${d.volume} ${abbrev}${d.first_page ? " " + d.first_page : ""} (${d.year}).`
+    `${d.author}, ${d.title}, ${d.volume} ${abbrev}${d.first_page ? " " + d.first_page : ""} (${d.year}).` +
+    (d.doi ? ` https://doi.org/${d.doi}` : "")
   );
 
   // JSON safe to place inside a <script> tag

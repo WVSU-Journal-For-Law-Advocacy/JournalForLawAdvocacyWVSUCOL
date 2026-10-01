@@ -7,6 +7,7 @@ volume: 4
 issue: 1
 year: 2024
 first_page: 159
+last_page: 163
 pdf_page: 165
 pdf: "/uploads/articles/v4/is-biotechnology-a-threat.pdf"
 keywords:

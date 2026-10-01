@@ -23,4 +23,13 @@ layout: layouts/base.njk
   {%- else %}
   <p class="sub">The contents of this volume will be posted when it is published.</p>
   {%- endif %}
+
+  <form class="form subscribe-box" name="newsletter" method="POST" action="/subscribed/" data-netlify="true" netlify-honeypot="website">
+    <input type="hidden" name="form-name" value="newsletter">
+    <p class="hp"><label>Leave this empty: <input name="website" tabindex="-1" autocomplete="off"></label></p>
+    <h2>Get the next volume by email</h2>
+    <p>One email when a new volume is published. Nothing else.</p>
+    <div class="field"><label for="vol-email">Email address</label><input id="vol-email" name="email" type="email" required autocomplete="email"></div>
+    <button class="btn" type="submit">Subscribe</button>
+  </form>
 </div></section>

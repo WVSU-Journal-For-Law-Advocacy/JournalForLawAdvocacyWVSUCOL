@@ -8,8 +8,10 @@ Go to `/admin` on the live site and sign in with GitHub. From there you can:
 
 - **Volumes**: add a volume and upload the complete volume PDF exactly as published (the historical copy). Mark exactly one volume as *Current*; it appears on the home page.
 - **Articles**: add one entry per piece in the volume and upload that article's own PDF. Fill in the *printed* first page (used in the citation) and the *page in the volume PDF* (powers the "View in the original volume" link). Tick *Draft* to hide it until it's ready.
-- **Pages**: edit the About page, the submission guidelines and the editorial board.
-- **Settings**: journal name, contact email, announcement banner, areas of law, social links.
+- **News**: post announcements, calls for papers and events. The newest three appear on the home page.
+- **Policies**: the peer review, ethics, open access, copyright and citation policies. They're drafts: once the board approves one, untick *Show draft notice*.
+- **Pages**: edit the About page, the submission guidelines and the editorial board. Add each new academic year's board at the top of the list; earlier years move to *Past boards* automatically.
+- **Settings**: journal name, contact email, announcement banner, areas of law, ISSN, analytics code, social links.
 
 Changes go live about a minute after you click *Publish*.
 
@@ -22,7 +24,11 @@ The abstracts for Volumes 1, 4 and 5 were drafted from each author's opening par
 
 To split a new volume, any PDF tool works (for example *Print → Save as PDF* with a page range, or `qpdf in.pdf --pages . 12-25 -- out.pdf`). Upload each piece in the article's *Article PDF* field.
 
-Manuscripts sent through the form on `/submit/` show up in the Netlify dashboard under **Forms → submission**.
+Manuscripts sent through the form on `/submit/` show up in the Netlify dashboard under **Forms → submission**. Newsletter signups show up under **Forms → newsletter**; export them as CSV when a new volume comes out.
+
+### Full text on the web (optional)
+
+An article's *Full text* field shows the article as a web page under the abstract, with numbered footnotes (`text[^1]` … `[^1]: The footnote.`) and a table of contents built from its headings. The best source is the author's Word file: paste it into the CMS editor. Text copied out of a PDF needs careful proofreading. Set *Full text status* to *Proofread* once checked.
 
 ## One-time setup (site admin)
 
@@ -32,23 +38,33 @@ Manuscripts sent through the form on `/submit/` show up in the Netlify dashboard
    2. In Netlify, go to Project configuration → Access & security → OAuth → *Install provider* → GitHub, and paste the client ID and secret.
    3. Add each editor as a collaborator with write access on the GitHub repository.
 3. **Custom domain (optional)**: add it in Netlify → Domain management, then update *Site address* in CMS Settings.
+4. **Analytics (optional, free)**: create a site at [goatcounter.com](https://www.goatcounter.com/) (free for non-commercial sites). Enter its code (the part before `.goatcounter.com`) in CMS Settings → *GoatCounter code*. Page views and PDF downloads (listed as `download/…` events) then appear in the GoatCounter dashboard. It uses no cookies, so no consent banner is needed.
+5. **Google Scholar and Search Console**: verify the site in [Google Search Console](https://search.google.com/search-console) and submit `/sitemap.xml`. Article pages already carry the `citation_*` tags Google Scholar reads.
+6. **ISSN**: apply to the National Library of the Philippines (ISSN National Centre) for a print and/or online ISSN, then enter it in CMS Settings. It appears in the footer and in article metadata.
+7. **DOIs**: either join Crossref (ask whether WVSU already has membership; fees apply per DOI) or deposit each article in [Zenodo](https://zenodo.org/) (free) to get a DOI. Enter the DOI on each article in the CMS (just `10.xxxx/…`); it's added to the citation and metadata.
 
 ## Project layout
 
 ```
 src/
-  _data/        site.json, board.json, guidelines.json (edited through the CMS)
+  _data/        site.json, board.json, guidelines.json, authorAliases.json
   _includes/    layouts and partials
+  _og/fonts/    fonts for the share images (not published)
   articles/     one Markdown file per article
   issues/       one Markdown file per volume
-  uploads/      PDFs (volumes/ = originals, articles/ = per-article)
+  news/         news posts
+  policies/     journal policies
+  uploads/      PDFs (volumes/ = originals, articles/ = per-article) and news images
   admin/        Decap CMS (config.yml holds the editor fields)
   assets/       CSS, JS, images
-eleventy.config.js
+eleventy.config.js   collections, filters, build hooks
+og-cards.js          builds the 1200×630 share images in _site/og/
 netlify.toml
 ```
 
-To change the citation format, edit the `cite` filter in `eleventy.config.js`.
+- **Citation format**: the house style is the `cite` filter in `eleventy.config.js`. The other formats and BibTeX/RIS export are in `src/assets/js/site.js`.
+- **Author pages**: if one person appears under two spellings, map the variant to the preferred name in `src/_data/authorAliases.json`.
+- **Search**: built by [Pagefind](https://pagefind.app/) after Eleventy (`npm run build`), so it only works on the deployed site or after a full local build.
 
 ## Local preview (optional)
 

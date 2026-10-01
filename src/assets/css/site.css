@@ -45,6 +45,9 @@ img{max-width:100%;height:auto}
 .pagehead .crumb a,.pagehead .byline a{color:var(--goldl)}
 .pagehead .byline a:hover{color:#fff}
 
+.subscribe-box{max-width:46rem;margin-top:3rem}
+.subscribe-box p{font:.95rem var(--sans);color:var(--muted);margin:-.4rem 0 1rem}
+
 /* news */
 .news-list{display:grid;gap:1.6rem}
 .news-row{grid-template-columns:repeat(auto-fill,minmax(18rem,1fr))}

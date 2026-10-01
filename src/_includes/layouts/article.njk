@@ -2,6 +2,7 @@
 layout: layouts/base.njk
 ---
 {%- set d = { author: author, title: title, volume: volume, first_page: first_page, year: year } %}
+{%- set vol = collections.issues | issueOf(volume, issue) %}
 <header class="pagehead"><div class="wrap">
   <p class="crumb"><a href="/articles/?area={{ area | urlencode }}">{{ area }}</a> · {{ kind }}</p>
   <h1>{{ title }}</h1>
@@ -16,7 +17,8 @@ layout: layouts/base.njk
     </div>
     <p class="cite" id="cite">{{ d | cite(site.short) }}</p>
     <div class="acts">
-      {%- if pdf %}<a class="btn sm" href="{{ pdf }}" download>Download PDF</a>{% endif %}
+      {%- if pdf %}<a class="btn sm" href="{{ pdf }}">Read the PDF</a>{% endif %}
+      {%- if vol and vol.data.pdf and pdf_page %}<a class="btn sm alt" href="{{ vol.data.pdf }}#page={{ pdf_page }}">View in the original volume</a>{% endif %}
       <button class="btn sm alt" type="button" data-copy="#cite">Copy citation</button>
       <button class="btn sm alt" type="button" data-copy-link>Copy link</button>
     </div>
@@ -30,9 +32,11 @@ layout: layouts/base.njk
   <aside class="side" aria-label="Article details">
     <dl>
       <dt>Published in</dt>
-      <dd><a href="/archive/volume-{{ volume }}-issue-{{ issue }}/">Volume {{ volume }}, Issue {{ issue }}</a> ({{ year }})</dd>
+      <dd>{% if vol %}<a href="{{ vol.url }}">Volume {{ volume }}</a> ({{ vol.data.academic_year }}){% else %}Volume {{ volume }} ({{ year }}){% endif %}</dd>
+      {%- if first_page %}
       <dt>First page</dt>
       <dd>{{ first_page }}</dd>
+      {%- endif %}
       <dt>Area of law</dt>
       <dd>{{ area }}</dd>
       {%- if keywords and keywords.length %}

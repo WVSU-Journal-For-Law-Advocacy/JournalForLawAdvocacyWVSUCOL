@@ -4,12 +4,12 @@ layout: layouts/base.njk
 {%- set contents = collections.articles | inIssue(volume, issue) %}
 <header class="pagehead"><div class="wrap">
   <p class="crumb"><a href="/archive/">Archive</a></p>
-  <h1>{{ title }}</h1>
-  <p>Academic Year {{ academic_year }}{% if status == "forthcoming" %} · Forthcoming{% elif status == "current" %} · Current issue{% endif %}</p>
+  <h1>{{ title }}{% if theme %}: {{ theme }}{% endif %}</h1>
+  <p>Academic Year {{ academic_year }}{% if status == "forthcoming" %} · Forthcoming{% elif status == "current" %} · Current volume{% endif %}</p>
 </div></header>
 
 <section><div class="wrap">
-  {%- if pdf %}<p class="btns" style="margin:0 0 2rem"><a class="btn" href="{{ pdf }}" download>Download the full issue (PDF)</a></p>{% endif %}
+  {%- if pdf %}<p class="btns" style="margin:0 0 2rem"><a class="btn" href="{{ pdf }}">Read the full volume (PDF)</a></p>{% endif %}
   {%- if contents.length %}
   <div class="toc" style="max-width:46rem">
     <h2>Contents</h2>
@@ -21,6 +21,6 @@ layout: layouts/base.njk
     </ol>
   </div>
   {%- else %}
-  <p class="sub">The contents of this issue will be posted when it is published.</p>
+  <p class="sub">The contents of this volume will be posted when it is published.</p>
   {%- endif %}
 </div></section>

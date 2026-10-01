@@ -6,12 +6,21 @@ Website of the Journal for Law Advocacy, WVSU College of Law. Built with [Eleven
 
 Go to `/admin` on the live site and sign in with GitHub. From there you can:
 
-- **Articles**: add an article, upload its PDF, set volume, issue and first page. Tick *Draft* to hide it until it's ready.
-- **Issues**: add an issue. Mark exactly one issue as *Current*; it appears on the home page.
+- **Volumes**: add a volume and upload the complete volume PDF exactly as published (the historical copy). Mark exactly one volume as *Current*; it appears on the home page.
+- **Articles**: add one entry per piece in the volume and upload that article's own PDF. Fill in the *printed* first page (used in the citation) and the *page in the volume PDF* (powers the "View in the original volume" link). Tick *Draft* to hide it until it's ready.
 - **Pages**: edit the About page, the submission guidelines and the editorial board.
 - **Settings**: journal name, contact email, announcement banner, areas of law, social links.
 
 Changes go live about a minute after you click *Publish*.
+
+The abstracts for Volumes 1, 4 and 5 were drafted from each author's opening paragraph. Replace them with the authors' own abstracts where available.
+
+### PDFs
+
+- `src/uploads/volumes/`: the original full-volume PDFs, unchanged.
+- `src/uploads/articles/v<N>/`: one PDF per article. Volumes 4 and 5 were split from the originals by page range. Volume 1 was published as separate files.
+
+To split a new volume, any PDF tool works (for example *Print → Save as PDF* with a page range, or `qpdf in.pdf --pages . 12-25 -- out.pdf`). Upload each piece in the article's *Article PDF* field.
 
 Manuscripts sent through the form on `/submit/` show up in the Netlify dashboard under **Forms → submission**.
 
@@ -31,8 +40,8 @@ src/
   _data/        site.json, board.json, guidelines.json (edited through the CMS)
   _includes/    layouts and partials
   articles/     one Markdown file per article
-  issues/       one Markdown file per issue
-  uploads/      PDFs uploaded through the CMS
+  issues/       one Markdown file per volume
+  uploads/      PDFs (volumes/ = originals, articles/ = per-article)
   admin/        Decap CMS (config.yml holds the editor fields)
   assets/       CSS, JS, images
 eleventy.config.js

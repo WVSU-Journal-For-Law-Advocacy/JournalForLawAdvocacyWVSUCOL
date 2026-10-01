@@ -21,47 +21,54 @@ collections:
   - name: articles
     label: Articles
     label_singular: Article
-    description: One entry per article. Upload the PDF and fill in where it appears in the journal.
+    description: One entry per article. Upload the article's own PDF and say where it appears in the volume.
     folder: src/articles
     create: true
     slug: "{{slug}}"
-    summary: "Vol. {{volume}}, No. {{issue}}, p. {{first_page}} · {{title}}"
-    sortable_fields: [title, volume, issue, first_page]
+    summary: "Vol. {{volume}} · {{title}}"
+    sortable_fields: [title, volume, first_page]
+    media_folder: /src/uploads/articles
+    public_folder: /uploads/articles
     fields:
       - { label: Title, name: title, widget: string }
       - { label: "Author(s)", name: author, widget: string, hint: "Separate multiple authors with “and”." }
-      # Keep these lists in step with Site settings → Areas of law / Kinds
+      # Keep these lists in step with Site settings → Areas of law / Kinds of work
       - label: Area of law
         name: area
         widget: select
-        options: ["Constitutional law", "Criminal law", "Civil law", "Remedial law", "Legal ethics"]
+        options: ["Constitutional law", "Privacy and data protection", "Technology and the law", "Election law", "Criminal law", "Environmental law", "Civil law", "Taxation", "Legal ethics and the profession"]
       - label: Kind
         name: kind
         widget: select
-        options: ["Article", "Essay", "Comment", "Student note", "Case comment"]
+        options: ["Article", "Essay", "Comment", "Editorial", "Student note"]
       - { label: Volume, name: volume, widget: number, value_type: int, min: 1 }
-      - { label: Issue, name: issue, widget: number, value_type: int, min: 1 }
-      - { label: Year, name: year, widget: number, value_type: int, min: 2021 }
-      - { label: First page, name: first_page, widget: number, value_type: int, min: 1 }
-      - { label: PDF, name: pdf, widget: file, required: false, hint: "Upload the final PDF of the article." }
+      - { label: Issue, name: issue, widget: hidden, default: 1 }
+      - { label: Year published, name: year, widget: number, value_type: int, min: 2021 }
+      - { label: First page (printed), name: first_page, widget: number, value_type: int, min: 1, required: false, hint: "The page number printed in the volume. Used in the citation." }
+      - { label: Page in the volume PDF, name: pdf_page, widget: number, value_type: int, min: 1, required: false, hint: "Where the article starts in the full-volume PDF file, for the “View in the original volume” link. Often differs from the printed page." }
+      - { label: Order, name: order, widget: number, value_type: int, required: false, hint: "Only for volumes without page numbers: position in the table of contents." }
+      - { label: Article PDF, name: pdf, widget: file, required: false, hint: "The PDF of this article alone." }
       - { label: Keywords, name: keywords, widget: list, required: false, hint: "Separate with commas." }
       - { label: Abstract, name: abstract, widget: text }
       - { label: Draft (hide from the site), name: draft, widget: boolean, default: false, required: false }
       - { label: Full text (optional), name: body, widget: markdown, required: false, hint: "Leave empty if readers should use the PDF." }
 
   - name: issues
-    label: Issues
-    label_singular: Issue
-    description: One entry per issue. Articles are listed under the issue with the same volume and issue number.
+    label: Volumes
+    label_singular: Volume
+    description: One entry per volume. Articles with the same volume number are listed under it.
     folder: src/issues
     create: true
-    slug: "volume-{{volume}}-issue-{{issue}}"
-    summary: "{{title}} ({{status}})"
+    slug: "volume-{{volume}}"
+    summary: "{{title}} · {{academic_year}} ({{status}})"
+    media_folder: /src/uploads/volumes
+    public_folder: /uploads/volumes
     fields:
-      - { label: Title, name: title, widget: string, hint: "e.g. Volume 1, Issue 2" }
+      - { label: Title, name: title, widget: string, hint: "e.g. Volume 6" }
       - { label: Volume, name: volume, widget: number, value_type: int, min: 1 }
-      - { label: Issue, name: issue, widget: number, value_type: int, min: 1 }
+      - { label: Issue, name: issue, widget: hidden, default: 1 }
       - { label: Academic year, name: academic_year, widget: string, hint: "e.g. 2026–2027" }
+      - { label: Theme, name: theme, widget: string, required: false, hint: "Optional, e.g. The Inaugural Issue" }
       - label: Status
         name: status
         widget: select
@@ -69,8 +76,8 @@ collections:
           - { label: "Current (shown on the home page)", value: current }
           - { label: Published, value: published }
           - { label: Forthcoming, value: forthcoming }
-        hint: "Only one issue should be Current. Change the old one to Published."
-      - { label: Full issue PDF, name: pdf, widget: file, required: false }
+        hint: "Only one volume should be Current. Change the old one to Published."
+      - { label: Full volume PDF (original), name: pdf, widget: file, required: false, hint: "The complete volume exactly as published." }
 
   - name: pages
     label: Pages
@@ -85,6 +92,8 @@ collections:
           - { label: Search description, name: description, widget: string }
           - { label: Quotation, name: quote, widget: text, required: false }
           - { label: Quotation source, name: quote_by, widget: string, required: false }
+          - { label: Banner image, name: image, widget: image, required: false }
+          - { label: Banner description (for screen readers), name: image_alt, widget: string, required: false }
           - { label: Body, name: body, widget: markdown }
       - name: guidelines
         label: Submission guidelines
@@ -101,15 +110,21 @@ collections:
       - name: board
         label: Editorial board
         file: src/_data/board.json
+        media_folder: /src/assets/img/board
+        public_folder: /assets/img/board
         fields:
+          - { label: Academic year, name: academic_year, widget: string }
+          - { label: Groups (in display order), name: groups, widget: list }
           - label: Members
             name: members
             widget: list
-            summary: "{{fields.role}}: {{fields.name}}"
+            summary: "{{fields.group}} · {{fields.name}}"
             fields:
               - { label: Name, name: name, widget: string }
               - { label: Role, name: role, widget: string }
-              - { label: Detail, name: detail, widget: string, required: false, hint: "e.g. Juris Doctor candidate" }
+              - { label: Group, name: group, widget: string, hint: "Must match one of the groups above exactly." }
+              - { label: Photo, name: photo, widget: image, required: false, hint: "Square photo, at least 320 × 320 pixels." }
+              - { label: Detail, name: detail, widget: string, required: false }
 
   - name: settings
     label: Settings

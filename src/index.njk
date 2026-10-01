@@ -10,19 +10,20 @@ layout: layouts/base.njk
     <p class="inst">{{ site.tagline }}</p>
     <p class="lead">{{ site.description }}</p>
     <div class="btns">
-      {%- if cur %}<a class="btn" href="{{ cur.url }}">Read the current issue</a>{% endif %}
+      {%- if cur %}<a class="btn" href="{{ cur.url }}">Read the current volume</a>{% endif %}
       <a class="btn alt" href="/submit/">Submit your work</a>
     </div>
   </div>
   {%- if cur %}
-  <aside class="toc" aria-label="Current issue contents">
+  <aside class="toc" aria-label="Current volume contents">
     <h2>{{ cur.data.title }}</h2>
     <p class="meta">Academic Year {{ cur.data.academic_year }} · Table of contents</p>
     <ol>
-      {%- for a in contents %}
+      {%- for a in contents.slice(0, 8) %}
       <li style="--n:{{ loop.index0 }}"><a href="{{ a.url }}"><span class="tt">{{ a.data.title }}<small>{{ a.data.author }} · {{ a.data.kind }}</small></span><span class="dots"></span><span class="pg">{{ a.data.first_page }}</span></a></li>
       {%- endfor %}
     </ol>
+    {%- if contents.length > 8 %}<p class="meta" style="margin:.9rem 0 0"><a href="{{ cur.url }}">All {{ contents.length }} pieces in {{ cur.data.title }} →</a></p>{% endif %}
   </aside>
   {%- endif %}
 </div></header>

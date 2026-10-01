@@ -5,6 +5,9 @@ layout: layouts/base.njk
   <h1>{{ title }}</h1>
 </div></header>
 
+{%- if image %}
+<div class="wrap"><img class="banner" src="{{ image }}" alt="{{ image_alt }}" width="1285" height="720"></div>
+{%- endif %}
 <section><div class="wrap{% if quote %} cols{% endif %}">
   <div class="prose narrow">
     {{ content | safe }}

@@ -3,3 +3,6 @@ _site/
 .netlify/
 .DS_Store
 Thumbs.db
+
+# Source originals (published copies live in src/)
+assets/

@@ -12,12 +12,13 @@ export default function (eleventyConfig) {
 
   const num = (v) => Number(v) || 0;
 
-  // Newest issue first, then by first page
+  // Newest issue first, then by first page (or `order` for unpaginated issues)
+  const position = (a) => num(a.data.first_page) || num(a.data.order);
   eleventyConfig.addCollection("articles", (api) =>
     api.getFilteredByGlob("src/articles/*.md").sort((a, b) =>
       num(b.data.volume) - num(a.data.volume) ||
       num(b.data.issue) - num(a.data.issue) ||
-      num(a.data.first_page) - num(b.data.first_page)
+      position(a) - position(b)
     )
   );
 
@@ -38,9 +39,15 @@ export default function (eleventyConfig) {
     articles.filter((a) => num(a.data.volume) === num(volume) && num(a.data.issue) === num(issue))
   );
 
+  eleventyConfig.addFilter("where", (items, key, value) => (items || []).filter((x) => x[key] === value));
+
+  eleventyConfig.addFilter("issueOf", (issues, volume, issue) =>
+    issues.find((i) => num(i.data.volume) === num(volume) && num(i.data.issue) === num(issue))
+  );
+
   // Edit this to match the journal's house citation style
   eleventyConfig.addFilter("cite", (d, abbrev) =>
-    `${d.author}, ${d.title}, ${d.volume} ${abbrev} ${d.first_page} (${d.year}).`
+    `${d.author}, ${d.title}, ${d.volume} ${abbrev}${d.first_page ? " " + d.first_page : ""} (${d.year}).`
   );
 
   // JSON safe to place inside a <script> tag

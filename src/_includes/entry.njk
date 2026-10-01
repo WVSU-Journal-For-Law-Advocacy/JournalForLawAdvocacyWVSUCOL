@@ -1,6 +1,6 @@
 {#- One article in a list. Expects `a` (a collection item). -#}
 <article class="entry" data-area="{{ a.data.area }}" data-search="{{ [a.data.title, a.data.author, a.data.abstract, a.data.area, a.data.kind, (a.data.keywords or []) | join(' ')] | join(' ') | lower }}">
-  <div class="tag">{{ a.data.area }}<small>{{ a.data.kind }}<br>Vol. {{ a.data.volume }}, Issue {{ a.data.issue }}, p. {{ a.data.first_page }}</small></div>
+  <div class="tag">{{ a.data.area }}<small>{{ a.data.kind }}<br>Vol. {{ a.data.volume }} ({{ a.data.year }}){% if a.data.first_page %}, p. {{ a.data.first_page }}{% endif %}</small></div>
   <div>
     <h3><a href="{{ a.url }}">{{ a.data.title }}</a></h3>
     <p class="by">{{ a.data.author }}</p>

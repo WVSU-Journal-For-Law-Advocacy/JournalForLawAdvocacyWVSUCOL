@@ -32,8 +32,7 @@
 <meta name="citation_publisher" content="{{ site.institution }}">
 <meta name="citation_publication_date" content="{{ year }}">
 <meta name="citation_volume" content="{{ volume }}">
-<meta name="citation_issue" content="{{ issue }}">
-<meta name="citation_firstpage" content="{{ first_page }}">
+{%- if first_page %}<meta name="citation_firstpage" content="{{ first_page }}">{% endif %}
 {%- for k in keywords %}<meta name="citation_keywords" content="{{ k }}">{% endfor %}
 {%- if pdf %}<meta name="citation_pdf_url" content="{{ site.url }}{{ pdf }}">{% endif %}
 <script type="application/ld+json">{{ {
@@ -45,9 +44,8 @@
   "keywords": (keywords or []) | join(", "),
   "datePublished": year | string,
   "url": site.url + page.url,
-  "isPartOf": { "@type": "PublicationIssue", "issueNumber": issue | string,
-    "isPartOf": { "@type": "PublicationVolume", "volumeNumber": volume | string,
-      "isPartOf": { "@type": "Periodical", "name": site.title } } }
+  "isPartOf": { "@type": "PublicationVolume", "volumeNumber": volume | string,
+    "isPartOf": { "@type": "Periodical", "name": site.title } }
 } | jsonScript | safe }}</script>
 {%- else %}
 <script type="application/ld+json">{{ {

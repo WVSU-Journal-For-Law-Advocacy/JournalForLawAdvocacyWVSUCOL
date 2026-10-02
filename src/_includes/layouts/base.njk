@@ -19,14 +19,15 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="{{ title or site.title }}">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#2a1245">
+<meta name="theme-color" content="#F7F3EA" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#120B19" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
-<script>try{document.documentElement.dataset.theme=localStorage.getItem("jla-theme")||(matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem("jla-theme")||"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+SC:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/site.css">
 {%- if isArticle %}
 {# Google Scholar indexing tags #}
@@ -71,46 +72,103 @@
 <script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 {%- endif %}
 </head>
-<body>
+<body{% if isArticle %} class="has-actionbar"{% endif %}>
 <a class="skip" href="#main">Skip to content</a>
 <div id="bar" aria-hidden="true"></div>
+{%- set nav = [["/articles/", "Articles"], ["/archive/", "Archive"], ["/authors/", "Authors"], ["/news/", "News"], ["/about/", "About"], ["/board/", "Board"], ["/submit/", "Submit"]] %}
 {%- if site.announcement %}
-<div class="ann">{{ site.announcement }}{% if site.deadline %} Deadline: {{ site.deadline }}.{% endif %} {% if cfp.active %}<a href="/call-for-papers/">See the {{ cfp.kind | lower }}</a>{% else %}<a href="/submit/">How to submit</a>{% endif %}</div>
+<div class="ribbon" id="ribbon" data-key="{{ site.announcement | slugify }}">
+  <span>{{ site.announcement }}{% if site.deadline %} Deadline: {{ site.deadline }}.{% endif %} {% if cfp.active %}<a href="/call-for-papers/">See the {{ cfp.kind | lower }} →</a>{% else %}<a href="/submit/">How to submit →</a>{% endif %}</span>
+  <button class="x" type="button" aria-label="Dismiss announcement"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5l14 14M19 5 5 19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+</div>
 {%- endif %}
 
-<nav class="nav" aria-label="Main"><div class="wrap">
-  <a class="brand" href="/"><img src="/assets/img/seal-240.png" alt="" width="42" height="42">{{ site.title }}</a>
-  <button class="menu" id="menu" type="button" aria-expanded="false" aria-controls="navlinks">Menu</button>
-  <ul id="navlinks">
-    {%- set links = [["/articles/", "Articles"], ["/archive/", "Archive"], ["/news/", "News"], ["/about/", "About"], ["/board/", "Editorial board"], ["/submit/", "Submit"]] %}
-    {%- for l in links %}
-    <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
-    {%- endfor %}
-    <li><a class="searchlink" href="/search/"{% if page.url == "/search/" %} aria-current="page"{% endif %}><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Search</a></li>
-    <li><button class="tbtn" id="tb" type="button">Dark mode</button></li>
-  </ul>
-</div></nav>
+<header class="site-head" id="sitehead">
+  <div class="head-in">
+    <div class="head-left">
+      <button class="icon-btn menu-btn" id="menu" type="button" aria-expanded="false" aria-controls="menusheet" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    <a class="brand" href="/" aria-label="{{ site.title }}, home">
+      <img src="/assets/img/seal-240.png" alt="" width="40" height="40">
+      <span class="wordmark"><span class="full">{{ site.title }}</span><span class="short">JLA</span></span>
+    </a>
+    <div class="head-right">
+      <button class="icon-btn tb tb-desk" type="button" aria-label="Switch to dark mode">
+        <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+        <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
+      <a class="icon-btn" href="/search/" aria-label="Search"{% if page.url == "/search/" %} aria-current="page"{% endif %}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </a>
+    </div>
+  </div>
+  <nav class="primary" aria-label="Main">
+    <ul>
+      {%- for l in nav %}
+      <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+  </nav>
+</header>
+
+<div class="menu-sheet" id="menusheet" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="sheet-top">
+    <button class="icon-btn" type="button" data-close-menu aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+    <button class="icon-btn tb" type="button" aria-label="Switch to dark mode">
+      <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <form class="msearch" action="/search/" role="search">
+    <label for="m-q" class="sr">Search the journal</label>
+    <input id="m-q" name="q" type="search" placeholder="Search the journal">
+    <button class="btn sm" type="submit">Search</button>
+  </form>
+  <nav aria-label="Menu">
+    <ul>
+      <li><a href="/"{% if page.url == "/" %} aria-current="page"{% endif %}>Home</a></li>
+      {%- for l in nav %}
+      <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
+      {%- endfor %}
+    </ul>
+  </nav>
+  <div class="mfoot">
+    <img src="/assets/img/seal-240.png" alt="" width="56" height="56" loading="lazy">
+    <p>{{ site.institution }}<br>Est. MMXXI{% if site.issn_print %} · ISSN {{ site.issn_print }}{% endif %}</p>
+  </div>
+</div>
 
 <main id="main"{% if not searchExclude %} data-pagefind-body{% endif %}>
 {{ content | safe }}
 </main>
 
-<footer id="contact"><div class="wrap">
-  <div>
-    <img src="/assets/img/seal-240.png" alt="Seal of the Journal for Law Advocacy" width="80" height="80" loading="lazy">
+<footer class="site-foot" id="contact"><div class="wrap">
+  <div class="foot-mast">
+    <img src="/assets/img/seal-240.png" alt="Seal of the Journal for Law Advocacy" width="72" height="72" loading="lazy">
     <h2>{{ site.title }}</h2>
-    <p>{{ site.institution }}<br>{{ site.city }}</p>
+    <p class="est">Est. MMXXI · {{ site.city }}</p>
+    <p>{{ site.institution }}</p>
     <p><a href="mailto:{{ site.email }}">{{ site.email }}</a></p>
-    {%- if site.issn_print %}<p class="issn">ISSN {{ site.issn_print }} (Print)</p>{% endif %}
-    {%- if site.issn_online %}<p class="issn">ISSN {{ site.issn_online }} (Online)</p>{% endif %}
+    {%- if site.issn_print %}<p class="issn">ISSN {{ site.issn_print }} (Print){% if site.issn_online %} · ISSN {{ site.issn_online }} (Online){% endif %}</p>{% endif %}
   </div>
-  <div><h2>Journal</h2><ul><li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/authors/">Authors</a></li><li><a href="/news/">News</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/about/history/">History</a></li><li><a href="/about/numbers/">By the numbers</a></li><li><a href="/call-for-papers/">Call for papers</a></li><li><a href="/submit/">Submit</a></li></ul></div>
-  <div><h2>Policies</h2><ul>
-    {%- for p in collections.policies %}<li><a href="{{ p.url }}">{{ p.data.title }}</a></li>{% endfor %}
-  </ul></div>
-  <div>
+
+  <div class="foot-cols">
+    <details open><summary>The Journal</summary><ul>
+      <li><a href="/articles/">Articles</a></li><li><a href="/archive/">Archive</a></li><li><a href="/authors/">Authors</a></li><li><a href="/news/">News</a></li><li><a href="/search/">Search</a></li>
+    </ul></details>
+    <details open><summary>About</summary><ul>
+      <li><a href="/about/">About the journal</a></li><li><a href="/about/history/">History</a></li><li><a href="/board/">Editorial board</a></li><li><a href="/about/numbers/">By the numbers</a></li><li><a href="/call-for-papers/">Call for papers</a></li><li><a href="/submit/">Submit</a></li>
+    </ul></details>
+    <details open><summary>Policies</summary><ul>
+      {%- for p in collections.policies %}<li><a href="{{ p.url }}">{{ p.data.title }}</a></li>{% endfor %}
+    </ul></details>
+  </div>
+
+  <div class="foot-news">
     <h2>Stay informed</h2>
-    <p>Get an email when a new volume is published.</p>
+    <p>One email when a new volume is published.</p>
     <form class="subscribe" name="newsletter" method="POST" action="/subscribed/" data-netlify="true" netlify-honeypot="website">
       <input type="hidden" name="form-name" value="newsletter">
       <p class="hp"><label>Leave this empty: <input name="website" tabindex="-1" autocomplete="off"></label></p>
@@ -124,10 +182,10 @@
       {%- if site.instagram %}<li><a href="{{ site.instagram }}" rel="noopener">Instagram</a></li>{% endif %}
     </ul>
     {%- endif %}
+    <button class="tb tb-foot" type="button" aria-label="Switch to dark mode"><span class="i-moon">Dark mode</span><span class="i-sun">Light mode</span></button>
   </div>
-</div>
-<div class="wrap"><small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Articles are open access under <a href="/policies/open-access/">CC BY-NC 4.0</a> unless stated otherwise. Views expressed are those of the authors.</small></div>
-</footer>
+  <small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Articles are open access under <a href="/policies/open-access/">CC BY-NC 4.0</a> unless stated otherwise. Views expressed are those of the authors.</small>
+</div></footer>
 <div id="toast" role="status" aria-live="polite"></div>
 <script src="/assets/js/site.js" defer></script>
 </body>

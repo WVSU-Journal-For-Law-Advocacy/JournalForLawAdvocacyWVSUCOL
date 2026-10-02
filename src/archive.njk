@@ -6,17 +6,12 @@ permalink: /archive/
 description: Every volume of the Journal for Law Advocacy, newest first.
 ---
 <header class="pagehead"><div class="wrap">
-  <h1>Archive</h1>
-  <p>Every volume of the journal, newest first. Each volume is available as its original PDF, and each article has its own page and PDF.</p>
+  <p class="crumb">The archive</p>
+  <h1>Every volume</h1>
+  <p>Each volume is kept as its original PDF, and every article has its own page, PDF, and citation.</p>
 </div></header>
 
 <section><div class="wrap">
-  <ul class="vols">
-    {%- for i in collections.issues %}
-    {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
-    <li><b><a href="{{ i.url }}">{{ i.data.title }}{% if i.data.theme %}: {{ i.data.theme }}{% endif %}</a></b><span class="dots"></span><span class="st">
-      {%- if i.data.status == "current" %}Current · {% elif i.data.status == "forthcoming" %}Forthcoming · {% endif -%}
-      AY {{ i.data.academic_year }}{% if n %} · {{ n }} {{ "item" if n == 1 else "items" }}{% endif %}</span></li>
-    {%- endfor %}
-  </ul>
+  {%- include "plates.njk" %}
+  <p class="more"><a href="/articles/">Browse all articles by area of law →</a></p>
 </div></section>

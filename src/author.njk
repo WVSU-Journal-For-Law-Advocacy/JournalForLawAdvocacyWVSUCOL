@@ -7,17 +7,39 @@ pagination:
 permalink: "/authors/{{ person.slug }}/"
 eleventyComputed:
   title: "{{ person.name }}"
-  description: "Articles by {{ person.name }} in the Journal for Law Advocacy."
+  description: "{{ person.name }}: publications in the Journal for Law Advocacy, WVSU College of Law."
 searchExclude: true
 ---
-<header class="pagehead"><div class="wrap">
+{%- set prof = person | profileFor(authorProfiles, board) %}
+{%- set first = person.articles | last %}
+<header class="pagehead"><div class="wrap profile">
   <p class="crumb"><a href="/authors/">Authors</a></p>
+  {%- if prof.photo %}
+  <img class="portrait" src="{{ prof.photo }}" alt="Portrait of {{ person.name }}" width="132" height="132">
+  {%- else %}
+  <div class="portrait monogram" aria-hidden="true">{{ person.name | monogram }}</div>
+  {%- endif %}
   <h1>{{ person.name }}</h1>
-  <p>{{ person.articles.length }} {{ "piece" if person.articles.length == 1 else "pieces" }} in the Journal for Law Advocacy</p>
+  {%- if prof.affiliation %}<p class="aff">{{ prof.affiliation }}</p>{% endif %}
+  {%- if prof.role %}<p class="aff">{{ prof.role }}, {{ site.title }}</p>{% endif %}
+  <div class="stats">
+    <div><b>{{ person.articles.length }}</b><span>{{ "publication" if person.articles.length == 1 else "publications" }}</span></div>
+    {%- if first %}<div><b>{{ first.data.year }}</b><span>first published</span></div>{% endif %}
+  </div>
+  {%- if prof.bio %}<p class="bio">{{ prof.bio }}</p>{% endif %}
+  <div class="btns links">
+    <button class="btn sm" type="button" data-copy-link>Copy profile link</button>
+    {%- if prof.facebook %}<a class="btn sm alt" href="{{ prof.facebook }}" rel="noopener">Facebook</a>{% endif %}
+    {%- if prof.linkedin %}<a class="btn sm alt" href="{{ prof.linkedin }}" rel="noopener">LinkedIn</a>{% endif %}
+    {%- if prof.orcid %}<a class="btn sm alt" href="https://orcid.org/{{ prof.orcid }}" rel="noopener">ORCID</a>{% endif %}
+  </div>
 </div></header>
 
 <section><div class="wrap">
-  {%- for a in person.articles %}
-  {%- include "entry.njk" %}
-  {%- endfor %}
+  <h2 class="title">Publications</h2>
+  <div class="list">
+    {%- for a in person.articles %}
+    {%- include "entry.njk" %}
+    {%- endfor %}
+  </div>
 </div></section>

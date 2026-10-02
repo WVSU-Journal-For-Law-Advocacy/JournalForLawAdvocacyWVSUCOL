@@ -53,6 +53,7 @@ collections:
       - { label: Keywords, name: keywords, widget: list, required: false, hint: "Separate with commas." }
       - { label: Abstract, name: abstract, widget: text }
       - { label: Draft (hide from the site), name: draft, widget: boolean, default: false, required: false }
+      - { label: Featured on the home page, name: featured, widget: boolean, default: false, required: false, hint: "Shown as the lead piece of the current volume. Tick only one." }
       - label: Full text status
         name: fulltext_status
         widget: select
@@ -139,6 +140,25 @@ collections:
           - { label: Banner image, name: image, widget: image, required: false }
           - { label: Banner description (for screen readers), name: image_alt, widget: string, required: false }
           - { label: Body, name: body, widget: markdown }
+      - name: authorProfiles
+        label: Author profiles
+        file: src/_data/authorProfiles.json
+        media_folder: /src/assets/img/authors
+        public_folder: /assets/img/authors
+        fields:
+          - label: Profiles
+            name: profiles
+            widget: list
+            summary: "{{fields.slug}}"
+            hint: "Optional. Every author already has a page; a profile adds a photo, affiliation, bio, and links."
+            fields:
+              - { label: Page address, name: slug, widget: string, hint: "The last part of the author's page address, e.g. elmo-v-ador-jr for /authors/elmo-v-ador-jr/" }
+              - { label: Photo, name: photo, widget: image, required: false, hint: "Square, at least 400 × 400 pixels." }
+              - { label: Affiliation, name: affiliation, widget: string, required: false, hint: "e.g. Juris Doctor candidate, WVSU College of Law" }
+              - { label: Short bio, name: bio, widget: text, required: false }
+              - { label: Facebook URL, name: facebook, widget: string, required: false }
+              - { label: LinkedIn URL, name: linkedin, widget: string, required: false }
+              - { label: ORCID iD, name: orcid, widget: string, required: false, hint: "e.g. 0000-0002-1825-0097" }
       - name: history
         label: Organization and history
         file: src/history.md

@@ -17,6 +17,12 @@ Changes go live about a minute after you click *Publish*.
 
 The abstracts for Volumes 1, 4 and 5 were drafted from each author's opening paragraph. Replace them with the authors' own abstracts where available.
 
+### Sharing and author pages
+
+- Every article gets ready-made share images, built automatically on each deploy: a link-preview card (`/og/<article>.png`), an Instagram/Facebook post (`/share/<article>-post.png`, 4:5) and a story (`/share/<article>-story.png`, 9:16). Authors find them under **Share** on their article page; on a phone, **Share image** sends the picture straight to Instagram, Facebook, or Messenger and copies a suggested caption.
+- Each author has a page at `/authors/<name>/`. To add a photo, affiliation, bio, or links, add a profile under **Pages → Author profiles** in `/admin` (the "page address" is the last part of the author's page URL). Board members automatically use their board photo.
+- Tick **Featured on the home page** on one article of the current volume to make it the lead piece on the home page.
+
 ### PDFs
 
 - `src/uploads/volumes/`: the original full-volume PDFs, unchanged.

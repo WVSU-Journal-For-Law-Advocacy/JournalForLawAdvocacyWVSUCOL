@@ -1,0 +1,14 @@
+{#- Volume "plates": one card per volume, newest first. -#}
+<div class="plates">
+  {%- for i in collections.issues %}
+  {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
+  <a class="plate" href="{{ i.url }}">
+    {%- if i.data.status == "current" %}<span class="badge">Current</span>{% elif i.data.status == "forthcoming" %}<span class="badge">Forthcoming</span>{% endif %}
+    <span class="numeral" aria-hidden="true">{{ i.data.volume | roman }}</span>
+    <span class="vol">{{ i.data.title }}</span>
+    <span class="yr">AY {{ i.data.academic_year }}</span>
+    {%- if i.data.theme %}<span class="theme">{{ i.data.theme }}</span>{% endif %}
+    <span class="count">{{ n }} {{ "piece" if n == 1 else "pieces" }}</span>
+  </a>
+  {%- endfor %}
+</div>

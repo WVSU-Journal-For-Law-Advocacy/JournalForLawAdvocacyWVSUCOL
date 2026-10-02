@@ -20,7 +20,14 @@ export default function (eleventyConfig) {
   // ---- Full-text articles: footnotes ([^1]) and a table of contents from h2/h3 ----
   // linkify: bare URLs in bibliographies become links
   let mdLib;
-  eleventyConfig.amendLibrary("md", (md) => { mdLib = md.set({ linkify: true }).use(markdownItFootnote); });
+  eleventyConfig.amendLibrary("md", (md) => {
+    mdLib = md.set({ linkify: true }).use(markdownItFootnote);
+    // law-review style markers: a bare superscript number, not "[1]"
+    md.renderer.rules.footnote_caption = (tokens, idx) => {
+      const n = Number(tokens[idx].meta.id + 1).toString();
+      return tokens[idx].meta.subId > 0 ? `${n}:${tokens[idx].meta.subId}` : n;
+    };
+  });
   // Markdown stored in data files (e.g. the call for papers)
   eleventyConfig.addFilter("md", (s) => (s && mdLib ? mdLib.render(String(s)) : ""));
 
@@ -62,6 +69,29 @@ export default function (eleventyConfig) {
     if (at < 0) return { main: s, notes: "", count: 0 };
     const notes = s.slice(at).replace('<hr class="footnotes-sep">', "");
     return { main: s.slice(0, at), notes, count: (notes.match(/<li id="fn\d+"/g) || []).length };
+  });
+  // ---- author profiles: optional CMS profile, else the board photo of the same person ----
+  eleventyConfig.addFilter("profileFor", (person, profiles, board) => {
+    const p = ((profiles && profiles.profiles) || []).find((x) => x.slug === person.slug) || {};
+    const member = ((board && board.boards) || []).flatMap((b) => b.members).find((m) => canonical(m.name) === person.name);
+    const role = !member ? "" : member.role.includes(member.group) ? member.role : `${member.role}, ${member.group}`;
+    return { ...p, photo: p.photo || (member && member.photo) || "", role };
+  });
+  eleventyConfig.addFilter("monogram", (name) => {
+    const parts = String(name || "").replace(/,?\s+(Jr\.|Sr\.|III|II|IV)$/, "").split(/\s+/).filter((w) => !/\.$/.test(w) || w.length > 2);
+    return ((parts[0] || "")[0] || "") + ((parts[parts.length - 1] || "")[0] || "");
+  });
+  // the piece marked "featured" in the CMS, otherwise the first one
+  eleventyConfig.addFilter("featuredOf", (list) => (list || []).find((a) => a.data.featured) || (list || [])[0]);
+  eleventyConfig.addFilter("roman", (n) => {
+    let x = num(n), out = "";
+    for (const [v, s] of [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]]) while (x >= v) { out += s; x -= v; }
+    return out;
+  });
+  // minutes to read, at ~230 words a minute (footnotes excluded)
+  eleventyConfig.addFilter("readingTime", (html) => {
+    const words = String(html || "").replace(/<sup class="footnote-ref">[\s\S]*?<\/sup>/g, "").replace(/<[^>]+>/g, " ").split(/\s+/).filter(Boolean).length;
+    return words > 150 ? Math.max(1, Math.round(words / 230)) : 0;
   });
   eleventyConfig.addFilter("exceptUrl", (items, url) => (items || []).filter((x) => x.url !== url));
   eleventyConfig.addFilter("headings", (html) =>

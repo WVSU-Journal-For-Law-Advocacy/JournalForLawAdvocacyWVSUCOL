@@ -4,43 +4,49 @@ layout: layouts/base.njk
 ---
 {%- set cur = collections.issues | currentIssue %}
 {%- set contents = (collections.articles | inIssue(cur.data.volume, cur.data.issue)) if cur else [] %}
-<header class="hero" id="top"><div class="wrap">
-  <div>
-    <img class="seal" src="/assets/img/seal-240.png" width="104" height="104" alt="Seal of the Journal for Law Advocacy, WVSU College of Law, 2021">
-    <h1>{{ site.title }}</h1>
-    <p class="inst">{{ site.tagline }}</p>
-    <p class="lead">{{ site.description }}</p>
-    <div class="btns">
-      {%- if cur %}<a class="btn" href="{{ cur.url }}">Read the current volume</a>{% endif %}
-      <a class="btn alt" href="/submit/">Submit your work</a>
-    </div>
+{%- set featured = contents | featuredOf %}
+<header class="masthead"><div class="wrap">
+  <img class="seal" src="/assets/img/seal-240.png" width="120" height="120" alt="Seal of the Journal for Law Advocacy, WVSU College of Law, 2021">
+  <h1>{{ site.title }}</h1>
+  <p class="est">Est. MMXXI · {{ site.city }}</p>
+  <p class="inst">{{ site.tagline }}</p>
+  <div class="btns">
+    {%- if cur %}<a class="btn" href="{{ cur.url }}">Read {{ cur.data.title }}</a>{% endif %}
+    <a class="btn alt" href="/submit/">Submit your work</a>
   </div>
-  {%- if cur %}
-  <aside class="toc" aria-label="Current volume contents">
-    <h2>{{ cur.data.title }}</h2>
-    <p class="meta">Academic Year {{ cur.data.academic_year }} · Table of contents</p>
-    <ol>
-      {%- for a in contents.slice(0, 8) %}
-      <li style="--n:{{ loop.index0 }}"><a href="{{ a.url }}"><span class="tt">{{ a.data.title }}<small>{{ a.data.author }} · {{ a.data.kind }}</small></span><span class="dots"></span><span class="pg">{{ a.data.first_page }}</span></a></li>
-      {%- endfor %}
-    </ol>
-    {%- if contents.length > 8 %}<p class="meta" style="margin:.9rem 0 0"><a href="{{ cur.url }}">All {{ contents.length }} pieces in {{ cur.data.title }} →</a></p>{% endif %}
-  </aside>
-  {%- endif %}
 </div></header>
 
-<section><div class="wrap">
-  <h2 class="title">Latest articles</h2>
-  <p class="sub">Recent scholarship from the journal. Browse every article by area of law on the <a href="/articles/">articles page</a>.</p>
-  {%- for a in collections.articles.slice(0, 4) %}
-  {%- include "entry.njk" %}
-  {%- endfor %}
-  <p class="more"><a href="/articles/">All articles →</a></p>
+{%- if cur %}
+<section aria-labelledby="current-h"><div class="wrap">
+  <h2 class="title" id="current-h">The current volume</h2>
+  <p class="sub">{{ cur.data.title }}{% if cur.data.theme %}: {{ cur.data.theme }}{% endif %} · Academic Year {{ cur.data.academic_year }}</p>
+
+  {%- if featured %}
+  <article class="feature">
+    <span class="eyebrow"><a href="/areas/{{ featured.data.area | slugify }}/">{{ featured.data.area }}</a> · {{ featured.data.kind }}</span>
+    <h2><a href="{{ featured.url }}">{{ featured.data.title }}</a></h2>
+    <p class="by">{% for au in featured.data.author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</p>
+    <p class="abs">{{ featured.data.abstract }}</p>
+    <div class="btns"><a class="btn sm" href="{{ featured.url }}">Read the {{ featured.data.kind | lower }}</a></div>
+  </article>
+  <div class="orn" aria-hidden="true"><span>❦</span></div>
+  {%- endif %}
+
+  <div class="toc">
+    <p class="meta">Contents</p>
+    <ol>
+      {%- for a in contents.slice(0, 10) %}
+      <li><a href="{{ a.url }}"><span class="tt">{{ a.data.title }}<small>{{ a.data.author }}</small></span><span class="dots"></span><span class="pg">{{ a.data.first_page }}</span></a></li>
+      {%- endfor %}
+    </ol>
+  </div>
+  {%- if contents.length > 10 %}<p class="more"><a href="{{ cur.url }}">All {{ contents.length }} pieces in {{ cur.data.title }} →</a></p>{% endif %}
 </div></section>
+{%- endif %}
 
 {%- if collections.news.length %}
-<section class="wash"><div class="wrap">
-  <h2 class="title">Latest news</h2>
+<section class="wash" aria-labelledby="news-h"><div class="wrap">
+  <h2 class="title" id="news-h">News</h2>
   <div class="news-list news-row">
     {%- for n in collections.news.slice(0, 3) %}
     {%- include "news-item.njk" %}
@@ -50,15 +56,15 @@ layout: layouts/base.njk
 </div></section>
 {%- endif %}
 
-<section><div class="wrap cols">
-  <div>
-    <h2 class="title">About the journal</h2>
-    <p>{{ site.title }} is the official publication of the {{ site.institution }}. It publishes original legal scholarship from students, faculty, and practitioners.</p>
-    <p class="more"><a href="/about/">Read more about the journal →</a></p>
-  </div>
-  <div>
-    <h2 class="title">Write for us</h2>
-    <p>We accept articles, case comments, and student notes year-round.</p>
-    <p class="more"><a href="/submit/">Submission guidelines →</a></p>
-  </div>
+<section aria-labelledby="archive-h"><div class="wrap">
+  <h2 class="title" id="archive-h">The archive</h2>
+  <p class="sub">Every volume since the inaugural issue of MMXXI, each article with its own page, PDF, and citation.</p>
+  {%- include "plates.njk" %}
+  <p class="more"><a href="/articles/">Browse all articles →</a></p>
+</div></section>
+
+<section class="wash" aria-labelledby="write-h"><div class="wrap home-intro">
+  <h2 class="title" id="write-h">Write for the journal</h2>
+  <p>{{ site.title }} is a student publication of the {{ site.institution }}. We accept articles, essays, case comments, and student notes year-round.</p>
+  <div class="btns"><a class="btn" href="/submit/">Submit your work</a><a class="btn alt" href="/about/">About the journal</a></div>
 </div></section>

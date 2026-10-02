@@ -23,7 +23,34 @@ layout: layouts/base.njk
   {%- else %}
   <p class="sub">The contents of this volume will be posted when it is published.</p>
   {%- endif %}
+</div></section>
 
+{%- if contents.length %}
+{%- set nContents = ((contents.length + 4) / 5) | int %}
+{%- set nSlides = 2 + (nContents if nContents < 17 else 17) %}
+<section class="wash launch" id="launch-kit" data-volume="{{ volume }}"><div class="wrap">
+  <h2 class="title">Launch kit</h2>
+  <p class="sub">A ready-made carousel for Instagram and Facebook: {{ nSlides }} slides announcing {{ title }}.</p>
+  <div class="slides" role="list">
+    {%- for k in range(1, nSlides + 1) %}
+    {%- set f = "/share/volume-" + volume + "/slide-" + ("0" + k if k < 10 else k) + ".png" %}
+    <figure class="slide" role="listitem">
+      <img src="{{ f }}" width="1080" height="1350" loading="lazy" alt="{{ title }}, launch slide {{ k }} of {{ nSlides }}">
+      <a class="chip" href="{{ f }}" download="jla-volume-{{ volume }}-slide-{{ k }}.png">Slide {{ k }} ↓</a>
+    </figure>
+    {%- endfor %}
+  </div>
+  <div class="btns">
+    <button class="btn" type="button" data-share-slides="{{ nSlides }}" hidden>Share all slides</button>
+    <button class="btn alt" type="button" data-copy="#launch-caption" data-copy-msg="Caption copied">Copy caption</button>
+  </div>
+  <p class="caption-box" id="launch-caption" style="max-width:36rem;margin-inline:auto">{{ title }} of the {{ site.title }} is now online. {{ contents.length }} pieces of scholarship from the {{ site.institution }}, free to read, download, and cite.
+{{ site.url }}{{ page.url }}
+#JournalForLawAdvocacy #WVSULaw</p>
+</div></section>
+{%- endif %}
+
+<section><div class="wrap">
   <form class="form subscribe-box" name="newsletter" method="POST" action="/subscribed/" data-netlify="true" netlify-honeypot="website">
     <input type="hidden" name="form-name" value="newsletter">
     <p class="hp"><label>Leave this empty: <input name="website" tabindex="-1" autocomplete="off"></label></p>

@@ -115,6 +115,40 @@ layout: layouts/base.njk
 Read it here: {{ url }}
 #JournalForLawAdvocacy #WVSULaw</p>
     <div class="acts"><button class="btn sm alt" type="button" data-copy="#share-caption" data-copy-msg="Caption copied">Copy caption</button></div>
+
+    {%- set certs = author | certificates(slug) %}
+    {%- if certs.length %}
+    <div class="orn" aria-hidden="true"><span>❦</span></div>
+    <h2>Certificate of publication</h2>
+    <p class="off">For each author: a certificate to print, frame, or share. Signature lines are left blank for the Executive Editor and Faculty Adviser.</p>
+    <div class="certs">
+      {%- for c in certs %}
+      <figure class="cert">
+        <img src="/certificates/{{ c.file }}.png" width="2339" height="1654" loading="lazy" alt="Certificate of publication for {{ c.name }}">
+        <figcaption>{{ c.name }}</figcaption>
+        <div class="acts">
+          <a class="btn sm" href="/certificates/{{ c.file }}.pdf" download="Certificate - {{ c.name }}.pdf">Download PDF</a>
+          <button class="btn sm alt" type="button" data-share-img="/certificates/{{ c.file }}.png" hidden>Share image</button>
+        </div>
+      </figure>
+      {%- endfor %}
+    </div>
+    {%- endif %}
+
+    <div class="orn" aria-hidden="true"><span>❦</span></div>
+    <h2>Add it to LinkedIn</h2>
+    {%- set li = { volume: volume, year: year, first_page: first_page, slug: slug, url: url } %}
+    <p class="off">Show it under <em>Licenses &amp; certifications</em> with one click, or list it under <em>Publications</em> with the details below.</p>
+    <div class="acts"><a class="btn sm" href="{{ li | linkedinCert(site) }}" target="_blank" rel="noopener">Add certificate to LinkedIn</a></div>
+    <dl class="li-fields">
+      <div><dt>Title</dt><dd id="li-title">{{ title }}</dd><button class="chip" type="button" data-copy="#li-title" data-copy-msg="Title copied">Copy</button></div>
+      <div><dt>Publisher</dt><dd id="li-pub">{{ site.title }} ({{ site.institution }})</dd><button class="chip" type="button" data-copy="#li-pub" data-copy-msg="Publisher copied">Copy</button></div>
+      <div><dt>Publication date</dt><dd id="li-date">{{ year }}</dd><button class="chip" type="button" data-copy="#li-date" data-copy-msg="Date copied">Copy</button></div>
+      <div><dt>Publication URL</dt><dd id="li-url">{{ url }}</dd><button class="chip" type="button" data-copy="#li-url" data-copy-msg="URL copied">Copy</button></div>
+      <div><dt>Description</dt><dd id="li-desc">{{ abstract }}</dd><button class="chip" type="button" data-copy="#li-desc" data-copy-msg="Description copied">Copy</button></div>
+    </dl>
+    <p class="off">On your profile: <em>Add profile section → Recommended → Add publications</em>, then paste each field.</p>
+    <div class="acts"><a class="btn sm alt" href="https://www.linkedin.com/in/me/" target="_blank" rel="noopener">Open my LinkedIn profile</a></div>
   </section>
 
   <footer class="art-foot">

@@ -109,15 +109,41 @@ export default function (eleventyConfig) {
     );
     shareCardArticles = list.map(({ page, data }) => ({
       slug: page.fileSlug, title: data.title, author: data.author, volume: data.volume, year: data.year, kind: data.kind,
+      first_page: data.first_page, last_page: data.last_page, url: page.url, authors: certificatesFor(data.author, page.fileSlug),
     }));
     return list;
   });
 
-  eleventyConfig.addCollection("issues", (api) =>
-    api.getFilteredByGlob("src/issues/*.md").sort((a, b) =>
+  let shareCardIssues = [];
+  eleventyConfig.addCollection("issues", (api) => {
+    const list = api.getFilteredByGlob("src/issues/*.md").sort((a, b) =>
       num(b.data.volume) - num(a.data.volume) || num(b.data.issue) - num(a.data.issue)
-    )
-  );
+    );
+    shareCardIssues = list.map(({ page, data }) => ({ volume: data.volume, issue: data.issue, title: data.title, academic_year: data.academic_year, theme: data.theme, url: page.url }));
+    return list;
+  });
+
+  // ---- Certificates of publication: one per author of each piece ----
+  // [{ name: as printed, slug, file: "<article>--<author>" }]
+  // (editorials signed "From the Editors' Desk" get none: certificates are for people)
+  function certificatesFor(author, articleSlug) {
+    return splitAuthors(author).filter(isPerson).map((name) => {
+      const slug = slugify(canonical(name));
+      return { name, slug, file: `${articleSlug}--${slug}` };
+    });
+  }
+  eleventyConfig.addFilter("certificates", (author, articleSlug) => certificatesFor(author, articleSlug));
+  // LinkedIn has a deep link only for "Licenses & certifications"
+  eleventyConfig.addFilter("linkedinCert", (d, site) => {
+    const p = new URLSearchParams({
+      startTask: "CERTIFICATION_NAME",
+      name: `Published Author: ${site.title}, Vol. ${d.volume}`,
+      organizationName: `${site.title}, ${site.institution}`,
+      issueYear: String(d.year), issueMonth: "1",
+      certUrl: d.url, certId: `JLA-${d.volume}${d.first_page ? "-" + d.first_page : ""}-${d.slug.slice(0, 24).replace(/-+$/, "")}`,
+    });
+    return "https://www.linkedin.com/profile/add?" + p.toString();
+  });
 
   eleventyConfig.addCollection("policies", (api) =>
     api.getFilteredByGlob("src/policies/*.md").sort((a, b) => num(a.data.order) - num(b.data.order))
@@ -204,7 +230,11 @@ export default function (eleventyConfig) {
   // Facebook / social share images, written straight into _site/og/
   eleventyConfig.on("eleventy.after", async ({ dir, runMode }) => {
     const site = JSON.parse(fs.readFileSync("src/_data/site.json", "utf8"));
-    await generateShareCards({ articles: shareCardArticles, site, outDir: `${dir.output}/og`, onlyMissing: runMode !== "build" });
+    const byVolume = (v) => shareCardArticles.filter((a) => num(a.volume) === num(v));
+    await generateShareCards({
+      articles: shareCardArticles, issues: shareCardIssues.map((i) => ({ ...i, articles: byVolume(i.volume) })),
+      site, outDir: `${dir.output}/og`, onlyMissing: runMode !== "build",
+    });
   });
 
   return {

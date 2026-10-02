@@ -43,3 +43,18 @@ searchExclude: true
     {%- endfor %}
   </div>
 </div></section>
+
+<section class="wash"><div class="wrap">
+  <h2 class="title">Certificates</h2>
+  <p class="sub">A certificate of publication for each piece, to print, frame, or share.</p>
+  <div class="certs" style="max-width:52rem;margin:0 auto">
+    {%- for a in person.articles %}
+    {%- set file = a.page.fileSlug + "--" + person.slug %}
+    <figure class="cert" style="text-align:center">
+      <a href="/certificates/{{ file }}.pdf"><img src="/certificates/{{ file }}.png" width="2339" height="1654" loading="lazy" alt="Certificate of publication: {{ a.data.title }}"></a>
+      <figcaption>Volume {{ a.data.volume }} · {{ a.data.year }}</figcaption>
+      <div class="acts"><a class="btn sm" href="/certificates/{{ file }}.pdf" download>Download PDF</a></div>
+    </figure>
+    {%- endfor %}
+  </div>
+</div></section>

@@ -308,6 +308,121 @@ if (fnPanel && fulltext) {
   document.addEventListener('click', (e) => { if (e.target.closest('[data-open-footnotes]')) openPanel(); });
 }
 
+/* ---------- volume launch kit: share every slide at once (phones) ---------- */
+const shareSlides = $('[data-share-slides]');
+if (shareSlides && navigator.canShare && navigator.share) {
+  shareSlides.hidden = false;
+  shareSlides.addEventListener('click', async () => {
+    try {
+      shareSlides.disabled = true; say('Preparing slides…');
+      const imgs = $$('.slide img');
+      const files = await Promise.all(imgs.map(async (img, i) => new File([await (await fetch(img.src)).blob()], `slide-${i + 1}.png`, { type: 'image/png' })));
+      if (!navigator.canShare({ files })) { say('This device cannot share several images at once, so download them one by one'); return; }
+      const cap = $('#launch-caption'); if (cap && navigator.clipboard) navigator.clipboard.writeText(cap.innerText.trim()).catch(() => {});
+      await navigator.share({ files, title: document.title });
+      say('Caption copied: paste it into your post');
+    } catch (e) { if (e && e.name !== 'AbortError') say('Could not share the slides, so download them instead'); }
+    finally { shareSlides.disabled = false; }
+  });
+}
+
+/* ---------- quote cards: select a passage, share it as an image ---------- */
+const quoteZone = $$('#fulltext, .abstract');
+if (quoteZone.length && citebox) {
+  const meta = { title: citebox.dataset.title, authors: JSON.parse(citebox.dataset.authors || '[]'), volume: citebox.dataset.volume, year: citebox.dataset.year, url: citebox.dataset.url };
+  const chip = document.createElement('button');
+  chip.type = 'button'; chip.className = 'quote-chip'; chip.hidden = true;
+  chip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Share quote';
+  document.body.append(chip);
+  const touch = matchMedia('(hover: none)').matches;
+  let picked = '';
+
+  const selectedText = () => {
+    const sel = getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return '';
+    const range = sel.getRangeAt(0);
+    if (!quoteZone.some((z) => z.contains(range.commonAncestorContainer))) return '';
+    const frag = range.cloneContents(); frag.querySelectorAll('.footnote-ref, sup').forEach((x) => x.remove());
+    const div = document.createElement('div'); div.append(frag);
+    return div.textContent.replace(/\s+/g, ' ').trim();
+  };
+  let st;
+  document.addEventListener('selectionchange', () => {
+    clearTimeout(st);
+    st = setTimeout(() => {
+      const t = selectedText();
+      if (t.length < 25 || t.length > 420) { chip.hidden = true; return; }
+      picked = t; chip.hidden = false;
+      if (touch) { chip.classList.add('dock'); return; } // docked above the action bar; the native menu covers the selection
+      const r = getSelection().getRangeAt(0).getBoundingClientRect();
+      chip.classList.remove('dock');
+      chip.style.left = Math.max(12, Math.min(scrollX + r.left + r.width / 2 - chip.offsetWidth / 2, scrollX + innerWidth - chip.offsetWidth - 12)) + 'px';
+      chip.style.top = (scrollY + r.top - chip.offsetHeight - 10) + 'px';
+    }, 180);
+  });
+
+  // draw the card: 1080×1350, ivory paper, gold double rule, seal, quote in Cormorant italic
+  const loadImg = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+  const wrap = (ctx, text, max) => { const words = text.split(' '), lines = []; let line = ''; for (const w of words) { const t = line ? line + ' ' + w : w; if (ctx.measureText(t).width > max && line) { lines.push(line); line = w; } else line = t; } if (line) lines.push(line); return lines; };
+  const drawCard = async (quote) => {
+    await Promise.all(['italic 500 60px "Cormorant Garamond"', '600 40px "Cormorant Garamond"', '600 30px "Cormorant SC"', '400 24px "Newsreader"'].map((f) => document.fonts.load(f).catch(() => {})));
+    const W = 1080, H = 1350, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#F7F3EA'; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = '#C9A24A'; ctx.lineWidth = 2; ctx.strokeRect(44, 44, W - 88, H - 88); ctx.lineWidth = 1; ctx.strokeRect(56, 56, W - 112, H - 112);
+    try { const seal = await loadImg($('.brand img').src); ctx.drawImage(seal, W / 2 - 60, 110, 120, 120); } catch (e) {}
+    ctx.textAlign = 'center';
+    // measure everything first, then centre the block between the seal (y≈250) and the footer (y≈H-190)
+    ctx.font = '600 34px "Cormorant Garamond"';
+    const tLines = wrap(ctx, meta.title, 860); const titleLines = tLines.slice(0, 2);
+    if (tLines.length > 2) titleLines[1] = titleLines[1].replace(/\s*\S*$/, '') + '…';
+    const regionTop = 290, regionBottom = H - 200, after = 40 + 56 + 52 + titleLines.length * 42; // rule, author, title
+    let size = 66, lines, lh;
+    do { ctx.font = `italic 500 ${size}px "Cormorant Garamond"`; lines = wrap(ctx, quote, 820); lh = size * 1.28; size -= 2; }
+    while (lines.length * lh + 110 + after > regionBottom - regionTop && size > 28);
+    const blockH = 110 + lines.length * lh + after;
+    let y = regionTop + Math.max(0, (regionBottom - regionTop - blockH) / 2);
+    ctx.fillStyle = '#A98236'; ctx.font = '600 150px "Cormorant Garamond"'; ctx.fillText('“', W / 2, y + 105); y += 110 + lh * 0.75;
+    ctx.font = `italic 500 ${size + 2}px "Cormorant Garamond"`; ctx.fillStyle = '#1C1424';
+    lines.forEach((l, i) => ctx.fillText(l, W / 2, y + i * lh));
+    y += (lines.length - 1) * lh + 40;
+    ctx.fillStyle = '#C9A24A'; ctx.fillRect(W / 2 - 60, y, 120, 1); y += 56;
+    ctx.fillStyle = '#4A2466'; ctx.font = '600 32px "Cormorant SC"'; if ('letterSpacing' in ctx) ctx.letterSpacing = '4px';
+    ctx.fillText(meta.authors.join(' & ').toLowerCase(), W / 2, y); if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    ctx.fillStyle = '#3A3044'; ctx.font = '600 34px "Cormorant Garamond"';
+    titleLines.forEach((l, i) => ctx.fillText(l, W / 2, y + 52 + i * 42));
+    ctx.fillStyle = '#A98236'; ctx.font = '600 26px "Cormorant SC"'; if ('letterSpacing' in ctx) ctx.letterSpacing = '5px';
+    ctx.fillText(`journal for law advocacy · vol. ${meta.volume}`, W / 2, H - 150);
+    ctx.fillStyle = '#6A6070'; ctx.font = '400 22px "Newsreader"'; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    ctx.fillText(location.host + location.pathname, W / 2, H - 112);
+    return cv;
+  };
+
+  chip.addEventListener('click', async () => {
+    // a passage cut mid-sentence gets ellipses, as in a proper quotation
+    let quote = picked.replace(/^["“”']+|["“”']+$/g, '');
+    if (/^[a-z]/.test(quote)) quote = '…' + quote;
+    if (!/[.!?…]$/.test(quote)) quote = quote.replace(/[,;:\s]+$/, '') + '…';
+    chip.hidden = true;
+    const cv = await drawCard(quote);
+    const url = cv.toDataURL('image/png');
+    const cite = $('#cite-text') ? $('#cite-text').innerText.trim() : `${meta.title}, ${meta.url}`;
+    const text = `“${quote}”\n\n${cite}\n${meta.url}`;
+    Sheet.open({ title: 'Share this quote', html: `<img class="quote-preview" src="${url}" alt="Quote card">
+      <div class="acts"><button class="btn sm" type="button" data-q-share hidden>Share image</button>
+      <a class="btn sm alt" href="${url}" download="jla-quote.png">Download</a>
+      <button class="btn sm alt" type="button" data-q-copy>Copy quote with citation</button></div>` });
+    const shareBtn = $('[data-q-share]'), copyBtn = $('[data-q-copy]');
+    copyBtn.addEventListener('click', () => copy(text, 'Quote and citation copied'));
+    cv.toBlob((blob) => {
+      const file = new File([blob], 'jla-quote.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        shareBtn.hidden = false;
+        shareBtn.addEventListener('click', () => navigator.share({ files: [file], text }).catch(() => {}));
+      }
+    });
+  });
+}
+
 /* count PDF downloads in GoatCounter, when analytics is enabled */
 document.addEventListener('click', (e) => {
   const a = e.target.closest('a[href$=".pdf"], a[href*=".pdf#"]');

@@ -5,6 +5,84 @@ layout: layouts/base.njk
 {%- set cur = collections.issues | currentIssue %}
 {%- set contents = (collections.articles | inIssue(cur.data.volume, cur.data.issue)) if cur else [] %}
 {%- set featured = contents | featuredOf %}
+{#- ===== The app's Home (shown only in the installed app; the website keeps the page below) ===== -#}
+<div class="app-home" data-tones="{{ site.area_tones | dump }}">
+  <header class="ah-hello">
+    <p class="ah-date" data-today></p>
+    <h1 data-hello>Welcome</h1>
+    <a class="ah-streak" href="/account/" data-streak hidden></a>
+  </header>
+
+  <section class="ah-sec" data-continue hidden>
+    <h2 class="ah-h">Continue reading</h2>
+    <div data-continue-card></div>
+  </section>
+
+  {%- if cur %}
+  <a class="vol-hero" href="{{ cur.url }}">
+    <span class="vh-num" aria-hidden="true">{{ cur.data.volume | roman }}</span>
+    <span class="vh-eyebrow">The current volume</span>
+    <span class="vh-title">{{ cur.data.title }}</span>
+    {%- if cur.data.theme %}<span class="vh-theme">{{ cur.data.theme }}</span>{% endif %}
+    <span class="vh-meta">{{ contents.length }} pieces · Academic Year {{ cur.data.academic_year }}</span>
+    <span class="vh-cta">Open the volume</span>
+  </a>
+
+  <section class="ah-sec">
+    <div class="ah-row"><h2 class="ah-h">In {{ cur.data.title }}</h2><a href="{{ cur.url }}">See all</a></div>
+    <div class="shelf">
+      {%- for a in contents %}{% include "cover.njk" %}{% endfor %}
+    </div>
+  </section>
+  {%- endif %}
+
+  <section class="ah-sec" data-foryou hidden>
+    <div class="ah-row"><h2 class="ah-h">Picked for you</h2><a href="/articles/">Explore</a></div>
+    <div class="shelf" data-foryou-shelf></div>
+  </section>
+
+  <section class="ah-sec">
+    <h2 class="ah-h">Browse by area</h2>
+    <div class="area-grid">
+      {%- for ar in site.areas %}
+      <a class="area-tile" href="/areas/{{ ar | slugify }}/" style="--tone:{{ site.area_tones[ar] or '#4A2466' }}"><span>{{ ar }}</span></a>
+      {%- endfor %}
+    </div>
+  </section>
+
+  <section class="ah-sec">
+    <div class="ah-row"><h2 class="ah-h">The archive</h2><a href="/archive/">All volumes</a></div>
+    <div class="shelf vol-shelf">
+      {%- for i in collections.issues %}
+      {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
+      <a class="vol-card" href="{{ i.url }}">
+        <span class="vc-num">{{ i.data.volume | roman }}</span>
+        <span class="vc-t">{{ i.data.title }}</span>
+        <span class="vc-y">AY {{ i.data.academic_year }} · {{ n }} {{ "piece" if n == 1 else "pieces" }}</span>
+      </a>
+      {%- endfor %}
+    </div>
+  </section>
+
+  {%- if collections.news.length %}
+  <section class="ah-sec">
+    <div class="ah-row"><h2 class="ah-h">News</h2><a href="/news/">All news</a></div>
+    <ul class="ah-news">
+      {%- for n in collections.news.slice(0, 3) %}
+      <li><a href="{{ n.url }}"><time datetime="{{ n.date | isoDate }}">{{ (n.date | monthYear) if n.data.date_approx else (n.date | readableDate) }}</time><b>{{ n.data.title }}</b></a></li>
+      {%- endfor %}
+    </ul>
+  </section>
+  {%- endif %}
+
+  <a class="write-card" href="/call-for-papers/">
+    <span class="eyebrow">From reader to author</span>
+    <b>Your argument could open the next volume.</b>
+    <span>See the call for papers</span>
+  </a>
+</div>
+
+<div class="web-home">
 <header class="masthead"><div class="wrap">
   <img class="seal" src="/assets/img/seal-240.png" width="120" height="120" alt="Seal of the WVSU Journal for Law Advocacy, WVSU College of Law, 2021">
   <h1>{{ site.title }}</h1>
@@ -68,3 +146,4 @@ layout: layouts/base.njk
   <p>{{ site.title }} is a student publication of the {{ site.institution }}. We accept articles, essays, case comments, and student notes year-round.</p>
   <div class="btns"><a class="btn" href="/submit/">Submit your work</a><a class="btn alt" href="/about/">About the journal</a></div>
 </div></section>
+</div>

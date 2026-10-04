@@ -23,6 +23,14 @@
 <meta name="theme-color" content="#120B19" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
 <script>document.documentElement.classList.add("js");try{document.documentElement.dataset.theme=localStorage.getItem("jla-theme")||"light"}catch(e){document.documentElement.dataset.theme="light"}</script>
+{#- The installed app (or ?app=1 to preview it in a browser) gets the app layer: tab bar, app bar, transitions, the opening animation. -#}
+<script>(function(){var d=document.documentElement,q=location.search,s=null,pv=false;try{s=localStorage;if(/[?&]app=1\b/.test(q))s.setItem("jla:app-preview","1");if(/[?&]app=0\b/.test(q))s.removeItem("jla:app-preview");pv=s.getItem("jla:app-preview")==="1"}catch(e){}
+var sa=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;if(!(sa||pv))return;d.classList.add("is-app");
+try{if(!sessionStorage.getItem("jla:launched")){sessionStorage.setItem("jla:launched","1");if(!matchMedia("(prefers-reduced-motion: reduce)").matches)d.classList.add("launching")}}catch(e){}
+var tabs=["/","/articles/","/search/","/account/"];
+addEventListener("pagereveal",function(e){if(!e.viewTransition)return;if(d.classList.contains("launching")){e.viewTransition.skipTransition();return}var a=window.navigation&&navigation.activation;if(!a||!a.from||!a.entry)return;
+var f=new URL(a.from.url).pathname,t=new URL(a.entry.url).pathname,k="push";if(tabs.indexOf(f)>-1&&tabs.indexOf(t)>-1)k="tab";else if(a.navigationType==="traverse"&&a.entry.index<a.from.index)k="back";else if(a.navigationType==="reload")k="tab";
+try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/assets/img/app/apple-touch-icon-180.png">
 <link rel="manifest" href="/manifest.webmanifest">
@@ -34,6 +42,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Cormorant+SC:wght@500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/css/site.css">
+<link rel="stylesheet" href="/assets/css/app.css">
+<script type="speculationrules">{"prefetch":[{"source":"list","urls":["/","/articles/","/search/","/account/"],"eagerness":"eager"},{"where":{"and":[{"href_matches":"/*"},{"not":{"href_matches":"/admin/*"}},{"not":{"href_matches":"/*.pdf"}}]},"eagerness":"moderate"}]}</script>
 {%- if isArticle %}
 {# Google Scholar indexing tags #}
 <meta name="citation_title" content="{{ title }}">
@@ -77,7 +87,21 @@
 <script data-goatcounter="https://{{ site.goatcounter }}.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 {%- endif %}
 </head>
-<body{% if isArticle %} class="has-actionbar"{% endif %}>
+{%- set appTabs = ["/", "/articles/", "/search/", "/account/"] %}
+<body{% if isArticle %} class="has-actionbar"{% endif %}{% if page.url in appTabs %} data-app-root{% endif %}>
+<div class="launch" aria-hidden="true">
+  <div class="ln-mark">
+    <span class="ln-glow"></span>
+    <svg class="ln-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/><circle class="r2" cx="100" cy="100" r="89"/></svg>
+    <img src="/assets/img/seal-240.png" alt="" width="120" height="120">
+    <span class="ln-sheen"></span>
+  </div>
+  <p class="ln-pre">WVSU</p>
+  <p class="ln-name">Journal for Law Advocacy</p>
+  <span class="ln-rule"></span>
+  <p class="ln-est">Est. MMXXI · {{ site.city | replace(", Philippines", "") }}</p>
+</div>
+<script>(function(){var d=document.documentElement;if(!d.classList.contains("launching"))return;var gone=false,done=function(){if(gone)return;gone=true;d.classList.add("launched");setTimeout(function(){d.classList.remove("launching","launched")},900)};setTimeout(done,2500);document.querySelector("div.launch").addEventListener("click",done)})();</script>
 <a class="skip" href="#main">Skip to content</a>
 <div id="bar" aria-hidden="true"></div>
 {%- set volumeLinks = [["/archive/", "Every volume"]] %}
@@ -100,6 +124,9 @@
 <header class="site-head" id="sitehead">
   <div class="head-in">
     <div class="head-left">
+      <button class="icon-btn app-back" type="button" data-app-back aria-label="Back">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <button class="icon-btn menu-btn" id="menu" type="button" aria-expanded="false" aria-controls="menusheet" aria-label="Open menu">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h16M4 16h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       </button>
@@ -108,6 +135,7 @@
       <img src="/assets/img/seal-240.png" alt="" width="40" height="40">
       <span class="wordmark"><span class="full"><span class="pre">WVSU</span> Journal for Law Advocacy</span><span class="short">WVSU JLA</span></span>
     </a>
+    <p class="app-title" aria-hidden="true">{{ title or site.short }}</p>
     <div class="head-right">
       <button class="icon-btn tb tb-desk" type="button" aria-label="Switch to dark mode">
         <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
@@ -221,10 +249,25 @@
   </div>
   <small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Articles are open access under <a href="/policies/open-access/">CC BY-NC 4.0</a> unless stated otherwise. Views expressed are those of the authors.</small>
 </div></footer>
+{%- set u = page.url or "" %}
+{%- set onExplore = u == "/articles/" or u.startsWith("/archive") or u.startsWith("/areas/") or u.startsWith("/authors/") or u.startsWith("/issues/") %}
+<nav class="app-tabbar" aria-label="App">
+  <a href="/" data-tab{% if u == "/" %} aria-current="page"{% endif %}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path class="f" d="M4 10.5 12 4l8 6.5V20h-5.2v-5.5H9.2V20H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Home</span></a>
+  <a href="/articles/" data-tab{% if onExplore %} aria-current="page"{% endif %}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path class="f" d="m15.5 8.5-2.3 4.7-4.7 2.3 2.3-4.7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg><span>Explore</span></a>
+  <a href="/search/" data-tab{% if u == "/search/" %} aria-current="page"{% endif %}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle class="f" cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M15 15l5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span>Search</span></a>
+  <a href="/account/" data-tab{% if u == "/account/" %} aria-current="page"{% endif %}>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path class="f" d="M5 4.5h4v15H5zM10.5 4.5h4v15h-4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="m16.2 5.4 3.6-.9 3 13.9-3.7.9z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" transform="translate(-2.4 .6)"/></svg><span>Library</span></a>
+  <button type="button" data-app-more>
+    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor"/></svg><span>More</span></button>
+</nav>
 <div id="toast" role="status" aria-live="polite"></div>
 {%- if site.firebase and site.firebase.apiKey %}
 <script type="application/json" id="fb-config">{{ site.firebase | jsonScript | safe }}</script>
 {%- endif %}
 <script src="/assets/js/site.js" defer></script>
+<script type="module">if (document.documentElement.classList.contains("is-app")) import("/assets/js/app-shell.js");</script>
 </body>
 </html>

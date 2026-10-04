@@ -1,0 +1,10 @@
+{#- A typographic "book cover" for an article (app shelves). Expects `a` (an article). The colour follows its area of law. -#}
+<a class="cover-card" href="{{ a.url }}">
+  <span class="cover" style="--tone:{{ site.area_tones[a.data.area] or '#4A2466' }}">
+    <span class="cv-top">{{ a.data.area }}</span>
+    <span class="cv-title">{{ a.data.title.split(":")[0] }}</span>
+    <span class="cv-foot"><i></i>Vol. {{ a.data.volume | roman }} · {{ a.data.year }}</span>
+  </span>
+  <span class="cc-title">{{ a.data.title }}</span>
+  <span class="cc-by">{{ a.data.author }}</span>
+</a>

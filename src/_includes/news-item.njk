@@ -1,7 +1,13 @@
-{#- One news post in a list. Expects `n` (a collection item). -#}
+{#- One news post in a list, as a dated card. Expects `n` (a collection item). -#}
+{%- set months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"] %}
+{%- set nd = n.date %}
 <article class="news-card">
-  {%- if n.data.image %}<a href="{{ n.url }}" tabindex="-1" aria-hidden="true"><img src="{{ n.data.image }}" alt="" loading="lazy"></a>{% endif %}
-  <div>
+  <a class="nd-tile" href="{{ n.url }}" tabindex="-1" aria-hidden="true">
+    {%- if n.data.date_approx %}<b class="sm">{{ months[nd.getUTCMonth()] }}</b><span>{{ nd.getUTCFullYear() }}</span>
+    {%- else %}<b>{{ nd.getUTCDate() }}</b><span>{{ months[nd.getUTCMonth()] }} {{ nd.getUTCFullYear() }}</span>{% endif %}
+  </a>
+  <div class="nd-body">
+    {%- if n.data.image %}<a href="{{ n.url }}" tabindex="-1" aria-hidden="true"><img src="{{ n.data.image }}" alt="" loading="lazy"></a>{% endif %}
     <time datetime="{{ n.date | isoDate }}">{{ (n.date | monthYear) if n.data.date_approx else (n.date | readableDate) }}</time>
     <h3><a href="{{ n.url }}">{{ n.data.title }}</a></h3>
     {%- if n.data.summary %}<p>{{ n.data.summary }}</p>{% endif %}

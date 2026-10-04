@@ -108,7 +108,7 @@ export default function (eleventyConfig) {
       position(a) - position(b)
     );
     shareCardArticles = list.map(({ page, data }) => ({
-      slug: page.fileSlug, title: data.title, author: data.author, volume: data.volume, year: data.year, kind: data.kind,
+      slug: page.fileSlug, title: data.title, author: data.author, volume: data.volume, year: data.year, kind: data.kind, area: data.area,
       first_page: data.first_page, last_page: data.last_page, url: page.url, authors: certificatesFor(data.author, page.fileSlug),
     }));
     return list;

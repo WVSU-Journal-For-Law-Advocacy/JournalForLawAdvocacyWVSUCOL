@@ -143,8 +143,12 @@ export const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&a
 export const badgeHtml = (b) => `<li class="badge-item${b.earned ? ' earned' : ''}" title="${esc(b.how)}">
   <span class="medal" aria-hidden="true"><span>${esc(b.glyph)}</span></span>
   <b>${esc(b.name)}</b><small>${b.earned ? 'Earned' : `${esc(b.how)} · ${b.have}/${b.need}`}</small></li>`;
-export const cardHtml = (a, p) => `<a class="next-card" href="${a.url}">
+// each area of law has a cover colour (site.json area_tones, printed into every page)
+let tones;
+export const toneOf = (area) => { if (!tones) { try { tones = JSON.parse(document.getElementById('area-tones').textContent); } catch (e) { tones = {}; } } return tones[area] || '#4A2466'; };
+export const miniCover = (a) => `<span class="cover nc-cover" style="--tone:${toneOf(a.area)}" aria-hidden="true"><span class="cv-title">${esc(String(a.title).split(':')[0])}</span></span>`;
+export const cardHtml = (a, p) => `<a class="next-card has-cover" href="${a.url}">${miniCover(a)}<span class="nc-body">
   <span class="nc-meta">${esc(a.area)} · Vol. ${a.volume}</span>
   <b>${esc(a.title)}</b><span class="nc-by">${esc(a.authors.join(' & '))}</span>
   ${p && p.pct && !p.done ? `<span class="pbar"><i style="width:${Math.round(p.pct)}%"></i></span><span class="nc-pct">${Math.round(p.pct)}% read</span>` : ''}
-  ${!a.text ? '<span class="nc-pdf">PDF</span>' : ''}</a>`;
+  ${!a.text ? '<span class="nc-pdf">PDF</span>' : ''}</span></a>`;

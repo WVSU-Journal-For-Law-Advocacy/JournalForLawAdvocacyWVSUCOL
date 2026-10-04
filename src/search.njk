@@ -13,6 +13,16 @@ searchExclude: true
 <section><div class="wrap">
   <link href="/pagefind/pagefind-ui.css" rel="stylesheet">
   <div id="search"></div>
+  <div class="search-start" data-search-start>
+    <h2 class="ss-h">Try</h2>
+    <p class="ss-chips">
+      {%- for t in ["Data Privacy Act", "artificial intelligence", "freedom of expression", "cybercrime", "COMELEC", "Writ of Kalikasan", "mangroves", "legal ethics"] %}<button type="button" data-q="{{ t }}">{{ t }}</button>{% endfor %}
+    </p>
+    <h2 class="ss-h">Or browse an area of law</h2>
+    <div class="area-grid">
+      {%- for ar in site.areas %}<a class="area-tile" href="/areas/{{ ar | slugify }}/" style="--tone:{{ site.area_tones[ar] or '#4A2466' }}"><span>{{ ar }}</span></a>{% endfor %}
+    </div>
+  </div>
   <noscript><p class="empty">Search needs JavaScript. You can also browse the <a href="/articles/">articles list</a> or the <a href="/archive/">archive</a>.</p></noscript>
   <script src="/pagefind/pagefind-ui.js"></script>
   <script>
@@ -33,6 +43,11 @@ searchExclude: true
         translations: { placeholder: 'Search the journal' } });
       const q = new URLSearchParams(location.search).get('q');
       if (q) ui.triggerSearch(q);
+      // the suggestions step aside once there is a search
+      const start = document.querySelector('[data-search-start]');
+      const sync = () => { const i = document.querySelector('#search input'); start.hidden = !!(i && i.value.trim()); };
+      start.addEventListener('click', (e) => { const b = e.target.closest('[data-q]'); if (!b) return; ui.triggerSearch(b.dataset.q); const i = document.querySelector('#search input'); if (i) i.value = b.dataset.q; sync(); scrollTo(0, 0); });
+      document.getElementById('search').addEventListener('input', sync); sync();
     });
   </script>
 </div></section>

@@ -264,6 +264,7 @@ try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
     <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5.5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="18.5" cy="12" r="1.7" fill="currentColor"/></svg><span>More</span></button>
 </nav>
 <div id="toast" role="status" aria-live="polite"></div>
+<script type="application/json" id="area-tones">{{ site.area_tones | jsonScript | safe }}</script>
 {%- if site.firebase and site.firebase.apiKey %}
 <script type="application/json" id="fb-config">{{ site.firebase | jsonScript | safe }}</script>
 {%- endif %}

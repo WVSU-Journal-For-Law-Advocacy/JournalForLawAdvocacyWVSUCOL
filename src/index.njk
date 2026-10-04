@@ -80,6 +80,7 @@ layout: layouts/base.njk
 
 <div class="web-home">
 <header class="masthead"><div class="wrap">
+  {%- if cur %}{% set v = cur %}<a class="mast-book" href="{{ cur.url }}" aria-label="Open {{ cur.data.title }}">{%- include "vol-cover.njk" %}<span class="mb-cap">The current volume</span></a>{% endif %}
   <img class="seal" src="/assets/img/seal-240.png" width="120" height="120" alt="Seal of the WVSU Journal for Law Advocacy, WVSU College of Law, 2021">
   <h1>{{ site.title }}</h1>
   <p class="est">Est. MMXXI · {{ site.city }}</p>

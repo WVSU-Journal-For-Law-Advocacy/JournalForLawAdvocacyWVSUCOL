@@ -46,6 +46,44 @@ function card(f, { title, author, meta, kicker, seal, host }) {
   ]);
 }
 
+// Link preview (1200×630) for an article: the title on ivory, and the piece as a book on deep plum,
+// in its area's colour, like the covers on the site and in the app
+const shade = (hex, k = 0.42) => "#" + [1, 3, 5].map((i) => Math.round(parseInt(hex.slice(i, i + 2), 16) * (1 - k)).toString(16).padStart(2, "0")).join("");
+function ogBook({ title, author, meta, area, tone, volume, year, seal }) {
+  const W = 1200, H = 630, panel = 450, bw = 236, bh = 354;
+  const short = title.split(":")[0];
+  const capsOf = (size, color, text, extra = {}) => el("div", { display: "flex", fontFamily: "Cormorant SC", fontWeight: 600, fontSize: size, letterSpacing: size * 0.14, color, ...extra }, text);
+  const book = el("div", { position: "relative", width: bw, height: bh, display: "flex", padding: "24px 18px 18px 30px", borderRadius: "4px 12px 12px 4px",
+    backgroundImage: `linear-gradient(160deg, ${tone}, ${shade(tone)})`, boxShadow: "18px 26px 50px rgba(0,0,0,0.5)" }, [
+    el("div", { position: "absolute", left: 0, top: 0, bottom: 0, width: 11, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(0,0,0,0.35), rgba(255,255,255,0.14))" }),
+    el("div", { position: "absolute", left: 18, top: 10, right: 10, bottom: 10, display: "flex", border: "1px solid rgba(226,198,126,0.45)", borderRadius: "2px 8px 8px 2px" }),
+    el("div", { flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between" }, [
+      capsOf(13, "#E2C67E", String(area || "").toLowerCase()),
+      el("div", { display: "flex", fontFamily: "Cormorant Garamond", fontWeight: 600, fontSize: short.length > 44 ? 24 : 29, lineHeight: 1.12, color: "#F7F3EA" }, clip(short, 90)),
+      el("div", { display: "flex", alignItems: "center" }, [
+        el("div", { width: 18, height: 1, marginRight: 8, backgroundColor: "#E2C67E" }),
+        capsOf(12, "rgba(247,243,234,0.85)", `vol. ${roman(volume).toLowerCase()} · ${year}`),
+      ]),
+    ]),
+  ]);
+  return el("div", { width: W, height: H, display: "flex", backgroundColor: C.paper }, [
+    el("div", { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", padding: "48px 56px" }, [
+      el("div", { display: "flex", alignItems: "center", marginBottom: 22 }, [
+        { type: "img", props: { src: seal, width: 58, height: 58, style: { marginRight: 16 } } },
+        el("div", { display: "flex", flexDirection: "column" }, [
+          capsOf(17, C.gold, "published in"),
+          capsOf(20, C.ink, "wvsu journal for law advocacy", { marginTop: 2 }),
+        ]),
+      ]),
+      el("div", { display: "flex", fontFamily: "Cormorant Garamond", fontWeight: 600, fontSize: title.length <= 60 ? 54 : title.length <= 100 ? 44 : 36, lineHeight: 1.06, color: C.ink }, clip(title, 150)),
+      el("div", { width: 64, height: 2, marginTop: 22, backgroundColor: C.gold2, display: "flex" }),
+      capsOf(24, C.plum, String(author).toLowerCase(), { marginTop: 18 }),
+      el("div", { display: "flex", fontFamily: "Newsreader", fontSize: 19, color: C.muted, marginTop: 8 }, meta),
+    ]),
+    el("div", { width: panel, height: H, display: "flex", alignItems: "center", justifyContent: "center", backgroundImage: "linear-gradient(160deg, #4F2A6B, #2B1438 55%, #170A20)" }, [book]),
+  ]);
+}
+
 const roman = (n) => { let x = Number(n) || 0, out = ""; for (const [v, s] of [[1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"], [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]]) while (x >= v) { out += s; x -= v; } return out; };
 const caps = (size, color, text, extra = {}) => el("div", { display: "flex", fontFamily: "Cormorant SC", fontWeight: 600, fontSize: size, letterSpacing: size * 0.16, color, ...extra }, text);
 const serif = (size, color, text, extra = {}) => el("div", { display: "flex", fontFamily: "Cormorant Garamond", fontWeight: 600, fontSize: size, color, lineHeight: 1.1, ...extra }, text);
@@ -156,7 +194,15 @@ export async function generateShareCards({ articles, issues = [], site, outDir, 
   });
   for (const a of articles) {
     const props = { kicker: "published in", title: a.title, author: a.author, meta: `Volume ${a.volume} · ${a.year}${issn}`, host };
-    await render(path.join(ogDir, `${a.slug}.png`), "og", props);
+    // link preview with the book; if that design ever fails to draw, keep the plain card rather than break the build
+    const ogFile = path.join(ogDir, `${a.slug}.png`);
+    if (!(onlyMissing && fs.existsSync(ogFile))) {
+      try {
+        const tone = (site.area_tones && site.area_tones[a.area]) || C.plum;
+        const svg = await satori(ogBook({ ...props, area: a.area, tone, volume: a.volume, year: a.year, seal }), { width: 1200, height: 630, fonts });
+        fs.writeFileSync(ogFile, new Resvg(svg, { fitTo: { mode: "width", value: 1200 } }).render().asPng());
+      } catch (e) { console.warn(`[og] book preview failed for ${a.slug}, using the plain card:`, e.message); await render(ogFile, "og", props); }
+    }
     await render(path.join(shareDir, `${a.slug}-post.png`), "post", props);
     await render(path.join(shareDir, `${a.slug}-story.png`), "story", props);
   }

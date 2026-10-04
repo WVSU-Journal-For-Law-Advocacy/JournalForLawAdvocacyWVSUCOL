@@ -2,8 +2,6 @@
 title: "Sworn to write: the Year 3 board takes its oath"
 date: 2024-04-04
 summary: The journal's third editorial board took its oath at the College of Law Moot Court, led by Executive Editor Luigi Bien Villanueva.
-image: /uploads/events/2024-04-year-3-oath.jpg
-image_alt: "The Year 3 editorial board at its oath-taking"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/438529035357052/
 milestone: The Year 3 board takes its oath, led by Executive Editor Luigi Bien Villanueva.
 ---

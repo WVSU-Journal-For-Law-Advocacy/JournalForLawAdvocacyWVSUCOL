@@ -2,8 +2,6 @@
 title: Editors plan the publication of Volume 5
 date: 2025-10-09
 summary: The Board of Editors and the new Editorial Apprentices met to settle the articles, layout, and printing of Volume 5.
-image: /uploads/events/2025-10-planning-meeting.jpg
-image_alt: "The Board of Editors and Editorial Apprentices at their planning meeting"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/819783997231552/
 ---
 

@@ -3,8 +3,6 @@ title: "Journal Essentials: the 2024 editorial workshops"
 date: 2024-08-01
 date_approx: true
 summary: Dr. Hazel P. Villa and Atty. Regina Johanna V. Gustilo spoke at the journal's 2024 workshop on scholarly writing.
-image: /uploads/events/2024-journal-essentials-workshop.jpg
-image_alt: "Participants of the 2024 editorial workshop"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/530853086124646/
 ---
 

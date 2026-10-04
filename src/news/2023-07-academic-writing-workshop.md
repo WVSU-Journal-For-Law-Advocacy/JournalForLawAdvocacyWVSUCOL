@@ -2,8 +2,6 @@
 title: Law students learn academic writing and how to run a law journal
 date: 2023-07-22
 summary: Dr. Hazel P. Villa and Atty. Maria Reylan Garcia led a workshop for the journal's editors and contributors at the Moot Court.
-image: /uploads/events/2023-07-academic-writing-workshop.jpg
-image_alt: "Workshop participants and speakers in the WVSU College of Law Moot Court"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/765959742201019/
 milestone: Workshop on academic writing and journal management with Dr. Hazel P. Villa and Atty. Maria Reylan Garcia.
 ---

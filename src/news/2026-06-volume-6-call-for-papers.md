@@ -2,8 +2,6 @@
 title: "Call for papers for Volume 6: Combatting Impunity"
 date: 2026-06-02
 summary: The journal invited papers on public accountability in the fight against corruption. The extended deadline was September 11, 2026.
-image: /uploads/events/2026-volume-6-call-for-papers.jpg
-image_alt: "Call for papers for Volume 6"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/pfbid02dYdZhYC79WTySBaNEqXiVTYiWfQ2WZSnnWyToitsrY87sDYt5AvZQaLhoesCofyzl
 milestone: The Volume 6 call opens to the whole Visayas and Southern Philippines.
 ---

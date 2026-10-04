@@ -2,8 +2,6 @@
 title: "Ready to advocate: new members, the 5th editorial workshop, and the turnover"
 date: 2026-08-07
 summary: The 2026–2027 team took its oath on May 26, trained at the 5th Editorial Enhancement Lectures and Workshop, and took over from Year 4.
-image: /uploads/events/2026-07-oath-and-workshop.jpg
-image_alt: "The 2026–2027 editorial team with advisers and speakers"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/pfbid0neE5VrDVXtKXUu4Xm528nMmhGW3zEwbjfbjt93Ho8j7T7y6aHj4LroLtKUhnvMKVl
 milestone: The 5th Editorial Enhancement Workshop and the turnover from Year 4 to Year 5.
 ---

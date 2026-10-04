@@ -2,8 +2,6 @@
 title: Volume 1 released chapter by chapter
 date: 2022-08-18
 summary: Ahead of its official launch, the inaugural issue on electoral law was published online one chapter a week.
-image: /uploads/events/2022-volume-1-chapter-one.jpg
-image_alt: "Opening page of the first chapter of Volume 1"
 source: https://www.facebook.com/JournalforLawAdvocacy/posts/pfbid0263DdEJDGjsk2gNNKoj5kjzid1gakwRmvkxAqHfdHg6itgLbuqrfqQEXs5PP4vTg4l
 milestone: Volume 1, on electoral law and the 2022 elections, is released one chapter a week.
 ---

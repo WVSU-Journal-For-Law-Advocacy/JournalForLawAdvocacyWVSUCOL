@@ -3,8 +3,6 @@ title: Call for student papers for the inaugural issue
 date: 2021-12-01
 date_approx: true
 summary: The journal opened its first call for papers, for Volume 1 (2022), to students of every Juris Doctor program.
-image: /uploads/events/2021-call-for-papers-volume-1.jpg
-image_alt: "Poster: call for student papers for the inaugural issue of the WVSU Journal for Law Advocacy"
 milestone: The first call for papers, for the inaugural issue.
 ---
 

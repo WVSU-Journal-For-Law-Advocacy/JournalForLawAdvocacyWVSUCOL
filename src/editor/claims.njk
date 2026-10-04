@@ -1,0 +1,57 @@
+---
+layout: layouts/base.njk
+title: Author claims
+permalink: /editor/claims/
+description: Review requests to claim author pages (board members only).
+searchExclude: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb">Board</p>
+  <h1>Author claims</h1>
+  <p>Readers asking to manage an author page. Approve only when you're sure it's the author.</p>
+</div></header>
+
+<section class="acct"><div class="wrap">
+  <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
+  <div data-tools hidden>
+    <div class="claims" data-list></div>
+    <p class="more"><a href="/editor/editors/">Manage editors</a> · <a href="/editor/announce/">Send an announcement</a></p>
+  </div>
+</div></section>
+<script type="module">
+  const cloud = await import('/assets/js/jla-cloud.js');
+  const gate = document.querySelector('[data-gate]'), tools = document.querySelector('[data-tools]'), list = document.querySelector('[data-list]');
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  let claims = [];
+  async function load() {
+    try { claims = await cloud.pendingClaims(); } catch (e) { list.innerHTML = `<p class="off">Could not load claims: ${esc(e.message)}</p>`; return; }
+    list.innerHTML = claims.length ? claims.map((c) => `
+      <article class="card-box claim" data-id="${esc(c.id)}">
+        <p class="cl-for">Claim for <a href="/authors/${esc(c.slug)}/" target="_blank" rel="noopener">${esc(c.authorName)}</a></p>
+        <p class="cl-who"><b>${esc(c.accountName || 'A reader')}</b> · ${esc(c.email || 'no email')}${c.created ? ` · ${new Date(c.created).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' })}` : ''}</p>
+        <blockquote>${esc(c.note || '(no note)')}</blockquote>
+        <p class="acts"><button class="btn sm" type="button" data-approve>Approve</button> <button class="btn sm alt" type="button" data-decline>Decline</button></p>
+      </article>`).join('') : '<div class="card-box"><p class="off">No claims waiting. 🎉</p></div>';
+  }
+  if (!cloud.enabled) gate.innerHTML = '<p class="off">Reader accounts are not switched on.</p>';
+  else cloud.onUser(async (u) => {
+    if (!u) { gate.innerHTML = '<p class="off">Board members only. <a href="/account/">Sign in</a> first.</p>'; tools.hidden = true; return; }
+    if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only.</p>'; tools.hidden = true; return; }
+    gate.hidden = true; tools.hidden = false; load();
+  });
+  list.addEventListener('click', async (e) => {
+    const card = e.target.closest('[data-id]'); if (!card) return;
+    const c = claims.find((x) => x.id === card.dataset.id); if (!c) return;
+    try {
+      if (e.target.closest('[data-approve]')) {
+        if (!confirm(`Approve ${c.email} as ${c.authorName}? They will be able to edit that author page.`)) return;
+        await cloud.decideClaim(c, true); card.innerHTML = `<p>Approved: <b>${esc(c.authorName)}</b> is now managed by ${esc(c.email)}.</p>`;
+      }
+      if (e.target.closest('[data-decline]')) {
+        const note = prompt('Reason, shown to the reader (optional):', 'We could not confirm your authorship. Write to col_journal@wvsu.edu.ph with details.'); if (note === null) return;
+        await cloud.decideClaim(c, false, note); card.innerHTML = `<p>Declined the claim for ${esc(c.authorName)}.</p>`;
+      }
+    } catch (err) { alert('That did not go through: ' + err.message); }
+  });
+</script>

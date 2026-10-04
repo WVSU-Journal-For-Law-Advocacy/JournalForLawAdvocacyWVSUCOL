@@ -106,6 +106,7 @@ export function badges(index, progress, weeks) {
   // taking part: first paragraph comment (flag kept in this browser by comments.js)
   let flags = {}; try { flags = JSON.parse(localStorage.getItem('jla:flags') || '{}'); } catch (e) {}
   out.push({ id: 'amicus-curiae', name: 'Amicus Curiae', glyph: '❝', how: 'Join a discussion on any paragraph', have: flags.commented ? 1 : 0, need: 1 });
+  out.push({ id: 'published-author', name: 'Published Author', glyph: '✒', how: 'Publish in the Journal and claim your author page', have: flags.author ? 1 : 0, need: 1 });
   // a volume badge for every volume whose pieces are all online in full
   const vols = [...new Set(list.map((a) => a.volume))].sort((a, b) => b - a);
   for (const v of vols) {

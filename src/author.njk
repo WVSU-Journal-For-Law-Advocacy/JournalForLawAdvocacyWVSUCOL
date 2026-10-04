@@ -12,27 +12,28 @@ searchExclude: true
 ---
 {%- set prof = person | profileFor(authorProfiles, board) %}
 {%- set first = person.articles | last %}
-<header class="pagehead"><div class="wrap profile">
+<header class="pagehead"><div class="wrap profile" id="author-head" data-slug="{{ person.slug }}" data-name="{{ person.name }}">
   <p class="crumb"><a href="/authors/">Authors</a></p>
   {%- if prof.photo %}
   <img class="portrait" src="{{ prof.photo }}" alt="Portrait of {{ person.name }}" width="132" height="132">
   {%- else %}
   <div class="portrait monogram" aria-hidden="true">{{ person.name | monogram }}</div>
   {%- endif %}
-  <h1>{{ person.name }}</h1>
-  {%- if prof.affiliation %}<p class="aff">{{ prof.affiliation }}</p>{% endif %}
+  <h1>{{ person.name }}<span class="verified" hidden title="This author has verified their profile with the Journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1L2.7 15.6l1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.4z" fill="currentColor"/><path d="M8 12.2l2.6 2.6L16.2 9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Verified author</span></span></h1>
+  <p class="aff" data-aff{% if not prof.affiliation %} hidden{% endif %}>{{ prof.affiliation }}</p>
   {%- if prof.role %}<p class="aff">{{ prof.role }}, {{ site.title }}</p>{% endif %}
   <div class="stats">
     <div><b>{{ person.articles.length }}</b><span>{{ "publication" if person.articles.length == 1 else "publications" }}</span></div>
     {%- if first %}<div><b>{{ first.data.year }}</b><span>first published</span></div>{% endif %}
   </div>
-  {%- if prof.bio %}<p class="bio">{{ prof.bio }}</p>{% endif %}
+  <p class="bio"{% if not prof.bio %} hidden{% endif %}>{{ prof.bio }}</p>
   <div class="btns links">
     <button class="btn sm" type="button" data-copy-link>Copy profile link</button>
     {%- if prof.facebook %}<a class="btn sm alt" href="{{ prof.facebook }}" rel="noopener">Facebook</a>{% endif %}
     {%- if prof.linkedin %}<a class="btn sm alt" href="{{ prof.linkedin }}" rel="noopener">LinkedIn</a>{% endif %}
     {%- if prof.orcid %}<a class="btn sm alt" href="https://orcid.org/{{ prof.orcid }}" rel="noopener">ORCID</a>{% endif %}
   </div>
+  <div class="claim-box" data-claim hidden></div>
 </div></header>
 
 <section><div class="wrap">
@@ -60,3 +61,4 @@ searchExclude: true
   </div>
 </div></section>
 {%- endif %}
+<script type="module" src="/assets/js/author-page.js"></script>

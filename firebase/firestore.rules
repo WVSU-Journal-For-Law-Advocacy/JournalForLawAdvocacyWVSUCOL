@@ -87,6 +87,38 @@ service cloud.firestore {
         && request.resource.data.topics.hasOnly(['volumes', 'cfp', 'replies', 'streak']);
     }
 
+    // "Claim this author page": a reader asks; editors approve or decline.
+    match /authorClaims/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['slug', 'authorName', 'uid', 'email', 'accountName', 'note', 'status', 'created'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.status == 'pending'
+        && request.resource.data.slug is string && request.resource.data.slug.size() <= 120
+        && request.resource.data.note is string && request.resource.data.note.size() <= 600
+        && request.resource.data.created == request.time;
+      allow read: if isEditor() || (signedIn() && resource.data.uid == request.auth.uid);
+      allow update: if isEditor()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'decidedBy', 'decidedAt', 'decisionNote']);
+      allow delete: if isEditor() || (signedIn() && resource.data.uid == request.auth.uid && resource.data.status == 'pending');
+    }
+
+    // Verified author pages: public to read. Editors link an account (uid); that author edits their own profile fields.
+    match /authors/{slug} {
+      allow read: if true;
+      allow create, delete: if isEditor();
+      allow update: if isEditor() || (signedIn()
+        && resource.data.uid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['bio', 'photo', 'affiliation', 'linkedin', 'orcid', 'facebook', 'website', 'updated'])
+        && (!('bio' in request.resource.data) || request.resource.data.bio.size() <= 800)
+        && (!('photo' in request.resource.data) || request.resource.data.photo.size() <= 90000)
+        && (!('affiliation' in request.resource.data) || request.resource.data.affiliation.size() <= 120)
+        && (!('linkedin' in request.resource.data) || request.resource.data.linkedin.size() <= 200)
+        && (!('orcid' in request.resource.data) || request.resource.data.orcid.size() <= 40)
+        && (!('facebook' in request.resource.data) || request.resource.data.facebook.size() <= 200)
+        && (!('website' in request.resource.data) || request.resource.data.website.size() <= 200));
+    }
+
     // Log of board announcements (written by the server only).
     match /announcements/{id} {
       allow read: if isEditor();

@@ -225,6 +225,54 @@ export async function callFunction(name, body) {
   const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`); return j;
 }
 
+/* ---------- author pages: claims (reviewed by editors) and the author's own profile ---------- */
+const AUTHOR_FIELDS = ['bio', 'photo', 'affiliation', 'linkedin', 'orcid', 'facebook', 'website'];
+// an author page's verified profile: one public read over HTTPS, no SDK needed
+export async function authorDoc(slug) {
+  if (!enabled) return null;
+  const r = await fetch(`https://firestore.googleapis.com/v1/projects/${config.projectId}/databases/(default)/documents/authors/${encodeURIComponent(slug)}?key=${config.apiKey}`);
+  if (!r.ok) return null;
+  const f = (await r.json()).fields || {};
+  return Object.fromEntries(Object.entries(f).map(([k, v]) => [k, v.stringValue ?? v.booleanValue ?? v.integerValue ?? '']));
+}
+export async function submitClaim(slug, authorName, note) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.addDoc(s.F.collection(s.db, 'authorClaims'), {
+    slug, authorName: String(authorName).slice(0, 120), uid: u.uid, email: u.email || '', accountName: String(u.displayName || '').slice(0, 80),
+    note: String(note || '').trim().slice(0, 600), status: 'pending', created: s.F.serverTimestamp(),
+  });
+}
+export async function myClaims() {
+  const s = await load(); const u = current; if (!u) return [];
+  const snap = await s.F.getDocs(s.F.query(s.F.collection(s.db, 'authorClaims'), s.F.where('uid', '==', u.uid)));
+  const out = []; snap.forEach((d) => out.push({ id: d.id, ...d.data() })); return out;
+}
+export async function myAuthorPages() {
+  const s = await load(); const u = current; if (!u) return [];
+  const snap = await s.F.getDocs(s.F.query(s.F.collection(s.db, 'authors'), s.F.where('uid', '==', u.uid)));
+  const out = []; snap.forEach((d) => out.push({ slug: d.id, ...d.data() })); return out;
+}
+export async function saveAuthorProfile(slug, fields) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const clean = Object.fromEntries(Object.entries(fields).filter(([k]) => AUTHOR_FIELDS.includes(k)).map(([k, v]) => [k, String(v || '').trim()]));
+  await s.F.updateDoc(s.F.doc(s.db, 'authors', slug), { ...clean, updated: Date.now() });
+}
+// editors: review claims
+export async function pendingClaims() {
+  const s = await load();
+  const snap = await s.F.getDocs(s.F.query(s.F.collection(s.db, 'authorClaims'), s.F.where('status', '==', 'pending')));
+  const out = []; snap.forEach((d) => { const x = d.data(); out.push({ id: d.id, ...x, created: x.created && x.created.toMillis ? x.created.toMillis() : 0 }); });
+  return out.sort((a, b) => a.created - b.created);
+}
+export async function decideClaim(claim, approve, note = '') {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const batch = s.F.writeBatch(s.db);
+  if (approve) batch.set(s.F.doc(s.db, 'authors', claim.slug), { uid: claim.uid, name: claim.authorName, approvedBy: u.uid, approvedAt: Date.now() }, { merge: true });
+  batch.update(s.F.doc(s.db, 'authorClaims', claim.id), { status: approve ? 'approved' : 'declined', decidedBy: u.uid, decidedAt: Date.now(), decisionNote: String(note).slice(0, 300) });
+  await batch.commit();
+}
+export async function unlinkAuthor(slug) { const s = await load(); await s.F.deleteDoc(s.F.doc(s.db, 'authors', slug)); }
+
 /* ---------- your data ---------- */
 export async function exportData() {
   const u = current; if (!u) return null;

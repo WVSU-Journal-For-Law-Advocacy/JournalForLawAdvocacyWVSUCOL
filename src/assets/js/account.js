@@ -127,6 +127,44 @@ function wireSignIn() {
 }
 
 /* ---------- start ---------- */
+/* ---------- your author page(s): claim status, and editing a verified page ---------- */
+async function paintAuthor() {
+  let pages = [], claims = [], index = null;
+  try { [pages, claims, index] = await Promise.all([cloud.myAuthorPages(), cloud.myClaims(), loadIndex()]); } catch (e) { return; }
+  const box = $('[data-author-box]');
+  const open = claims.filter((c) => c.status !== 'approved' || !pages.some((p) => p.slug === c.slug));
+  box.hidden = !pages.length && !open.length; if (box.hidden) return;
+  const STATUS = { pending: 'Waiting for the board to review', declined: 'Not approved', approved: 'Approved' };
+  $('[data-claims]').innerHTML = open.map((c) => `<li><a href="/authors/${esc(c.slug)}/">${esc(c.authorName)}</a><span class="cl-st cl-${esc(c.status)}">${STATUS[c.status] || esc(c.status)}</span>${c.decisionNote ? `<small>${esc(c.decisionNote)}</small>` : ''}</li>`).join('');
+  if (pages.length) { try { const fl = JSON.parse(localStorage.getItem('jla:flags') || '{}'); if (!fl.author) { fl.author = Date.now(); localStorage.setItem('jla:flags', JSON.stringify(fl)); paint(); } } catch (e) {} }
+  $('[data-author-pages]').innerHTML = pages.map((p) => `
+    <form class="author-form" data-slug="${esc(p.slug)}">
+      <p class="af-head"><a href="/authors/${esc(p.slug)}/">${esc(p.name || p.slug)}</a> <span class="cl-st cl-approved">Verified</span></p>
+      <label class="ap-photo af-photo" title="Change photo"><img alt="" width="96" height="96"${p.photo ? ` src="${esc(p.photo)}"` : ' hidden'}><span class="monogram"${p.photo ? ' hidden' : ''}>${esc(initials(p.name))}</span><input type="file" accept="image/*" hidden><span class="ap-edit">Change</span></label>
+      <div class="field"><label>Affiliation</label><input name="affiliation" maxlength="120" value="${esc(p.affiliation)}" placeholder="e.g. Associate, Law Firm · WVSU College of Law, JD 2024"></div>
+      <div class="field"><label>Bio</label><textarea name="bio" maxlength="800" rows="4" placeholder="A few lines about you and your work">${esc(p.bio)}</textarea></div>
+      <div class="field"><label>LinkedIn</label><input name="linkedin" maxlength="200" value="${esc(p.linkedin)}" placeholder="linkedin.com/in/…"></div>
+      <div class="field"><label>ORCID</label><input name="orcid" maxlength="40" value="${esc(p.orcid)}" placeholder="0000-0000-0000-0000"></div>
+      <div class="field"><label>Facebook</label><input name="facebook" maxlength="200" value="${esc(p.facebook)}" placeholder="facebook.com/…"></div>
+      <div class="field"><label>Website</label><input name="website" maxlength="200" value="${esc(p.website)}" placeholder="https://…"></div>
+      <p class="acts"><button class="btn sm" type="submit">Save author page</button></p>
+    </form>`).join('');
+  $$('.author-form').forEach((f) => {
+    let photo = null;
+    f.querySelector('input[type=file]').addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0]; if (!file) return;
+      try { photo = await shrink(file); const img = f.querySelector('.af-photo img'); img.src = photo; img.hidden = false; f.querySelector('.af-photo .monogram').hidden = true; }
+      catch (err) { say('That photo could not be used'); }
+    });
+    f.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = Object.fromEntries(['affiliation', 'bio', 'linkedin', 'orcid', 'facebook', 'website'].map((k) => [k, f.elements[k].value]));
+      if (photo) data.photo = photo;
+      try { await cloud.saveAuthorProfile(f.dataset.slug, data); say('Author page saved'); } catch (err) { say('Could not save. Please try again'); }
+    });
+  });
+}
+
 /* ---------- notifications: opt in per kind, on this device ---------- */
 function wirePush() {
   const box = $('[data-push-box]'); if (!cloud || !cloud.pushConfigured()) return;
@@ -177,7 +215,7 @@ paint();
   catch (e) { $('.acct-signin .msg').textContent = 'That sign-in link has expired or was already used. Send a new one.'; }
   let wired = false;
   mod.onUser(async (u) => {
-    if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; $('[data-board]').hidden = true; paint(); return; }
+    if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; $('[data-board]').hidden = true; $('[data-author-box]').hidden = true; paint(); return; }
     const synced = await mod.sync().catch(() => null);
     profile = (synced && synced.profile) || null;
     if (!profile) { // first sign-in: create the profile
@@ -185,6 +223,10 @@ paint();
       await mod.saveProfile(profile).catch(() => {});
     }
     show('in'); paintProfile(u); if (!wired) { wireProfile(u); wirePush(); wired = true; } paint(); paintHighlights();
-    mod.isEditor().then((ed) => { $('[data-board]').hidden = !ed; });
+    mod.isEditor().then(async (ed) => {
+      $('[data-board]').hidden = !ed;
+      if (ed) { const n = (await mod.pendingClaims().catch(() => [])).length; const c = $('[data-claim-count]'); c.hidden = !n; c.textContent = n; }
+    });
+    paintAuthor();
   });
 })();

@@ -1109,3 +1109,15 @@ html.is-app .site-head{padding-top:env(safe-area-inset-top)}
 @media (max-width:420px){.lib-tabs{gap:0}.lib-tabs button{padding:0 .55rem;letter-spacing:.06em;font-size:.92rem}}
 .lib-tabs.is-scroll{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
 .lib-tabs.is-scroll.at-end{-webkit-mask-image:none;mask-image:none}
+/* the account menu (signed-in photo in the header) */
+.acct-menu{position:fixed;z-index:70;min-width:15rem;padding:.4rem 0;background:var(--card);border:1px solid var(--rule);border-radius:12px;box-shadow:var(--shadow);animation:qIn .18s var(--ease)}
+.acct-menu[hidden]{display:none}
+.am-head{display:flex;align-items:center;gap:.7rem;padding:.6rem 1rem .8rem;border-bottom:1px solid var(--rule);margin-bottom:.3rem}
+.am-head img,.am-head .ini{width:36px;height:36px;border-radius:50%;object-fit:cover;flex:none}
+.am-head .ini{display:grid;place-items:center;background:var(--plum);color:var(--on-ink);font:600 .85rem var(--caps)}
+.am-head b{display:block;font:600 1.02rem/1.2 var(--display)}
+.am-head small{color:var(--muted);font-size:.8rem}
+.acct-menu a,.acct-menu button{display:block;width:100%;text-align:left;padding:.55rem 1rem;color:var(--ink);font:500 .98rem var(--serif)}
+.acct-menu a:hover,.acct-menu button:hover,.acct-menu a:focus-visible,.acct-menu button:focus-visible{background:var(--wash);color:var(--plum)}
+.acct-menu .am-board{color:var(--plum);font-weight:600}
+.acct-menu .am-out{border-top:1px solid var(--rule);margin-top:.3rem;padding-top:.7rem;color:var(--muted)}

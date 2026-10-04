@@ -39,6 +39,37 @@ if (acctBtn) {
     const ini = me.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
     acctBtn.innerHTML = /^data:image\/|^https:\/\//.test(me.photo || '') ? `<img src="${me.photo.replace(/"/g, '')}" alt="" width="30" height="30">` : `<span class="ini">${ini}</span>`;
   }
+  // signed in: the photo opens a small account menu (My library, Settings, Board, Sign out)
+  if (me && me.name) {
+    const menu = document.createElement('div'); menu.className = 'acct-menu'; menu.hidden = true; menu.id = 'acct-menu';
+    menu.setAttribute('role', 'menu'); menu.setAttribute('aria-label', 'Your account');
+    const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    menu.innerHTML = `<div class="am-head">${acctBtn.innerHTML}<div><b>${esc(me.name)}</b><small>${me.editor ? 'Editor' : 'Reader'}</small></div></div>
+      <a role="menuitem" href="/account/">My library</a>
+      <a role="menuitem" href="/account/#highlights">Highlights &amp; notes</a>
+      <a role="menuitem" href="/account/#badges">Badges</a>
+      <a role="menuitem" href="/account/#settings">Settings</a>
+      ${me.editor ? '<a role="menuitem" href="/editor/" class="am-board">Board</a>' : ''}
+      <button role="menuitem" type="button" class="am-out" data-signout-menu>Sign out</button>`;
+    acctBtn.after(menu);
+    acctBtn.setAttribute('aria-haspopup', 'menu'); acctBtn.setAttribute('aria-expanded', 'false'); acctBtn.setAttribute('aria-controls', 'acct-menu');
+    const close = () => { menu.hidden = true; acctBtn.setAttribute('aria-expanded', 'false'); };
+    acctBtn.addEventListener('click', (e) => {
+      e.preventDefault(); const open = menu.hidden; menu.hidden = !open; acctBtn.setAttribute('aria-expanded', String(open));
+      if (open) { const r = acctBtn.getBoundingClientRect(); menu.style.top = `${r.bottom + 8}px`; menu.style.right = `${Math.max(8, innerWidth - r.right)}px`; menu.querySelector('a').focus({ preventScroll: true }); }
+    });
+    document.addEventListener('click', (e) => { if (!menu.hidden && !e.target.closest('#acct-menu, .acct-btn')) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { close(); acctBtn.focus(); } });
+    addEventListener('scroll', () => { if (!menu.hidden) close(); }, { passive: true });
+    menu.addEventListener('click', async (e) => {
+      if (e.target.closest('a')) return close();
+      if (!e.target.closest('[data-signout-menu]')) return;
+      e.target.disabled = true; e.target.textContent = 'Signing out…';
+      try { const cloud = await import('/assets/js/jla-cloud.js'); await cloud.signOut(); } catch (err) {}
+      try { localStorage.removeItem('jla:me'); } catch (err) {}
+      location.reload();
+    });
+  }
   // editors get a Board menu (the pages themselves check access again)
   if (me && me.editor) {
     const here = location.pathname.startsWith('/editor/');

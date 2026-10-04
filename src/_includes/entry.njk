@@ -1,6 +1,6 @@
 {#- One article in a list. Expects `a` (a collection item). -#}
 <article class="entry" data-area="{{ a.data.area }}" data-search="{{ [a.data.title, a.data.author, a.data.abstract, a.data.area, a.data.kind, (a.data.keywords or []) | join(' ')] | join(' ') | lower }}">
-  <a class="entry-cover" href="{{ a.url }}" tabindex="-1" aria-hidden="true">{%- set cp = a.page.fileSlug | coverFor(collections.coverPhotos) %}<span class="cover" style="--tone:{{ site.area_tones[a.data.area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}<span class="cv-title">{{ a.data.title.split(":")[0] }}</span></span></a>
+  <a class="entry-cover" href="{{ a.url }}" tabindex="-1" aria-hidden="true">{%- set cp = a.page.fileSlug | coverFor(collections.coverPhotos) %}<span class="cover" style="--tone:{{ site.area_tones[a.data.area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}<span class="cv-title">{{ a.data.title | coverTitle }}</span></span></a>
   <div class="tag"><a href="/areas/{{ a.data.area | slugify }}/">{{ a.data.area }}</a><small>{{ a.data.kind }}<span class="tag-sep"><br></span>Vol. {{ a.data.volume }} ({{ a.data.year }}){% if a.data.first_page %}, p. {{ a.data.first_page }}{% endif %}</small></div>
   <div>
     <h3><a href="{{ a.url }}">{{ a.data.title }}</a></h3>

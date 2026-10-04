@@ -17,7 +17,7 @@ layout: layouts/base.njk
 <header class="art-head"><div class="art-wrap">
   {#- the app shows the piece as a book first, like a reading app -#}
   {%- set cp = slug | coverFor(collections.coverPhotos) %}
-  <div class="art-cover" aria-hidden="true"><span class="cover" style="--tone:{{ site.area_tones[area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}<span class="cv-top">{{ area }}</span><span class="cv-title">{{ title.split(":")[0] }}</span><span class="cv-foot"><i></i>Vol. {{ volume | roman }} · {{ year }}</span></span></div>
+  <div class="art-cover" aria-hidden="true"><span class="cover" style="--tone:{{ site.area_tones[area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}<span class="cv-top">{{ area }}</span>{%- set st = title | coverTitle %}<span class="cv-title{% if st.length > 46 %} is-long{% endif %}">{{ st }}</span><span class="cv-foot"><i></i>Vol. {{ volume | roman }} · {{ year | roman }}</span></span></div>
   <p class="art-eyebrow"><a href="/areas/{{ area | slugify }}/" data-pagefind-filter="Area">{{ area }}</a><span hidden data-pagefind-filter="Type">{{ kind }}</span></p>
   <h1>{{ title }}</h1>
   {%- if honors and honors.length %}<p class="art-honors">{% for h in honors %}<span>{{ h }}</span>{% endfor %}</p>{% endif %}

@@ -268,3 +268,42 @@ html.is-app .cv-photo{display:block;position:absolute;inset:0;z-index:0;backgrou
 html.is-app .cv-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--tone,#4A2466) 35%,transparent),color-mix(in srgb,var(--tone,#4A2466) 70%,transparent) 55%,color-mix(in srgb,var(--tone,#4A2466) 40%,transparent))}
 html.is-app .art-photo{display:block;margin:.7rem 0 0;font-size:.72rem;color:var(--muted);text-align:center}
 html.is-app .art-photo a{color:inherit;text-decoration:underline;text-decoration-color:var(--rule-2)}
+
+/* ---------- Covers, set like an invitation: centred, small capitals, gold hairlines ---------- */
+.cover{align-items:center;text-align:center;padding:13% 11% 11% 15%}
+/* a fine double frame with a small jewel in each corner */
+.cover::after{inset:6px 6px 6px 12px;border:1px solid rgba(226,198,126,.5);border-radius:2px 6px 6px 2px;
+  box-shadow:inset 0 0 0 3px transparent,inset 0 0 0 4px rgba(226,198,126,.22);
+  background:
+    radial-gradient(circle,#E2C67E 0 1.3px,transparent 1.9px) left 3px top 3px/5px 5px no-repeat,
+    radial-gradient(circle,#E2C67E 0 1.3px,transparent 1.9px) right 3px top 3px/5px 5px no-repeat,
+    radial-gradient(circle,#E2C67E 0 1.3px,transparent 1.9px) left 3px bottom 3px/5px 5px no-repeat,
+    radial-gradient(circle,#E2C67E 0 1.3px,transparent 1.9px) right 3px bottom 3px/5px 5px no-repeat}
+.cover .cv-top{align-self:stretch;text-align:center;font-family:var(--caps);font-weight:600;letter-spacing:.24em;line-height:1.35}
+/* the title between two gold hairlines, each with a jewel at its centre */
+.cover .cv-title{margin:auto 0;padding:.95em 0;text-align:center;font-family:var(--display);font-weight:600;letter-spacing:.012em;line-height:1.16;text-wrap:balance;
+  background:
+    radial-gradient(circle,#E2C67E 0 1.7px,transparent 2.3px) 50% 0/8px 8px no-repeat,
+    linear-gradient(90deg,transparent,rgba(226,198,126,.85) 30%,rgba(226,198,126,.85) 70%,transparent) 50% 3.5px/62% 1px no-repeat,
+    radial-gradient(circle,#E2C67E 0 1.7px,transparent 2.3px) 50% 100%/8px 8px no-repeat,
+    linear-gradient(90deg,transparent,rgba(226,198,126,.85) 30%,rgba(226,198,126,.85) 70%,transparent) 50% calc(100% - 3.5px)/62% 1px no-repeat}
+/* the foot, engraved: Vol. V · MMXXV between two short rules */
+.cover .cv-foot{justify-content:center;gap:.5em;letter-spacing:.16em}
+.cover .cv-foot::after{content:"";flex:none;width:14px;height:1px;background:#E2C67E}
+
+/* volumes, the same way: the numeral, the volume, the theme beneath a jewelled rule */
+.vol-book{align-items:center;text-align:center}
+.vol-book .vb-num{margin-top:auto;letter-spacing:.04em}
+.vol-book .vb-label{letter-spacing:.28em;padding-left:.28em}
+.vol-book .vb-theme{margin:.9em 0 auto;padding-top:.9em;text-align:center;text-wrap:balance;
+  background:radial-gradient(circle,#E2C67E 0 1.7px,transparent 2.3px) 50% 0/8px 8px no-repeat,
+    linear-gradient(90deg,transparent,rgba(226,198,126,.85) 30%,rgba(226,198,126,.85) 70%,transparent) 50% 3.5px/62% 1px no-repeat}
+
+/* small thumbnails keep only the centred title: ornaments would be noise at that size */
+:is(.entry-cover,.nc-cover,.cont-card) .cover .cv-title,.entry-cover .cv-title,.nc-cover .cv-title,.cont-card .cover .cv-title{background:none;padding:0}
+.nc-cover.cover,.entry-cover .cover,.cont-card .cover{padding:12% 10%}
+.cover .cv-foot{gap:.35em;letter-spacing:.1em;max-width:100%}
+.cover .cv-foot i,.cover .cv-foot::after{width:8px}
+.cover .cv-title{min-height:0;-webkit-line-clamp:5}
+.cover .cv-title.is-long{font-size:.84rem;line-height:1.14}
+html.is-app .art-cover .cv-title.is-long{font-size:.9rem}

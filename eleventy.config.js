@@ -296,6 +296,8 @@ export default function (eleventyConfig) {
     }
     return [...people.values()].sort((a, b) => a.name.localeCompare(b.name));
   });
+  // the short title a cover carries: up to a colon, or up to and including a first question mark
+  eleventyConfig.addFilter("coverTitle", (t) => { const s = String(t || "").split(":")[0].trim(); const q = s.indexOf("?"); return q > 0 && q < s.length - 1 ? s.slice(0, q + 1) : s; });
   eleventyConfig.addFilter("editorSlug", (name) => slugify(canonical(name)));
   // the board that edited a volume: the one whose academic year matches the volume's
   eleventyConfig.addFilter("boardOfYear", (board, ay) => ((board && board.boards) || []).find((b) => b.academic_year === ay) || null);

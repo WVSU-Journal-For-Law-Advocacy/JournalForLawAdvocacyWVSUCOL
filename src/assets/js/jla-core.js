@@ -148,7 +148,9 @@ let tones;
 export const toneOf = (area) => { if (!tones) { try { tones = JSON.parse(document.getElementById('area-tones').textContent); } catch (e) { tones = {}; } } return tones[area] || '#4A2466'; };
 // the faded cover photo (shown in the app only; the URL comes from Unsplash via /api/articles.json)
 export const photoOf = (a) => (a && /^https:\/\/images\.unsplash\.com\//.test(a.cover || '') ? `<i class="cv-photo" style="background-image:url('${a.cover.replace(/['"()]/g, '')}')"></i>` : '');
-export const miniCover = (a) => `<span class="cover nc-cover" style="--tone:${toneOf(a.area)}" aria-hidden="true">${photoOf(a)}<span class="cv-title">${esc(String(a.title).split(':')[0])}</span></span>`;
+// the short title a cover carries (same rule as the site's coverTitle filter)
+export const coverTitle = (t) => { const s = String(t || '').split(':')[0].trim(), q = s.indexOf('?'); return q > 0 && q < s.length - 1 ? s.slice(0, q + 1) : s; };
+export const miniCover = (a) => `<span class="cover nc-cover" style="--tone:${toneOf(a.area)}" aria-hidden="true">${photoOf(a)}<span class="cv-title">${esc(coverTitle(a.title))}</span></span>`;
 export const cardHtml = (a, p) => `<a class="next-card has-cover" href="${a.url}">${miniCover(a)}<span class="nc-body">
   <span class="nc-meta">${esc(a.area)} · Vol. ${a.volume}</span>
   <b>${esc(a.title)}</b><span class="nc-by">${esc(a.authors.join(' & '))}</span>

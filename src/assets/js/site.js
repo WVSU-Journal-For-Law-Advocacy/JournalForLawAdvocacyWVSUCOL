@@ -359,29 +359,45 @@ if (fnPanel && fulltext) {
     if (e.target.closest('[data-all-notes]')) { Sheet.close(true); fnPanel.open = true; }
   });
 
-  // wide screens: one margin note, shown beside the marker you hover, focus, or click (always aligned, never drifting)
-  const side = document.createElement('aside'); side.className = 'sidenotes'; side.setAttribute('aria-live', 'polite');
-  const card = document.createElement('div'); card.className = 'sidenote'; card.hidden = true; side.append(card);
-  fulltext.append(side); fulltext.classList.add('has-sidenotes');
-  let pinned = -1, hideT;
-  const place = (i) => {
-    const a = refs[i], note = noteOf(a); if (!note || !wide.matches) return;
-    clearTimeout(hideT);
-    card.innerHTML = `<b>${numOf(a)}</b>${noteHtml(note)}`; card.hidden = false; card.classList.add('is-active');
-    refs.forEach((r, k) => r.classList.toggle('is-active', k === i));
-    const top = a.getBoundingClientRect().top - fulltext.getBoundingClientRect().top - 6;
-    card.style.top = Math.max(0, top) + 'px';
-  };
-  const unplace = () => { if (pinned >= 0) return; hideT = setTimeout(() => { card.hidden = true; refs.forEach((r) => r.classList.remove('is-active')); }, 250); };
-  refs.forEach((a, i) => {
-    a.addEventListener('mouseenter', () => place(i)); a.addEventListener('focus', () => place(i));
-    a.addEventListener('mouseleave', unplace); a.addEventListener('blur', unplace);
+  // wide screens: every note in the margin beside its marker, as in a printed law review.
+  // Notes stack without overlapping; long ones fold ("more"); hovering a marker or a note lights up the pair.
+  const side = document.createElement('aside'); side.className = 'sidenotes'; side.setAttribute('aria-hidden', 'true');
+  const cards = refs.map((a) => {
+    const note = noteOf(a); if (!note) return null;
+    const c = document.createElement('div'); c.className = 'sidenote';
+    c.innerHTML = `<b>${numOf(a)}</b>${noteHtml(note)}<button type="button" class="sn-more" hidden>more</button>`;
+    side.append(c); return c;
   });
-  card.addEventListener('mouseenter', () => clearTimeout(hideT)); card.addEventListener('mouseleave', unplace);
-  // click pins the note on wide screens (overrides the sheet handler above)
-  refs.forEach((a, i) => a.addEventListener('click', () => { if (!wide.matches) return; pinned = pinned === i ? -1 : i; if (pinned >= 0) place(i); else unplace(); }));
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pinned >= 0) { pinned = -1; unplace(); } });
-  wide.addEventListener('change', () => { if (!wide.matches) { card.hidden = true; pinned = -1; } });
+  fulltext.append(side); fulltext.classList.add('has-sidenotes');
+  const GAP = 10;
+  const layout = () => {
+    if (!wide.matches) return;
+    const base = fulltext.getBoundingClientRect().top; let floor = 0;
+    refs.forEach((a, i) => {
+      const c = cards[i]; if (!c) return;
+      const want = a.getBoundingClientRect().top - base - 4;
+      const top = Math.max(want, floor); c.style.top = top + 'px';
+      const more = c.querySelector('.sn-more'); more.hidden = c.classList.contains('is-open') || c.scrollHeight <= c.clientHeight + 2;
+      floor = top + c.offsetHeight + GAP;
+    });
+  };
+  const light = (i, on) => { refs[i].classList.toggle('is-active', on); if (cards[i]) cards[i].classList.toggle('is-active', on); };
+  refs.forEach((a, i) => {
+    a.addEventListener('mouseenter', () => light(i, true)); a.addEventListener('mouseleave', () => light(i, false));
+    a.addEventListener('focus', () => light(i, true)); a.addEventListener('blur', () => light(i, false));
+    if (cards[i]) { cards[i].addEventListener('mouseenter', () => light(i, true)); cards[i].addEventListener('mouseleave', () => light(i, false)); }
+    // on wide screens a click on the marker brings its note into view instead of opening the sheet
+    a.addEventListener('click', () => { if (!wide.matches || !cards[i]) return; cards[i].scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); light(i, true); setTimeout(() => light(i, false), 1600); });
+  });
+  side.addEventListener('click', (e) => {
+    const m = e.target.closest('.sn-more'); if (!m) return;
+    m.closest('.sidenote').classList.add('is-open'); layout();
+  });
+  let lt = 0; const relayout = () => { clearTimeout(lt); lt = setTimeout(layout, 40); }; // a timer, not a frame: also runs in background tabs
+  if ('ResizeObserver' in window) new ResizeObserver(relayout).observe(fulltext); else addEventListener('resize', relayout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  addEventListener('load', relayout); relayout();
+  wide.addEventListener('change', relayout);
   // the end-of-article list: collapsed on phones, opened when someone jumps to it
   if (!wide.matches && !/^#fn/.test(location.hash)) fnPanel.open = false;
   const openPanel = () => { fnPanel.open = true; };

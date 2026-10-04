@@ -1456,3 +1456,27 @@ html:not(.is-app) .next-card.has-cover{flex-direction:column;gap:.35rem}
   html:not(.is-app) .vh-btns{justify-content:center}
 }
 html:not(.is-app) .vol-head .crumb{display:block}
+
+/* ---------- Wide screens: footnotes live in the margin, as in a printed law review ---------- */
+@media (min-width:1300px){
+  .has-sidenotes .sidenotes{width:15.5rem;left:calc(100% + 2.75rem)}
+  .sidenote{max-height:11.5em;overflow:hidden;padding:.1rem 0 .1rem .8rem;background:none;border:0;border-left:1px solid var(--rule-2);box-shadow:none;border-radius:0;
+    font-size:.8rem;line-height:1.5;color:var(--muted);transition:color .2s,border-color .2s;animation:none}
+  .sidenote b{display:inline-block;min-width:1.1em;font:600 .82rem/1 var(--display);color:var(--gold)}
+  .sidenote.is-active{color:var(--ink);border-left-color:var(--gold)}
+  .sidenote.is-open{max-height:none}
+  .sidenote:not(.is-open)::after{content:"";position:absolute;left:.8rem;right:0;bottom:0;height:1.6em;background:linear-gradient(transparent,var(--paper));pointer-events:none}
+  .sidenote .sn-more{position:absolute;right:0;bottom:0;z-index:1;padding:0 0 0 .4rem;background:var(--paper);color:var(--plum);font:600 .74rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps}
+  .sidenote .sn-more[hidden]{display:none}
+  .footnote-ref a.is-active{color:var(--plum);background:color-mix(in srgb,var(--gold-3) 40%,transparent);border-radius:2px}
+}
+/* big monitors: a little larger type, the column growing with it, so lines stay the same comfortable length */
+@media (min-width:1400px){
+  .art-body{font-size:1.2rem}
+  .art-body .art-wrap{max-width:calc(var(--col) * 1.07)}
+}
+@media (min-width:1700px){
+  .art-body{font-size:1.28rem}
+  .art-body .art-wrap{max-width:calc(var(--col) * 1.14)}
+  .has-sidenotes .sidenotes{width:17rem}
+}

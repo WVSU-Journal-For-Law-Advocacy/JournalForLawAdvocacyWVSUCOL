@@ -127,6 +127,27 @@ function wireSignIn() {
 }
 
 /* ---------- start ---------- */
+/* ---------- app & offline: install button and the articles saved on this device ---------- */
+function paintApp() {
+  const A = window.JLA_APP; if (!A) return;
+  const box = $('[data-app-box]'), btn = $('[data-install-btn]'), saved = Object.entries(A.savedList());
+  btn.hidden = A.standalone || !A.canInstall();
+  if (A.standalone) $('[data-app-line]').textContent = "You're using the app. Articles you save stay readable without a connection.";
+  $('[data-saved-wrap]').hidden = !saved.length;
+  $('[data-saved]').innerHTML = saved.sort((a, b) => b[1].saved - a[1].saved).map(([url, s]) =>
+    `<li><a href="${esc(url)}">${esc(s.title)}</a><button type="button" data-unsave="${esc(url)}" aria-label="Remove from offline">Remove</button></li>`).join('');
+  box.hidden = btn.hidden && !saved.length && !A.standalone;
+}
+root.addEventListener('click', (e) => {
+  const u = e.target.closest('[data-unsave]'); if (!u) return;
+  const url = u.dataset.unsave, list = window.JLA_APP.savedList(), item = list[url];
+  delete list[url]; try { localStorage.setItem('jla:saved', JSON.stringify(list)); } catch (err) {}
+  if (navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage({ type: 'unsave', urls: [url, ...(item && item.pdf ? [item.pdf] : [])] });
+  paintApp();
+});
+document.addEventListener('jla:installable', paintApp);
+if (window.JLA_APP) paintApp(); else document.addEventListener('jla:ready', paintApp);
+
 paint();
 (async () => {
   const mod = await import('./jla-cloud.js');

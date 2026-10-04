@@ -959,3 +959,27 @@ body.has-actionbar{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
 .inapp p{margin:0 0 .6rem}
 .inapp .acts{justify-content:flex-start}
 .inapp-how{margin:0;font-size:.85rem}
+
+/* ---------- The app ---------- */
+/* installed: no ribbon, respect the notch, brand colour behind the status bar */
+html.is-app .ribbon{display:none}
+html.is-app .site-head{padding-top:env(safe-area-inset-top)}
+@media (display-mode: standalone){.ribbon{display:none}}
+/* the install invitation */
+.install-card{position:fixed;left:50%;bottom:calc(72px + env(safe-area-inset-bottom));z-index:60;display:grid;grid-template-columns:48px minmax(0,1fr);gap:.4rem .8rem;align-items:center;
+  width:min(26rem,calc(100vw - 24px));padding:.9rem 1rem;background:var(--card);border:1px solid var(--rule);box-shadow:var(--shadow);border-radius:14px;
+  transform:translate(-50%,20px);opacity:0;transition:transform .35s var(--ease),opacity .35s}
+.install-card.on{transform:translate(-50%,0);opacity:1}
+.install-card img{width:48px;height:48px;border-radius:12px}
+.install-card b{display:block;font:600 1.1rem/1.2 var(--display)}
+.install-card span{font-size:.88rem;color:var(--ink-2)}
+.ic-acts{grid-column:1/-1;display:flex;justify-content:flex-end;gap:.6rem;align-items:center}
+.ic-x{color:var(--muted);font-size:.9rem;min-height:36px}
+@media (min-width:1024px){.install-card{left:auto;right:24px;bottom:24px;transform:translateY(20px)}.install-card.on{transform:none}}
+/* My library: app & offline */
+.app-box .app-h{margin:var(--s4) 0 .4rem;font:600 .9rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.saved-list{list-style:none;margin:0;padding:0;text-align:left}
+.saved-list li{display:flex;justify-content:space-between;gap:1rem;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--rule)}
+.saved-list a{color:var(--ink);font:600 1.02rem/1.3 var(--display)}
+.saved-list button{color:var(--muted);font-size:.85rem;min-height:32px;flex:none}
+.app-box [hidden],.install-card [hidden]{display:none!important}

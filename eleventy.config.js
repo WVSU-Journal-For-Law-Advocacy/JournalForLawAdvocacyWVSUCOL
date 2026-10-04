@@ -235,6 +235,9 @@ export default function (eleventyConfig) {
       launched: vol && vol.data.launched ? new Date(vol.data.launched).toISOString().slice(0, 10) : null,
     };
   }));
+  // a fresh id per build: names the service worker's cache so each deploy refreshes the app shell
+  const BUILD_ID = Date.now().toString(36);
+  eleventyConfig.addFilter("buildId", () => BUILD_ID);
   // Top-menu item is "current" when the page is under its URL or any of its sub-links
   eleventyConfig.addFilter("navActive", (item, url = "") =>
     [item.url, ...(item.sub || []).map((s) => s[0])].some((u) => url.startsWith(u))

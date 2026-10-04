@@ -16,6 +16,14 @@ searchExclude: true
   <noscript><p class="empty">Search needs JavaScript. You can also browse the <a href="/articles/">articles list</a> or the <a href="/archive/">archive</a>.</p></noscript>
   <script src="/pagefind/pagefind-ui.js"></script>
   <script>
+    // shared into the installed app: a link to this journal opens that page; any other text is searched
+    (() => {
+      const p = new URLSearchParams(location.search);
+      const shared = [p.get('url'), p.get('q'), p.get('title')].filter(Boolean).join(' ');
+      const m = shared.match(/https?:\/\/{{ site.url | replace("https://", "") | replace(".", "\\.") }}(\/[^\s]*)/);
+      if (m) return location.replace(m[1]);
+      if (!p.get('q') && (p.get('title') || p.get('url'))) { p.set('q', p.get('title') || p.get('url')); history.replaceState(null, '', '?' + p.toString()); }
+    })();
     window.addEventListener('DOMContentLoaded', () => {
       if (!window.PagefindUI) {
         document.getElementById('search').innerHTML = '<p class="empty">Search is built when the site is deployed, so it isn\'t available in local preview.</p>';

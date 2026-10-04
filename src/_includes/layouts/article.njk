@@ -239,6 +239,7 @@ Read it here: {{ url }}
 <template id="tpl-contents"><ol class="sheet-toc">{% for h in toc %}<li class="lvl{{ h.level }}"><a href="#{{ h.id }}">{{ h.text }}</a></li>{% endfor %}</ol></template>
 {%- endif %}
 <template id="tpl-more"><ul class="sheet-menu">
+  <li><button type="button" data-save-offline data-title="{{ title }}"{% if pdf %} data-pdf="{{ pdf }}"{% endif %}>Save for offline</button></li>
   <li><a href="#cite" data-sheet="cite">Cite this article</a></li>
   {%- if pdf %}<li><a href="{{ pdf }}">Download the PDF</a></li>{% endif %}
   {%- if vol and vol.data.pdf and pdf_page %}<li><a href="{{ vol.data.pdf }}#page={{ pdf_page }}">Open in the original volume</a></li>{% endif %}

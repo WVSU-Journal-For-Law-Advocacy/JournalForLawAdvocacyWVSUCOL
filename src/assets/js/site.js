@@ -512,6 +512,53 @@ if (file) {
   });
 }
 
+/* ---------- the app: offline service worker, "Save for offline", install invitation ---------- */
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if (standalone) root.classList.add('is-app');
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
+}
+
+// Save this article (and its PDF) on the device; listed in My library and on the offline page
+const SAVED = 'jla:saved';
+const savedList = () => { try { return JSON.parse(store.get(SAVED) || '{}'); } catch (e) { return {}; } };
+document.addEventListener('click', async (e) => {
+  const b = e.target.closest('[data-save-offline]'); if (!b) return;
+  if (!('serviceWorker' in navigator) || !navigator.serviceWorker.controller) { Sheet.close(true); return say('Saving needs the app or a recent browser. Try again after a reload'); }
+  const urls = [location.pathname]; if (b.dataset.pdf) urls.push(b.dataset.pdf);
+  const list = savedList(); list[location.pathname] = { title: b.dataset.title || document.title, pdf: b.dataset.pdf || '', saved: Date.now() };
+  store.set(SAVED, JSON.stringify(list));
+  navigator.serviceWorker.controller.postMessage({ type: 'save', urls });
+  Sheet.close(true); say('Saved for offline: open it any time, even without signal');
+});
+
+// Install invitation: once, after a second visit (Android/Chrome), or a short how-to on iPhone. Never inside Messenger & co.
+const inApp = /FBAN|FBAV|FB_IAB|Orca|Instagram|Line\/|MicroMessenger|TikTok/i.test(navigator.userAgent);
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
+let deferredInstall = null;
+const visits = (() => { const today = new Date().toDateString(); let v = {}; try { v = JSON.parse(store.get('jla:visits') || '{}'); } catch (e) {} if (v.last !== today) { v.n = (v.n || 0) + 1; v.last = today; store.set('jla:visits', JSON.stringify(v)); } return v.n; })();
+const dismissed = () => { const t = +(store.get('jla:install-no') || 0); return Date.now() - t < 30 * 864e5; };
+function installCard() {
+  if (standalone || inApp || dismissed() || document.querySelector('.install-card')) return;
+  const c = document.createElement('div'); c.className = 'install-card'; c.setAttribute('role', 'dialog'); c.setAttribute('aria-label', 'Install the app');
+  c.innerHTML = `<img src="/assets/img/app/icon-192.png" alt="" width="48" height="48"><div><b>Read the Journal like an app</b>
+    <span>${deferredInstall ? 'One tap: on your home screen, works offline.' : 'Tap <b>Share</b> <span aria-hidden="true">⎋</span>, then <b>Add to Home Screen</b>.'}</span></div>
+    <div class="ic-acts">${deferredInstall ? '<button type="button" class="btn sm" data-install>Install</button>' : ''}<button type="button" class="ic-x" data-install-no aria-label="Not now">Not now</button></div>`;
+  document.body.append(c); requestAnimationFrame(() => c.classList.add('on'));
+}
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstall = e; document.dispatchEvent(new Event('jla:installable')); if (visits >= 2) setTimeout(installCard, 4000); });
+if (isIOS && !standalone && visits >= 2) setTimeout(installCard, 6000);
+document.addEventListener('click', async (e) => {
+  if (e.target.closest('[data-install]')) {
+    const card = document.querySelector('.install-card'); if (card) card.remove();
+    if (deferredInstall) { deferredInstall.prompt(); const r = await deferredInstall.userChoice.catch(() => null); deferredInstall = null; if (r && r.outcome === 'accepted') say('Installed: find the Journal on your home screen'); }
+    else if (isIOS) Sheet.open({ title: 'Install the app', html: '<p>In Safari, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>' });
+    else Sheet.open({ title: 'Install the app', html: '<p>Open your browser menu <b>⋮</b> and choose <b>Install app</b> or <b>Add to Home screen</b>.</p>' });
+  }
+  if (e.target.closest('[data-install-no]')) { store.set('jla:install-no', String(Date.now())); const card = document.querySelector('.install-card'); if (card) card.remove(); }
+});
+window.JLA_APP = { standalone, canInstall: () => !!deferredInstall || isIOS, savedList };
+
 /* shared with the ES modules (reader, reading tools, comments, account) */
 window.JLA = { Sheet, say, copy, store };
 document.dispatchEvent(new Event("jla:ready"));

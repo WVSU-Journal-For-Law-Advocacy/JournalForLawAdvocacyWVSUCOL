@@ -1,0 +1,67 @@
+---
+permalink: /sw.js
+eleventyExcludeFromCollections: true
+---
+/* WVSU Journal for Law Advocacy: the app's service worker.
+   Pages: network first, then the copy saved on this device, then /offline/.
+   Scripts and styles: served from the device and refreshed in the background.
+   "Save for offline" articles live in their own cache and are never evicted. */
+const V = '{{ "" | buildId }}';
+const SHELL = `jla-shell-${V}`, PAGES = 'jla-pages', SAVED = 'jla-saved', FONTS = 'jla-fonts';
+const PRECACHE = [
+  '/', '/offline/', '/account/', '/manifest.webmanifest', '/api/articles.json',
+  '/assets/css/site.css', '/assets/js/site.js', '/assets/js/jla-core.js', '/assets/js/jla-cloud.js',
+  '/assets/js/reader.js', '/assets/js/reading-tools.js', '/assets/js/comments.js', '/assets/js/share-studio.js', '/assets/js/account.js',
+  '/assets/img/seal-240.png', '/assets/img/logo.png', '/assets/img/app/icon-192.png', '/favicon.png',
+];
+const MAX_PAGES = 80;
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(caches.open(SHELL).then((c) => Promise.all(PRECACHE.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', (e) => {
+  e.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith('jla-shell-') && k !== SHELL).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+
+const trim = async (name, max) => { const c = await caches.open(name), keys = await c.keys(); for (let i = 0; i < keys.length - max; i++) await c.delete(keys[i]); };
+const pageKey = (url) => { const u = new URL(url); u.search = ''; u.hash = ''; return u.href; };
+
+async function page(req) {
+  const key = pageKey(req.url);
+  try {
+    const res = await fetch(req);
+    if (res.ok && res.type === 'basic') { const copy = res.clone(); caches.open(PAGES).then((c) => c.put(key, copy)).then(() => trim(PAGES, MAX_PAGES)); }
+    return res;
+  } catch (err) {
+    return (await caches.match(key)) || (await caches.match(key, { cacheName: SAVED })) || (await caches.match('/offline/'));
+  }
+}
+async function staleWhileRevalidate(req, cacheName) {
+  const cached = await caches.match(req);
+  const fresh = fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(cacheName).then((c) => c.put(req, copy)); } return res; }).catch(() => cached);
+  return cached || fresh;
+}
+async function cacheFirst(req, cacheName) {
+  const cached = await caches.match(req); if (cached) return cached;
+  const res = await fetch(req); if (res.ok || res.type === 'opaque') { const copy = res.clone(); caches.open(cacheName).then((c) => c.put(req, copy)); } return res;
+}
+
+self.addEventListener('fetch', (e) => {
+  const req = e.request; if (req.method !== 'GET') return;
+  const url = new URL(req.url);
+  // fonts from Google: keep them on the device
+  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') return e.respondWith(cacheFirst(req, FONTS));
+  if (url.origin !== location.origin) return; // Firebase, Google sign-in, analytics: always live
+  if (url.pathname.startsWith('/__/') || url.pathname.startsWith('/admin') || url.pathname.startsWith('/.netlify/')) return;
+  if (req.mode === 'navigate') return e.respondWith(page(req));
+  if (url.pathname === '/api/articles.json') return e.respondWith(fetch(req).then((res) => { const copy = res.clone(); caches.open(SHELL).then((c) => c.put(req, copy)); return res; }).catch(() => caches.match(req)));
+  if (url.pathname.endsWith('.pdf')) return e.respondWith(caches.match(req, { cacheName: SAVED }).then((r) => r || fetch(req)));
+  if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/pagefind/') || url.pathname === '/favicon.png') return e.respondWith(staleWhileRevalidate(req, SHELL));
+});
+
+// "Save for offline" from the page: { type: 'save', urls: [...] } / { type: 'unsave', urls: [...] }
+self.addEventListener('message', (e) => {
+  const d = e.data || {};
+  if (d.type === 'save') e.waitUntil(caches.open(SAVED).then((c) => Promise.all(d.urls.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => e.source && e.source.postMessage({ type: 'saved', urls: d.urls })));
+  if (d.type === 'unsave') e.waitUntil(caches.open(SAVED).then((c) => Promise.all(d.urls.map((u) => c.delete(u)))));
+});

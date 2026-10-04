@@ -1,0 +1,37 @@
+---
+layout: layouts/base.njk
+title: You're offline
+permalink: /offline/
+description: This page shows when the app has no connection.
+searchExclude: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <h1>You're offline</h1>
+  <p>No connection right now. These are on this device and still open:</p>
+</div></header>
+
+<section><div class="wrap">
+  <div class="next-list" data-offline-list><p class="sub">Looking for saved articles…</p></div>
+  <p class="more"><a href="/" onclick="location.reload();return false">Try again</a></p>
+</div></section>
+<script type="module">
+  // articles saved for offline, plus any you've started reading that are still on the device
+  const list = document.querySelector('[data-offline-list]');
+  const read = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  (async () => {
+    const saved = read('jla:saved') || {}, progress = read('jla:progress') || {};
+    let index = null; try { index = await (await caches.match('/api/articles.json')).json(); } catch (e) {}
+    const bySlug = index ? Object.fromEntries(index.articles.map((a) => [a.slug, a])) : {};
+    const items = [];
+    for (const [url, s] of Object.entries(saved)) items.push({ url, title: s.title, meta: 'Saved for offline' });
+    for (const slug of Object.keys(progress)) {
+      const a = bySlug[slug]; if (!a || saved[a.url]) continue;
+      if (await caches.match(a.url, { ignoreSearch: true })) items.push({ url: a.url, title: a.title, meta: `${Math.round(progress[slug].pct || 0)}% read` });
+    }
+    list.innerHTML = items.length
+      ? items.map((i) => `<a class="next-card" href="${esc(i.url)}"><span class="nc-meta">${esc(i.meta)}</span><b>${esc(i.title)}</b></a>`).join('')
+      : '<p class="sub">Nothing saved yet. When you\'re back online, open an article and choose <b>More → Save for offline</b>.</p>';
+  })();
+</script>

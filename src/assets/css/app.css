@@ -257,3 +257,14 @@ html.is-app .art-cta .btn{min-width:9rem}
 .shelf-book{flex:none;width:132px;scroll-snap-align:start}
 html.is-app .entry .tag-sep br{display:none}
 html.is-app .entry .tag-sep::before{content:" · "}
+
+/* ---------- Cover photos (Unsplash): only in the app, faded into the cover's colour ---------- */
+.cv-photo,.art-photo{display:none}
+.cover>span{position:relative;z-index:1}
+.cover::before{z-index:2}
+html.is-app .cv-photo{display:block;position:absolute;inset:0;z-index:0;background-size:cover;background-position:center;
+  opacity:.3;mix-blend-mode:luminosity;filter:contrast(1.05)}
+/* a gentle wash of the cover colour over the photo, darkest where the title sits */
+html.is-app .cv-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,color-mix(in srgb,var(--tone,#4A2466) 35%,transparent),color-mix(in srgb,var(--tone,#4A2466) 70%,transparent) 55%,color-mix(in srgb,var(--tone,#4A2466) 40%,transparent))}
+html.is-app .art-photo{display:block;margin:.7rem 0 0;font-size:.72rem;color:var(--muted);text-align:center}
+html.is-app .art-photo a{color:inherit;text-decoration:underline;text-decoration-color:var(--rule-2)}

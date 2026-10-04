@@ -1,6 +1,6 @@
 /* The app layer's behaviour (loaded only in the installed app, or with ?app=1):
    the back arrow, the app bar on scroll, the More sheet, a light tap on touch, and the personal parts of Home. */
-import { local, loadIndex, suggest, streak, esc } from './jla-core.js';
+import { local, loadIndex, suggest, streak, esc, photoOf } from './jla-core.js';
 
 const root = document.documentElement, body = document.body;
 const J = () => window.JLA;
@@ -90,7 +90,7 @@ if (home) {
 
   let tones = {}; try { tones = JSON.parse(home.dataset.tones || '{}'); } catch (e) {}
   const roman = (n) => [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']].reduce((s, [v, r]) => { while (n >= v) { s += r; n -= v; } return s; }, '');
-  const cover = (a) => `<span class="cover" style="--tone:${esc(tones[a.area] || '#4A2466')}"><span class="cv-top">${esc(a.area || '')}</span>
+  const cover = (a) => `<span class="cover" style="--tone:${esc(tones[a.area] || '#4A2466')}">${photoOf(a)}<span class="cv-top">${esc(a.area || '')}</span>
     <span class="cv-title">${esc(a.title.split(':')[0])}</span><span class="cv-foot"><i></i>Vol. ${roman(a.volume)} · ${esc(a.year)}</span></span>`;
 
   loadIndex().then((index) => {

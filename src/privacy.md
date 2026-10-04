@@ -12,6 +12,8 @@ This notice explains what the WVSU Journal for Law Advocacy ("the Journal") keep
 
 You don't need an account to read. The website counts how much of each article you have read and keeps that record **only in your own browser** (its local storage). It is not sent to the Journal. Clearing your browser data removes it. The same goes for articles you **save for offline** and the pages the app keeps for reading without a connection: they stay on your device only.
 
+In the installed app, the faded photographs on the book covers are shown directly from **Unsplash** (unsplash.com), the free photo library they come from, so your device asks Unsplash's servers for those pictures as it would for any image on the web. Nothing about you or your reading is sent with them. The website itself doesn't show them.
+
 ## What a reader account keeps
 
 If you sign in, the Journal keeps:

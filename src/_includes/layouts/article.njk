@@ -16,7 +16,8 @@ layout: layouts/base.njk
 {#- The opening: area, title, authors, one quiet line. Everything else lives in the dock and the end matter. -#}
 <header class="art-head"><div class="art-wrap">
   {#- the app shows the piece as a book first, like a reading app -#}
-  <div class="art-cover" aria-hidden="true"><span class="cover" style="--tone:{{ site.area_tones[area] or '#4A2466' }}"><span class="cv-top">{{ area }}</span><span class="cv-title">{{ title.split(":")[0] }}</span><span class="cv-foot"><i></i>Vol. {{ volume | roman }} · {{ year }}</span></span></div>
+  {%- set cp = slug | coverFor(collections.coverPhotos) %}
+  <div class="art-cover" aria-hidden="true"><span class="cover" style="--tone:{{ site.area_tones[area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}<span class="cv-top">{{ area }}</span><span class="cv-title">{{ title.split(":")[0] }}</span><span class="cv-foot"><i></i>Vol. {{ volume | roman }} · {{ year }}</span></span></div>
   <p class="art-eyebrow"><a href="/areas/{{ area | slugify }}/" data-pagefind-filter="Area">{{ area }}</a><span hidden data-pagefind-filter="Type">{{ kind }}</span></p>
   <h1>{{ title }}</h1>
   <p class="art-authors">{% for au in author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/" data-pagefind-filter="Author">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</p>
@@ -25,6 +26,7 @@ layout: layouts/base.njk
     <span class="dot" aria-hidden="true">·</span><span>{{ year }}</span>
     {%- if minutes %}<span class="dot" aria-hidden="true">·</span><span>{{ minutes }} min</span>{% endif %}
   </p>
+  {%- if cp %}<p class="art-photo">Cover photo: <a href="{{ cp.byUrl }}" rel="noopener">{{ cp.by }}</a> on <a href="https://unsplash.com/?utm_source=wvsu_journal_for_law_advocacy&amp;utm_medium=referral" rel="noopener">Unsplash</a></p>{% endif %}
   <p class="art-cta">{% if hasText %}<a class="btn" href="#fulltext">Start reading</a>{% elif pdf %}<a class="btn" href="{{ pdf }}">Read the PDF</a>{% endif %}<a class="btn alt" href="#share" data-sheet="share">Share</a></p>
   {%- if hasText and fulltext_status == "proofread-needed" %}
   <p class="art-note">Web text converted from the PDF · not yet proofread{% if pdf %} · <a href="{{ pdf }}">Read the PDF</a>{% endif %}</p>

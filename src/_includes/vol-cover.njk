@@ -1,6 +1,7 @@
 {#- A volume as a bound book: expects `v` (an issue, or a "coming soon" stand-in with v.soon). Colour from site.volume_tones. -#}
 {%- set vn = v.data.volume | string %}
-<span class="cover vol-book{% if v.soon %} is-soon{% endif %}" style="--tone:{{ site.volume_tones[vn] or '#4A2466' }}">
+{%- set vp = ("volume-" + vn) | coverFor(collections.coverPhotos) %}
+<span class="cover vol-book{% if v.soon %} is-soon{% endif %}" style="--tone:{{ site.volume_tones[vn] or '#4A2466' }}">{% if vp %}<i class="cv-photo" style="background-image:url('{{ vp | coverSrc }}')"></i>{% endif %}
   <span class="cv-top">WVSU J.L. Advoc.</span>
   <span class="vb-num">{{ v.data.volume | roman }}</span>
   <span class="vb-label">Volume {{ v.data.volume }}</span>

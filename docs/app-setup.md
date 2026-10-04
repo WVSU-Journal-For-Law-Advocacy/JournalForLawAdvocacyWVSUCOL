@@ -45,3 +45,21 @@ slide-in page transitions, and an app Home with book-cover shelves. The website 
 - **Preview it in any browser:** open `https://wvsujournalforlawadvocacy.netlify.app/?app=1`. Turn it off with `?app=0`.
 - **Cover colours** for each area of law are in `src/_data/site.json` → `area_tones`. A new area without a colour gets plum.
 - The opening animation plays once each time the app is opened (not on every page), and is skipped for readers who turn on "reduce motion".
+
+## Cover photos (automatic, from Unsplash)
+
+In the app, every book cover has a faded photograph behind its colour. They are picked automatically when the site builds (`covers.js`):
+
+1. A photo named in the article's own file wins: add `cover_photo: <Unsplash photo id>` (the last part of a photo's address on unsplash.com, e.g. `1CiE1x4dHIY`). Volumes accept the same line in `src/issues/volume-N.md`.
+2. Otherwise the photo chosen before is reused. Choices are remembered in Firebase (Firestore → `covers`), so covers never change between builds. To re-pick one, delete its document there.
+3. Otherwise a new article gets a photo from a search on its first keyword (portrait, safe content), or its area's chosen photo (listed in `covers.js`).
+
+Photos are shown from Unsplash's servers (as Unsplash requires), credited to the photographer on the article screen, and used under the [Unsplash License](https://unsplash.com/license).
+
+**One-time setup** (Journal's Google account):
+1. Go to [unsplash.com/developers](https://unsplash.com/developers) → **Register as a developer** → **New Application** → accept the API guidelines → name it "WVSU Journal for Law Advocacy website".
+2. Copy the application's **Access Key** (not the Secret key).
+3. Netlify → Project configuration → Environment variables → **Add a variable**: key `UNSPLASH_ACCESS_KEY`, value the Access Key, scopes **Builds**. Then **Deploys → Trigger deploy**.
+4. New applications are in "demo" mode (50 requests an hour): the first build picks up to 20 covers and the next deploys fill in the rest. To lift the limit, use **Apply for production** on the application page (free).
+
+Without the key, covers simply stay plain; the build never fails because of a photo.

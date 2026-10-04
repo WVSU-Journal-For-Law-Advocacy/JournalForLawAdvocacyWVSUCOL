@@ -146,7 +146,9 @@ export const badgeHtml = (b) => `<li class="badge-item${b.earned ? ' earned' : '
 // each area of law has a cover colour (site.json area_tones, printed into every page)
 let tones;
 export const toneOf = (area) => { if (!tones) { try { tones = JSON.parse(document.getElementById('area-tones').textContent); } catch (e) { tones = {}; } } return tones[area] || '#4A2466'; };
-export const miniCover = (a) => `<span class="cover nc-cover" style="--tone:${toneOf(a.area)}" aria-hidden="true"><span class="cv-title">${esc(String(a.title).split(':')[0])}</span></span>`;
+// the faded cover photo (shown in the app only; the URL comes from Unsplash via /api/articles.json)
+export const photoOf = (a) => (a && /^https:\/\/images\.unsplash\.com\//.test(a.cover || '') ? `<i class="cv-photo" style="background-image:url('${a.cover.replace(/['"()]/g, '')}')"></i>` : '');
+export const miniCover = (a) => `<span class="cover nc-cover" style="--tone:${toneOf(a.area)}" aria-hidden="true">${photoOf(a)}<span class="cv-title">${esc(String(a.title).split(':')[0])}</span></span>`;
 export const cardHtml = (a, p) => `<a class="next-card has-cover" href="${a.url}">${miniCover(a)}<span class="nc-body">
   <span class="nc-meta">${esc(a.area)} · Vol. ${a.volume}</span>
   <b>${esc(a.title)}</b><span class="nc-by">${esc(a.authors.join(' & '))}</span>

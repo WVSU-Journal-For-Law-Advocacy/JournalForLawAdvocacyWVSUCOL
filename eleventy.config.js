@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import markdownItFootnote from "markdown-it-footnote";
 import { generateShareCards } from "./og-cards.js";
+import { pickCovers, coverSrc } from "./covers.js";
 
 export default function (eleventyConfig) {
   // Static files copied as-is
@@ -114,6 +115,18 @@ export default function (eleventyConfig) {
     return list;
   });
 
+  // Cover photos for the app (Unsplash, chosen once and remembered; see covers.js). A list of { slug, ...photo }.
+  eleventyConfig.addCollection("coverPhotos", async (api) => {
+    try {
+      const articles = api.getFilteredByGlob("src/articles/*.md").map(({ page, data }) => ({ slug: page.fileSlug, area: data.area, keywords: data.keywords, cover_photo: data.cover_photo }));
+      const issues = api.getFilteredByGlob("src/issues/*.md").map(({ data }) => ({ volume: data.volume, cover_photo: data.cover_photo }));
+      const map = await pickCovers({ articles, issues });
+      return Object.entries(map).map(([slug, c]) => ({ slug, ...c }));
+    } catch (e) { console.warn("[covers]", e.message); return []; }
+  });
+  eleventyConfig.addFilter("coverFor", (slug, list) => (list || []).find((c) => c.slug === slug) || null);
+  eleventyConfig.addFilter("coverSrc", (c, w) => coverSrc(c, w));
+
   let shareCardIssues = [];
   eleventyConfig.addCollection("issues", (api) => {
     const list = api.getFilteredByGlob("src/issues/*.md").sort((a, b) =>
@@ -225,7 +238,7 @@ export default function (eleventyConfig) {
     .replace(/\[\^[^\]]+\]/g, " ")              // footnote markers
     .replace(/[#>*_`|[\]()-]/g, " ")
     .split(/\s+/).filter((w) => /[A-Za-z0-9]/.test(w)).length;
-  eleventyConfig.addFilter("articleIndex", (articles, issues) => articles.map((a) => {
+  eleventyConfig.addFilter("articleIndex", (articles, issues, covers = []) => articles.map((a) => {
     const vol = issues.find((i) => num(i.data.volume) === num(a.data.volume));
     const words = wordsIn(a.rawInput);
     return {
@@ -233,6 +246,7 @@ export default function (eleventyConfig) {
       volume: num(a.data.volume), year: a.data.year, area: a.data.area, kind: a.data.kind,
       keywords: a.data.keywords || [], words, text: words > 150,
       launched: vol && vol.data.launched ? new Date(vol.data.launched).toISOString().slice(0, 10) : null,
+      cover: coverSrc((covers || []).find((c) => c.slug === a.page.fileSlug), 300) || undefined,
     };
   }));
   // a fresh id per build: names the service worker's cache so each deploy refreshes the app shell

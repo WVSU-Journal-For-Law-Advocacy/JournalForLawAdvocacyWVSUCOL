@@ -3,7 +3,7 @@ title: "Volume 1"
 volume: 1
 issue: 1
 academic_year: "2021–2022"
-theme: "The Inaugural Issue"
+theme: "Electoral Laws and the 2022 Philippine Election"
 status: published
 pdf: ""
 ---

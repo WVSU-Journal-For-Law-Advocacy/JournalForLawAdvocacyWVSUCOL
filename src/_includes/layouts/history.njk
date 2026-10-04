@@ -34,7 +34,7 @@ layout: layouts/base.njk
       <span class="when">AY {{ i.data.academic_year }}</span>
       <div>
         <h3><a href="{{ i.url }}">{{ i.data.title }}{% if i.data.theme %}: {{ i.data.theme }}{% endif %}</a></h3>
-        <p>{{ n }} {{ "piece" if n == 1 else "pieces" }}{% if i.data.status == "current" %} · Current volume{% endif %}{% if i.data.pdf %} · <a href="{{ i.data.pdf }}">Original PDF</a>{% endif %}</p>
+        <p>{% if i.data.launched %}Launched {{ i.data.launched | readableDate }} · {% endif %}{{ n }} {{ "piece" if n == 1 else "pieces" }}{% if i.data.status == "current" %} · Current volume{% endif %}{% if i.data.pdf %} · <a href="{{ i.data.pdf }}">Original PDF</a>{% endif %}</p>
       </div>
     </li>
     {%- endfor %}
@@ -43,3 +43,28 @@ layout: layouts/base.njk
   <p class="more"><a href="/board/">Meet the {{ board.boards[0].academic_year }} Editorial Board →</a></p>
   {%- endif %}
 </div></section>
+
+{%- set years = collections.news | milestonesByYear %}
+{%- if years.length %}
+<section id="milestones"><div class="wrap">
+  <h2 class="title">Milestones</h2>
+  <p class="sub">From the first call for papers to the newest board, as recorded in the journal's announcements.</p>
+  {%- for y in years %}
+  <div class="ms-year">
+    <h3 class="ms-y">{{ y.year }}</h3>
+    <ol class="ms-list">
+      {%- for n in y.items %}
+      <li class="ms">
+        {%- if n.data.image %}<a class="ms-img" href="{{ n.url }}" tabindex="-1" aria-hidden="true"><img src="{{ n.data.image }}" alt="" loading="lazy" width="160" height="120"></a>{% endif %}
+        <div>
+          <time datetime="{{ n.date | isoDate }}">{{ (n.date | monthYear) if n.data.date_approx else (n.date | readableDate) }}</time>
+          <p><a href="{{ n.url }}">{{ n.data.milestone }}</a></p>
+        </div>
+      </li>
+      {%- endfor %}
+    </ol>
+  </div>
+  {%- endfor %}
+  <p class="more"><a href="/news/">All news →</a></p>
+</div></section>
+{%- endif %}

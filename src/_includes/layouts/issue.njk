@@ -5,7 +5,7 @@ layout: layouts/base.njk
 <header class="pagehead"><div class="wrap">
   <p class="crumb"><a href="/archive/">Archive</a></p>
   <h1>{{ title }}{% if theme %}: {{ theme }}{% endif %}</h1>
-  <p>Academic Year {{ academic_year }}{% if status == "forthcoming" %} · Forthcoming{% elif status == "current" %} · Current volume{% endif %}</p>
+  <p>Academic Year {{ academic_year }}{% if launched %} · Launched {{ launched | readableDate }}{% endif %}{% if status == "forthcoming" %} · Forthcoming{% elif status == "current" %} · Current volume{% endif %}</p>
 </div></header>
 
 <section><div class="wrap">

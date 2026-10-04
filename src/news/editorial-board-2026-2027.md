@@ -1,6 +1,8 @@
 ---
 title: The Editorial Board for Academic Year 2026–2027
-date: 2026-10-02
+date: 2026-05-18
+source: https://www.facebook.com/JournalforLawAdvocacy/posts/pfbid0LeFcJBCLmP9KEhPUpBThiUkfnEnVwfarLsYTXhbsNdWRwcwdwnJDWNUxbYmoQjNJl
+milestone: The 2026–2027 board is announced, led by Executive Editor Felice Marie P. Nafarrete.
 summary: The Board of Editors, Contribution Editors, and Editorial Apprentices for the coming academic year.
 image: /assets/img/jla-banner.jpg
 image_alt: "Members of the Journal for Law Advocacy with faculty of the WVSU College of Law"

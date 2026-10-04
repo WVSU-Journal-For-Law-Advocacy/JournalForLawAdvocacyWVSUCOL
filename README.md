@@ -8,7 +8,7 @@ Go to `/admin` on the live site and sign in with GitHub. From there you can:
 
 - **Volumes**: add a volume and upload the complete volume PDF exactly as published (the historical copy). Mark exactly one volume as *Current*; it appears on the home page.
 - **Articles**: add one entry per piece in the volume and upload that article's own PDF. Fill in the *printed* first page (used in the citation) and the *page in the volume PDF* (powers the "View in the original volume" link). Tick *Draft* to hide it until it's ready.
-- **News**: post announcements, calls for papers and events. The newest three appear on the home page.
+- **News**: post announcements, calls for papers and events. The newest three appear on the home page. Fill in **Milestone** with one line to put a post on the history page's timeline. Tick **Exact day unknown** to show only the month and year. Paste the **Original Facebook post** link to credit the source.
 - **Policies**: the peer review, ethics, open access, copyright and citation policies. They're drafts: once the board approves one, untick *Show draft notice*.
 - **Pages**: edit the About page, the submission guidelines and the editorial board. Add each new academic year's board at the top of the list; earlier years move to *Past boards* automatically.
 - **Settings**: journal name, contact email, announcement banner, areas of law, ISSN, analytics code, social links.

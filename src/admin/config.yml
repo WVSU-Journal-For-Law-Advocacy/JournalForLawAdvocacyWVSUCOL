@@ -79,6 +79,7 @@ collections:
       - { label: Issue, name: issue, widget: hidden, default: 1 }
       - { label: Academic year, name: academic_year, widget: string, hint: "e.g. 2026–2027" }
       - { label: Theme, name: theme, widget: string, required: false, hint: "Optional, e.g. The Inaugural Issue" }
+      - { label: Launch date, name: launched, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
       - label: Status
         name: status
         widget: select
@@ -106,6 +107,9 @@ collections:
       - { label: Summary, name: summary, widget: string, hint: "One sentence shown in lists and link previews." }
       - { label: Image, name: image, widget: image, required: false }
       - { label: Image description (for screen readers), name: image_alt, widget: string, required: false }
+      - { label: Exact day unknown (show month and year only), name: date_approx, widget: boolean, default: false, required: false }
+      - { label: Milestone (one line for the history timeline), name: milestone, widget: string, required: false, hint: "Leave empty unless this post marks a milestone in the journal's history." }
+      - { label: Original Facebook post (link), name: source, widget: string, required: false }
       - { label: Draft (hide from the site), name: draft, widget: boolean, default: false, required: false }
       - { label: Body, name: body, widget: markdown }
 
@@ -210,6 +214,8 @@ collections:
             summary: "AY {{fields.academic_year}}"
             fields:
               - { label: Academic year, name: academic_year, widget: string, hint: "e.g. 2026–2027" }
+              - { label: Label, name: label, widget: string, required: false, hint: "Optional, e.g. Year 4" }
+              - { label: Note, name: note, widget: string, required: false, hint: "Optional, e.g. that the list is incomplete." }
               - { label: Groups (in display order), name: groups, widget: list }
               - label: Members
                 name: members

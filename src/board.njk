@@ -12,10 +12,11 @@ description: The Board of Editors, Contribution Editors, and Editorial Apprentic
 <header class="pagehead"><div class="wrap">
   {%- if pagination.pageNumber > 0 %}<p class="crumb"><a href="/board/">Editorial board</a></p>{% endif %}
   <h1>Editorial board</h1>
-  <p>Academic Year {{ b.academic_year }}{% if pagination.pageNumber == 0 %} · Current board{% endif %}</p>
+  <p>Academic Year {{ b.academic_year }}{% if b.label %} · {{ b.label }}{% endif %}{% if pagination.pageNumber == 0 %} · Current board{% endif %}</p>
 </div></header>
 
 <section><div class="wrap">
+  {%- if b.note %}<p class="notice board-note">{{ b.note }}</p>{% endif %}
   {%- for g in b.groups %}
   {%- set people = b.members | where("group", g) %}
   {%- if people.length %}

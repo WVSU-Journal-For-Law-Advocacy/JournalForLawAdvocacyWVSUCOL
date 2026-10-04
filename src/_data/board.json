@@ -20,6 +20,65 @@
         { "name": "Ciania Belle Gloria", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/gloria.jpg" },
         { "name": "Val Marie Magracia", "role": "Editorial Apprentice", "group": "Editorial Apprentices", "photo": "/assets/img/board/magracia.jpg" }
       ]
+    },
+    {
+      "academic_year": "2025–2026",
+      "label": "Year 4",
+      "note": "As named at the oath-taking on April 24, 2025, in the journal's public announcements. The list may be incomplete. The board published Volume 5.",
+      "groups": ["Board of Editors", "Contribution Editors"],
+      "members": [
+        { "name": "Elyn Joy Estimada", "role": "Executive Editor", "group": "Board of Editors" },
+        { "name": "Lei Justine Labrador", "role": "Associate Executive Editor", "group": "Board of Editors" },
+        { "name": "Mary Rose Gerbolinga", "role": "Executive Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Paul Gabriel Barranco", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Allen Dave Evidente", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Jose Gian Karlo Farrol", "role": "Contribution Editor", "group": "Contribution Editors" }
+      ]
+    },
+    {
+      "academic_year": "2024–2025",
+      "label": "Year 3",
+      "note": "As named at the oath-taking on April 4, 2024, in the journal's public announcements. The list may be incomplete. The board published Volume 4.",
+      "groups": ["Board of Editors", "Contribution Editors"],
+      "members": [
+        { "name": "Luigi Bien Villanueva", "role": "Executive Editor", "group": "Board of Editors" },
+        { "name": "Mary Gemzel Alcazar", "role": "Member, Board of Editors", "group": "Board of Editors" },
+        { "name": "Dominic Dean Sentina", "role": "Member, Board of Editors", "group": "Board of Editors" },
+        { "name": "Christine Joy Gabayoyo", "role": "Executive Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Nathaniel Belarmino", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Mark Gregory Hontiveros", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Ivan Rey Lariga", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Czarelle Luces", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Gil Vincent Panado", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Alvin Teodoro", "role": "Contribution Editor", "group": "Contribution Editors" }
+      ]
+    },
+    {
+      "academic_year": "2023–2024",
+      "label": "Year 2",
+      "note": "Partial list, from the journal's public announcements. The board published the Second Issue, on human rights, in December 2023.",
+      "groups": ["Board of Editors", "Contribution Editors"],
+      "members": [
+        { "name": "Clint Deo N. Genciana", "role": "Executive Editor", "group": "Board of Editors" },
+        { "name": "Rodante Navallasca", "role": "Member, Board of Editors", "group": "Board of Editors" },
+        { "name": "Aimee Andrea Gaje", "role": "Member, Board of Editors", "group": "Board of Editors" },
+        { "name": "Ryan Cyril Gancia", "role": "Executive Contribution Editor", "group": "Contribution Editors" }
+      ]
+    },
+    {
+      "academic_year": "2021–2022",
+      "label": "Year 1 · Batch Banaag",
+      "note": "The founding editors, as named in the journal's public announcements. They co-wrote the opening chapter of Volume 1. The list may be incomplete.",
+      "groups": ["Board of Editors", "Contribution Editors"],
+      "members": [
+        { "name": "Clyde Ben Gacayan", "role": "Executive Editor", "group": "Board of Editors" },
+        { "name": "Vanessa Silla", "role": "Manuscript Editor", "group": "Board of Editors" },
+        { "name": "Edson Chase Yap", "role": "Editor", "group": "Board of Editors" },
+        { "name": "Kirby Aguaras", "role": "Editor", "group": "Board of Editors" },
+        { "name": "Theda Gumban", "role": "Editor", "group": "Board of Editors" },
+        { "name": "Mike Guillem", "role": "Editor", "group": "Board of Editors" },
+        { "name": "Rene Aviles", "role": "Executive Contribution Editor", "group": "Contribution Editors" }
+      ]
     }
   ]
 }

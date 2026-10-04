@@ -2,15 +2,18 @@
 layout: layouts/base.njk
 ---
 <header class="pagehead"><div class="wrap">
-  <p class="crumb"><a href="/news/">News</a> · <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate }}</time></p>
+  <p class="crumb"><a href="/news/">News</a> · <time datetime="{{ page.date | isoDate }}">{{ (page.date | monthYear) if date_approx else (page.date | readableDate) }}</time></p>
   <h1>{{ title }}</h1>
   {%- if summary %}<p>{{ summary }}</p>{% endif %}
 </div></header>
 
 <section><div class="wrap">
   <article class="prose narrow">
-    {%- if image %}<img class="news-img" src="{{ image }}" alt="{{ image_alt }}" loading="lazy">{% endif %}
+    {%- if image %}<img class="news-img" src="{{ image }}" alt="{{ image_alt }}" fetchpriority="high">{% endif %}
     {{ content | safe }}
+    {%- if source %}
+    <p class="source-note">Originally posted on the journal's <a href="{{ source }}" rel="noopener">Facebook page ↗</a></p>
+    {%- endif %}
   </article>
   <p class="more"><a href="/news/">All news →</a></p>
 </div></section>

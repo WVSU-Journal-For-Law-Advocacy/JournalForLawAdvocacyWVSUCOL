@@ -219,6 +219,20 @@ export default function (eleventyConfig) {
     new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
   );
   eleventyConfig.addFilter("isoDate", (d) => new Date(d).toISOString().slice(0, 10));
+  // For posts whose exact day is unknown (date_approx: true)
+  eleventyConfig.addFilter("monthYear", (d) =>
+    new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "long", timeZone: "UTC" })
+  );
+  // News posts flagged as milestones, oldest first, grouped by year: [{ year, items }]
+  eleventyConfig.addFilter("milestonesByYear", (news) => {
+    const groups = [];
+    for (const n of news.filter((n) => n.data.milestone).sort((a, b) => a.date - b.date)) {
+      const year = new Date(n.date).getUTCFullYear();
+      if (!groups.length || groups.at(-1).year !== year) groups.push({ year, items: [] });
+      groups.at(-1).items.push(n);
+    }
+    return groups;
+  });
 
   // JSON safe to place inside a <script> tag
   eleventyConfig.addFilter("jsonScript", (value) =>

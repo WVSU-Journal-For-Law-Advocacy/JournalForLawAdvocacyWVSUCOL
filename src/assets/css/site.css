@@ -480,6 +480,22 @@ blockquote.pull cite{display:block;margin-top:.8rem;font:600 .95rem var(--caps);
 .timeline h3{font-size:1.45rem}.timeline h3 a{color:var(--ink);text-decoration:none}.timeline h3 a:hover{color:var(--plum)}
 .timeline p{font-size:.92rem;color:var(--muted);font-style:italic}
 
+/* Milestones (history page) */
+.ms-year{max-width:44rem;margin:0 auto var(--s6)}
+.ms-y{font:600 2rem var(--display);text-align:center;color:var(--plum);margin-bottom:var(--s4);display:flex;align-items:center;gap:var(--s4)}
+.ms-y::before,.ms-y::after{content:"";flex:1;height:1px;background:var(--gold-2)}
+.ms-list{list-style:none;padding:0;margin:0;display:grid;gap:var(--s4)}
+.ms{display:grid;grid-template-columns:5.5rem minmax(0,1fr);gap:var(--s4);align-items:center;text-align:left}
+.ms:not(:has(.ms-img)){grid-template-columns:minmax(0,1fr);padding-left:calc(5.5rem + var(--s4))}
+.ms-img img{width:5.5rem;aspect-ratio:4/3;object-fit:cover;border:1px solid var(--rule)}
+.ms time{font:600 .9rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.ms p{margin:.1rem 0 0;line-height:1.35}
+.ms p a{color:var(--ink);text-decoration:none}.ms p a:hover{color:var(--plum);text-decoration:underline}
+@media (min-width:768px){.ms{grid-template-columns:8rem minmax(0,1fr)}.ms:not(:has(.ms-img)){padding-left:calc(8rem + var(--s4))}.ms-img img{width:8rem}}
+.prose p>img{margin:var(--s5) auto;border:1px solid var(--rule)}
+.source-note{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule);font-size:.92rem;color:var(--muted);font-style:italic;text-align:center}
+.board-note{max-width:40rem;margin:0 auto var(--s6)}
+
 /* ---------- 15. By the numbers ---------- */
 :root{--bar:#7d4ba3}:root[data-theme=dark]{--bar:#a77fd6}
 .tiles{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s5) var(--s4);max-width:52rem;margin:0 auto var(--s7);text-align:center}

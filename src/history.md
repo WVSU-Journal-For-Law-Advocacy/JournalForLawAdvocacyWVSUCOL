@@ -7,9 +7,18 @@ founded: 2021
 draft_notice: true
 ---
 
-The **Journal for Law Advocacy** is a student publication of the West Visayas State University College of Law in Iloilo City. It was founded in 2021, the year on its seal, and published its inaugural issue, Volume 1, in Academic Year 2021–2022. That first volume came out as a series of pieces released week by week, opening with an editorial overview of the 2022 national elections.
+The **Journal for Law Advocacy** is a student publication of the West Visayas State University College of Law in Iloilo City. It was founded in 2021, the year on its seal, and published its inaugural issue, Volume 1, in Academic Year 2021–2022. Its founding editors, **Batch Banaag**, took their oath in early 2022. Under the theme "Electoral Laws and the 2022 Philippine Election," the first volume came out week by week from August 2022, opening with an overview of the national elections written by the seven founding editors.
 
-Since then the journal has published student, faculty, and practitioner scholarship on Philippine law, each volume gathered around the questions of its year: elections and democracy in Volume 1, environmental law in Volume 4, and rights and liberties in a digital age in Volume 5.
+From the start the journal has had the support of the College of Law's deanship and of its adviser, Judge Enrique Z. Trespeces. He administers the oath to each new board. Atty. Regina Johanna V. Gustilo and Prosecutor Victoria Heler have also served as advisers.
+
+Each volume gathers student, faculty, and practitioner scholarship on Philippine law around the questions of its year:
+
+- elections and democracy in Volume 1;
+- human rights reforms in the Second Issue, launched in December 2023;
+- environmental law in Volume 4 (December 2024);
+- the Bill of Rights in the digital revolution in Volume 5 (December 2025).
+
+Volume 6, now in preparation, takes up public accountability and the fight against corruption. Each year's board also trains through editorial workshops, often led by the journal's own alumni.
 
 ## Organization
 

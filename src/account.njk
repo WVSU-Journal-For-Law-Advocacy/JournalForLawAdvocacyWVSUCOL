@@ -5,137 +5,160 @@ permalink: /account/
 description: Your reading, badges, and profile on the WVSU Journal for Law Advocacy.
 searchExclude: true
 ---
-<header class="pagehead"><div class="wrap">
-  <h1>My library</h1>
-  <p>Your reading, your badges, and what to read next.</p>
-</div></header>
+<section class="lib acct" id="acct"><div class="wrap">
 
-<section class="acct" id="acct"><div class="wrap">
-
-  {#- signed out -#}
-  <div class="acct-signin card-box" data-when="out" hidden>
-    <div class="inapp" hidden>
-      <p><b>You're reading inside <span data-app>an app</span>.</b> Google doesn't allow signing in here. Open this page in your phone's browser, or use the email link below.</p>
-      <p class="acts"><a class="btn sm" data-open-browser hidden>Open in Chrome</a><button class="btn sm alt" type="button" data-copy-link>Copy link</button></p>
-      <p class="off inapp-how">Or tap <b>⋯</b> (top right), then <b>Open in browser</b>.</p>
-    </div>
-    <h2>Sign in to keep your reading</h2>
-    <p class="off">Track every article you finish, keep a weekly streak, earn badges, and pick up where you left off on any device.</p>
-    <label class="consent"><input type="checkbox" id="consent"> I agree to the <a href="/privacy/">privacy notice</a>.</label>
-    <div class="acts"><button class="btn" type="button" data-google disabled>Continue with Google</button></div>
-    <form class="email-form" data-email>
-      <label for="email" class="sr">Email</label>
-      <input id="email" type="email" required placeholder="Or get a sign-in link by email" autocomplete="email">
-      <button class="btn alt" type="submit" disabled>Send link</button>
-    </form>
-    <p class="msg" aria-live="polite"></p>
-  </div>
-  <div class="card-box acct-soon" data-when="off" hidden>
-    <h2>Reader accounts are coming soon</h2>
-    <p class="off">Your reading is already being counted and saved in this browser. When accounts open you can sign in to keep it.</p>
-  </div>
-
-  {#- signed in: profile -#}
-  <div class="acct-profile card-box" data-when="in" hidden>
-    <div class="ap-head">
+  {#- ===== the header: who you are (or how to sign in) ===== -#}
+  <header class="lib-hero">
+    <div class="lib-me" data-when="in" hidden>
       <label class="ap-photo" title="Change photo">
-        <img alt="" width="96" height="96" hidden><span class="monogram" aria-hidden="true"></span>
+        <img alt="" width="88" height="88" hidden><span class="monogram" aria-hidden="true"></span>
         <input type="file" accept="image/*" hidden><span class="ap-edit">Change</span>
       </label>
-      <div>
-        <h2 class="ap-name"></h2>
+      <div class="lib-id">
+        <h1 class="ap-name">My library</h1>
         <p class="ap-school"></p>
         <p class="ap-streak"></p>
       </div>
+      <p class="lib-hero-acts"><a href="#settings" data-goto="settings">Edit profile</a><a data-public-link hidden>Public profile</a></p>
     </div>
-    <details class="ap-editor">
-      <summary>Edit profile</summary>
+
+    <div data-when="out" hidden>
+      <h1 class="lib-title">My library</h1>
+      <p class="lib-sub">Your reading is counted on this device. Sign in to keep it everywhere, keep a streak, and earn badges.</p>
+      <div class="acct-signin">
+        <div class="inapp" hidden>
+          <p><b>You're reading inside <span data-app>an app</span>.</b> Google doesn't allow signing in here. Open this page in your phone's browser, or use the email link below.</p>
+          <p class="acts"><a class="btn sm" data-open-browser hidden>Open in Chrome</a><button class="btn sm alt" type="button" data-copy-link>Copy link</button></p>
+          <p class="off inapp-how">Or tap <b>⋯</b> (top right), then <b>Open in browser</b>.</p>
+        </div>
+        <label class="consent"><input type="checkbox" id="consent"> I agree to the <a href="/privacy/">privacy notice</a>.</label>
+        <div class="acts"><button class="btn" type="button" data-google disabled>Continue with Google</button></div>
+        <form class="email-form" data-email>
+          <label for="email" class="sr">Email</label>
+          <input id="email" type="email" required placeholder="Or get a sign-in link by email" autocomplete="email">
+          <button class="btn alt" type="submit" disabled>Send link</button>
+        </form>
+        <p class="msg" aria-live="polite"></p>
+      </div>
+    </div>
+
+    <div data-when="off" hidden>
+      <h1 class="lib-title">My library</h1>
+      <p class="lib-sub">Your reading is counted and saved on this device.</p>
+    </div>
+  </header>
+
+  {#- ===== the numbers ===== -#}
+  <div class="lib-stats" data-stats>
+    <div><b data-s="finished">0</b><span>read</span></div>
+    <div><b data-s="streak">0</b><span>week streak</span></div>
+    <div><b data-s="badges">0</b><span>badges</span></div>
+    <div><b data-s="words">0</b><span>words</span></div>
+    <span hidden data-s="inProgress"></span><span hidden data-s="unread"></span>
+  </div>
+  <div class="overall"><span class="pbar big"><i data-overall></i></span><p data-overall-text></p></div>
+
+  {#- ===== tabs ===== -#}
+  <nav class="lib-tabs" role="tablist" aria-label="My library">
+    <button type="button" role="tab" data-tab-btn="reading" aria-selected="true">Reading</button>
+    <button type="button" role="tab" data-tab-btn="highlights" aria-selected="false">Highlights</button>
+    <button type="button" role="tab" data-tab-btn="badges" aria-selected="false">Badges</button>
+    <button type="button" role="tab" data-tab-btn="author" aria-selected="false" hidden>Author</button>
+    <button type="button" role="tab" data-tab-btn="board" aria-selected="false" hidden>Board</button>
+    <button type="button" role="tab" data-tab-btn="settings" aria-selected="false">Settings</button>
+  </nav>
+
+  {#- Reading -#}
+  <section class="lib-panel" role="tabpanel" data-tab="reading">
+    <div data-block="continue" hidden>
+      <h2 class="lib-h">Continue reading</h2>
+      <div class="next-list" data-continue></div>
+    </div>
+    <h2 class="lib-h">Read next</h2>
+    <div class="next-list" data-next></div>
+    <aside class="write-cta">
+      <span class="eyebrow">From reader to author</span>
+      <p data-write-line>Every article here began as a student's question. Yours could be in the next volume.</p>
+      <p class="lib-links"><a href="/submit/">How to submit →</a><a href="/call-for-papers/">Call for papers →</a></p>
+    </aside>
+  </section>
+
+  {#- Highlights -#}
+  <section class="lib-panel" role="tabpanel" data-tab="highlights" hidden>
+    <div data-block="highlights" hidden><div class="hl-list" data-highlights></div></div>
+    <p class="lib-empty" data-hl-empty>Select any sentence in an article and choose <b>Highlight</b> or <b>Note</b>. Your highlights and private notes collect here.</p>
+  </section>
+
+  {#- Badges -#}
+  <section class="lib-panel" role="tabpanel" data-tab="badges" hidden>
+    <p class="lib-note" data-badge-sum></p>
+    <ul class="badge-list" data-badges></ul>
+  </section>
+
+  {#- Author (approved authors and pending claims) -#}
+  <section class="lib-panel" role="tabpanel" data-tab="author" hidden>
+    <div class="author-box" id="author" data-author-box hidden>
+      <div data-author-pages></div>
+      <ul class="claim-list" data-claims></ul>
+    </div>
+  </section>
+
+  {#- Board (editors) -#}
+  <section class="lib-panel" role="tabpanel" data-tab="board" hidden>
+    <div class="board-box" data-board hidden>
+      <p class="lib-note">You're an editor: you can hide or delete comments in any discussion.</p>
+      <ul class="lib-menu">
+        <li><a href="/editor/claims/"><b>Author claims</b><span>Approve readers who claim author pages</span><span class="dk-count" data-claim-count hidden></span></a></li>
+        <li><a href="/editor/announce/"><b>Send an announcement</b><span>New volume or call for papers, to readers who opted in</span></a></li>
+        <li><a href="/editor/editors/"><b>Manage editors</b><span>Who can moderate and announce</span></a></li>
+      </ul>
+    </div>
+  </section>
+
+  {#- Settings -#}
+  <section class="lib-panel" role="tabpanel" data-tab="settings" hidden>
+    <div class="lib-group" data-when="in" hidden>
+      <h2 class="lib-h">Profile</h2>
       <form data-profile>
         <div class="field"><label for="pf-name">Name</label><input id="pf-name" name="name" maxlength="80" required></div>
         <div class="field"><label for="pf-school">School or office</label><input id="pf-school" name="school" maxlength="80" placeholder="e.g. WVSU College of Law, 2L"></div>
         <div class="field"><label for="pf-bio">Bio</label><textarea id="pf-bio" name="bio" maxlength="280" rows="3" placeholder="A line about you and the law you care about"></textarea></div>
         <label class="consent"><input type="checkbox" name="public"> Show my profile, badges and reading count publicly</label>
-        <div class="acts"><button class="btn sm" type="submit">Save profile</button> <a class="btn sm alt" data-public-link hidden>View public profile</a></div>
+        <div class="acts"><button class="btn sm" type="submit">Save profile</button></div>
       </form>
-    </details>
-  </div>
-
-  {#- everyone: stats -#}
-  <div class="tiles acct-tiles" data-stats>
-    <div><b data-s="finished">0</b><span>articles read</span></div>
-    <div><b data-s="inProgress">0</b><span>in progress</span></div>
-    <div><b data-s="unread">0</b><span>still to read</span></div>
-    <div><b data-s="streak">0</b><span>week streak</span></div>
-    <div><b data-s="words">0</b><span>words read</span></div>
-  </div>
-  <div class="overall"><span class="pbar big"><i data-overall></i></span><p data-overall-text></p></div>
-
-  <div data-block="continue" hidden>
-    <h2 class="title">Continue reading</h2>
-    <div class="next-list" data-continue></div>
-  </div>
-
-  <div data-block="highlights" hidden>
-    <h2 class="title">Highlights &amp; notes</h2>
-    <div class="hl-list" data-highlights></div>
-  </div>
-
-  <h2 class="title">Read next</h2>
-  <div class="next-list" data-next></div>
-
-  <h2 class="title">Badges</h2>
-  <p class="sub" data-badge-sum></p>
-  <ul class="badge-list" data-badges></ul>
-
-  <div class="card-box author-box" id="author" data-author-box hidden>
-    <h2>Your author page</h2>
-    <div data-author-pages></div>
-    <ul class="claim-list" data-claims></ul>
-  </div>
-
-  <div class="card-box board-box" data-board hidden>
-    <h2>Board tools</h2>
-    <p class="off">You're an editor: you can hide or delete comments in any discussion.</p>
-    <div class="acts"><a class="btn sm" href="/editor/claims/">Author claims <span class="dk-count" data-claim-count hidden></span></a> <a class="btn sm alt" href="/editor/announce/">Send an announcement</a> <a class="btn sm alt" href="/editor/editors/">Manage editors</a></div>
-  </div>
-
-  <div class="push-box card-box" data-push-box hidden>
-    <h2>Notifications</h2>
-    <p class="off">Choose what the Journal may tell you about. You can change this any time.</p>
-    <ul class="toggles">
-      <li><label><input type="checkbox" value="volumes"> <span><b>New volume published</b><small>When a new volume goes online.</small></span></label></li>
-      <li><label><input type="checkbox" value="replies"> <span><b>Replies to my comments</b><small>When someone replies to you in a discussion.</small></span></label></li>
-      <li><label><input type="checkbox" value="cfp"> <span><b>Calls for papers</b><small>When the Journal opens a call for submissions.</small></span></label></li>
-      <li><label><input type="checkbox" value="streak"> <span><b>Weekly reading reminder</b><small>Saturday morning, only if you haven't read that week.</small></span></label></li>
-    </ul>
-    <p class="msg push-msg" aria-live="polite"></p>
-  </div>
-
-  <div class="app-box card-box" data-app-box hidden>
-    <h2>App &amp; offline</h2>
-    <p class="off" data-app-line>Put the Journal on your home screen. It opens full screen and keeps your saved articles for reading offline.</p>
-    <div class="acts"><button class="btn" type="button" data-install data-install-btn hidden>Install the app</button></div>
-    <div data-saved-wrap hidden>
-      <h3 class="app-h">Saved for offline</h3>
-      <ul class="saved-list" data-saved></ul>
     </div>
-  </div>
 
-  <div class="write-cta card-box">
-    <span class="eyebrow">From reader to author</span>
-    <h2>Write for the journal</h2>
-    <p data-write-line>Every article here began as a student's question. Yours could be in the next volume.</p>
-    <div class="acts"><a class="btn" href="/submit/">How to submit</a> <a class="btn alt" href="/call-for-papers/">Call for papers</a></div>
-  </div>
-
-  <div class="acct-data" data-when="in" hidden>
-    <h2 class="title">Your data</h2>
-    <p class="sub">Read the <a href="/privacy/">privacy notice</a>.</p>
-    <div class="acts center">
-      <button class="btn sm alt" type="button" data-export>Download my data</button>
-      <button class="btn sm alt" type="button" data-signout>Sign out</button>
-      <button class="btn sm danger" type="button" data-delete>Delete my account</button>
+    <div class="lib-group push-box" data-push-box hidden>
+      <h2 class="lib-h">Notifications</h2>
+      <ul class="toggles">
+        <li><label><input type="checkbox" value="volumes"> <span><b>New volume published</b><small>When a new volume goes online.</small></span></label></li>
+        <li><label><input type="checkbox" value="replies"> <span><b>Replies to my comments</b><small>When someone replies to you in a discussion.</small></span></label></li>
+        <li><label><input type="checkbox" value="cfp"> <span><b>Calls for papers</b><small>When the Journal opens a call for submissions.</small></span></label></li>
+        <li><label><input type="checkbox" value="streak"> <span><b>Weekly reading reminder</b><small>Saturday morning, only if you haven't read that week.</small></span></label></li>
+      </ul>
+      <p class="msg push-msg" aria-live="polite"></p>
     </div>
-  </div>
+
+    <div class="lib-group app-box" data-app-box hidden>
+      <h2 class="lib-h">App &amp; offline</h2>
+      <p class="lib-note" data-app-line>Put the Journal on your home screen. It opens full screen and keeps your saved articles for reading offline.</p>
+      <div class="acts"><button class="btn sm" type="button" data-install data-install-btn hidden>Install the app</button></div>
+      <div data-saved-wrap hidden>
+        <h3 class="app-h">Saved for offline</h3>
+        <ul class="saved-list" data-saved></ul>
+      </div>
+    </div>
+
+    <div class="lib-group" data-when="in" hidden>
+      <h2 class="lib-h">Your data</h2>
+      <p class="lib-note">See the <a href="/privacy/">privacy notice</a>.</p>
+      <div class="acts">
+        <button class="btn sm alt" type="button" data-export>Download my data</button>
+        <button class="btn sm alt" type="button" data-signout>Sign out</button>
+        <button class="btn sm danger" type="button" data-delete>Delete my account</button>
+      </div>
+    </div>
+    <p class="lib-empty" data-when="out" hidden>Sign in (above) to edit your profile and choose notifications.</p>
+  </section>
 </div></section>
 <script type="module" src="/assets/js/account.js"></script>

@@ -1035,3 +1035,77 @@ html.is-app .site-head{padding-top:env(safe-area-inset-top)}
 .claim blockquote{margin:var(--s3) 0;padding:.5rem .9rem;border-left:3px solid var(--gold);background:var(--wash);font-style:italic}
 .dk-count{display:inline-grid;place-items:center;min-width:1.3rem;height:1.3rem;margin-left:.35rem;border-radius:999px;background:var(--gold);color:#1C1424;font:600 .75rem var(--serif)}
 .dk-count[hidden]{display:none}
+
+/* ---------- My library: a profile header, a strip of numbers, and tabs ---------- */
+.lib .wrap{max-width:44rem}
+.lib{padding:var(--s7) 0 var(--s8)}
+.lib-hero{text-align:center}
+.lib-me{display:flex;flex-direction:column;align-items:center}
+.lib-me .ap-photo{width:88px;height:88px}
+.lib-me .ap-photo .monogram{font-size:2rem}
+.lib-id{margin-top:var(--s3)}
+.lib-id .ap-name{font-size:clamp(1.9rem,6vw,2.5rem);margin:0;line-height:1.1}
+.lib-id .ap-school{margin:.3rem 0 0;color:var(--muted);font-style:italic}
+.lib-id .ap-streak{display:inline-block;margin:.6rem 0 0;padding:.15rem .8rem;border-radius:999px;background:color-mix(in srgb,var(--gold-3) 22%,transparent);color:var(--ink-2);font-size:.88rem}
+.lib-id .ap-streak:empty{display:none}
+.lib-hero-acts{display:flex;gap:1.2rem;justify-content:center;margin:var(--s3) 0 0;font-size:.92rem}
+.lib-hero-acts a{color:var(--plum)}
+.lib-hero-acts a[hidden]{display:none}
+.lib-title{font-size:clamp(2rem,6vw,2.6rem);margin:0}
+.lib-sub{max-width:28rem;margin:.5rem auto 0;color:var(--muted)}
+.lib .acct-signin{max-width:26rem;margin:var(--s5) auto 0;text-align:center}
+.lib .acct-signin .acts{justify-content:center}
+.lib .consent{justify-content:center}
+/* the numbers */
+.lib-stats{display:grid;grid-template-columns:repeat(4,1fr);margin:var(--s6) 0 var(--s3);border-top:1px solid var(--gold-2);border-bottom:1px solid var(--gold-2)}
+.lib-stats>div{display:flex;flex-direction:column;align-items:center;gap:.15rem;padding:.9rem .2rem}
+.lib-stats>div+div{border-left:1px solid var(--rule)}
+.lib-stats b{font:600 clamp(1.5rem,6vw,2rem)/1 var(--display);font-variant-numeric:lining-nums;color:var(--ink)}
+.lib-stats span{font:600 .78rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+.lib .overall{margin:0 0 var(--s5)}
+.lib .overall p{font-size:.88rem;margin-top:.5rem}
+/* tabs */
+.lib-tabs{position:sticky;top:0;z-index:20;display:flex;gap:.2rem;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--gutter));padding:0 var(--gutter);
+  background:color-mix(in srgb,var(--paper) 94%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule)}
+.lib-tabs::-webkit-scrollbar{display:none}
+.lib-tabs button{flex:none;min-height:46px;padding:0 .85rem;border-bottom:2px solid transparent;margin-bottom:-1px;color:var(--muted);
+  font:600 .98rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;white-space:nowrap}
+.lib-tabs button[aria-selected=true]{color:var(--ink);border-bottom-color:var(--gold)}
+.lib-tabs button:hover{color:var(--ink)}
+.lib-tabs button[hidden]{display:none}
+@media (min-width:600px){.lib-tabs{justify-content:center}}
+.lib-panel{padding-top:var(--s5)}
+.lib-panel[hidden]{display:none}
+.lib-h{display:flex;align-items:center;gap:.8rem;margin:var(--s5) 0 var(--s3);font:600 .9rem var(--caps);letter-spacing:.14em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.lib-h::after{content:"";flex:1;height:1px;background:var(--rule)}
+.lib-panel>.lib-h:first-child,.lib-panel>div:first-child>.lib-h:first-child,.lib-group:first-child>.lib-h{margin-top:0}
+.lib-note{color:var(--muted);font-size:.92rem;margin:0 0 var(--s3)}
+.lib-empty{text-align:center;color:var(--muted);max-width:28rem;margin:var(--s5) auto}
+.lib .next-list{max-width:none;margin-bottom:var(--s4)}
+.lib .badge-list{max-width:none}
+.lib .hl-list{max-width:none}
+/* the gentle "write for us" note at the end of Reading */
+.lib .write-cta{margin-top:var(--s6);padding:var(--s4) 0 0;border-top:1px solid var(--rule);text-align:center;background:none}
+.lib .write-cta .eyebrow{margin-bottom:.3rem}
+.lib .write-cta p{margin:0;color:var(--ink-2)}
+.lib-links{display:flex;gap:1.4rem;justify-content:center;margin-top:.6rem!important;font-size:.95rem}
+.lib-links a{color:var(--plum)}
+/* settings groups */
+.lib-group{margin-bottom:var(--s6);text-align:left}
+.lib-group .acts{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-start}
+.lib-group .consent{justify-content:flex-start}
+/* board menu */
+.lib-menu{list-style:none;margin:0;padding:0}
+.lib-menu li{border-bottom:1px solid var(--rule)}
+.lib-menu a{position:relative;display:block;padding:.85rem 2.4rem .85rem 0;color:var(--ink)}
+.lib-menu a::after{content:"→";position:absolute;right:.2rem;top:50%;transform:translateY(-50%);color:var(--gold)}
+.lib-menu b{display:block;font:600 1.08rem var(--display)}
+.lib-menu span{display:block;font-size:.88rem;color:var(--muted)}
+.lib-menu .dk-count{position:absolute;right:1.6rem;top:50%;transform:translateY(-50%);display:inline-grid}
+.lib-menu .dk-count[hidden]{display:none}
+/* author tab */
+.lib .author-box{text-align:left}
+.lib [hidden]{display:none!important}
+@media (max-width:420px){.lib-tabs{gap:0}.lib-tabs button{padding:0 .55rem;letter-spacing:.06em;font-size:.92rem}}
+.lib-tabs.is-scroll{-webkit-mask-image:linear-gradient(90deg,#000 82%,transparent);mask-image:linear-gradient(90deg,#000 82%,transparent)}
+.lib-tabs.is-scroll.at-end{-webkit-mask-image:none;mask-image:none}

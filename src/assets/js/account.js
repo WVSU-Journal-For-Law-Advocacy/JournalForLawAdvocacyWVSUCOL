@@ -31,6 +31,7 @@ async function paint() {
 
   const bs = badges(index, all, weeks), earned = bs.filter((b) => b.earned);
   $('[data-badge-sum]').textContent = `${earned.length} of ${bs.length} earned`;
+  $('[data-s="badges"]').textContent = earned.length;
   $('[data-badges]').innerHTML = [...earned, ...bs.filter((b) => !b.earned).sort((a, b) => b.have / b.need - a.have / a.need)].map(badgeHtml).join('');
 
   if (st.finished >= 3) $('[data-write-line]').textContent = `You've read ${st.finished} pieces. You know what makes a good one: write the next.`;
@@ -44,7 +45,7 @@ async function paint() {
 async function paintHighlights() {
   let hs = [], index;
   try { [hs, index] = await Promise.all([cloud.loadHighlights(), loadIndex()]); } catch (e) { return; }
-  const box = $('[data-block="highlights"]'); box.hidden = !hs.length; if (!hs.length) return;
+  const box = $('[data-block="highlights"]'); box.hidden = !hs.length; $('[data-hl-empty]').hidden = !!hs.length; if (!hs.length) return;
   const bySlug = Object.fromEntries(index.articles.map((a) => [a.slug, a])), groups = {};
   hs.sort((a, b) => (b.created || 0) - (a.created || 0)).forEach((h) => { (groups[h.slug] = groups[h.slug] || []).push(h); });
   $('[data-highlights]').innerHTML = Object.entries(groups).filter(([s]) => bySlug[s]).map(([s, list]) => `
@@ -80,7 +81,7 @@ function wireProfile(u) {
   $('[data-profile]').addEventListener('submit', async (e) => {
     e.preventDefault(); const f = e.target;
     const data = { name: f.name.value.trim().slice(0, 80), school: f.school.value.trim().slice(0, 80), bio: f.bio.value.trim().slice(0, 280), public: f.public.checked };
-    try { await cloud.saveProfile(data); profile = { ...profile, ...data }; paintProfile(u); say('Profile saved'); $('.ap-editor').open = false; }
+    try { await cloud.saveProfile(data); profile = { ...profile, ...data }; paintProfile(u); say('Profile saved'); }
     catch (err) { say('Could not save. Please try again'); }
   });
   $('.ap-photo input').addEventListener('change', async (e) => {
@@ -184,6 +185,34 @@ function wirePush() {
     boxes.forEach((b) => { b.disabled = false; });
   });
 }
+
+/* ---------- tabs: Reading · Highlights · Badges · Author · Board · Settings (remembered in the address, e.g. #badges) ---------- */
+const TABS = ['reading', 'highlights', 'badges', 'author', 'board', 'settings'];
+function goTab(name, focus) {
+  const btn = $(`[data-tab-btn="${name}"]`); if (!btn || btn.hidden) name = 'reading';
+  $$('[data-tab-btn]').forEach((b) => { const on = b.dataset.tabBtn === name; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
+  $$('[data-tab]').forEach((p) => { p.hidden = p.dataset.tab !== name; });
+  if (location.hash.slice(1) !== name) history.replaceState(null, '', name === 'reading' ? location.pathname : '#' + name);
+}
+root.addEventListener('click', (e) => {
+  const b = e.target.closest('[data-tab-btn]'); if (b) return goTab(b.dataset.tabBtn);
+  const g = e.target.closest('[data-goto]'); if (g) { e.preventDefault(); goTab(g.dataset.goto); $('.lib-tabs').scrollIntoView({ block: 'start', behavior: 'smooth' }); }
+});
+$('.lib-tabs').addEventListener('keydown', (e) => {
+  if (!['ArrowRight', 'ArrowLeft'].includes(e.key)) return;
+  const vis = $$('[data-tab-btn]').filter((b) => !b.hidden), i = vis.findIndex((b) => b.getAttribute('aria-selected') === 'true');
+  goTab(vis[(i + (e.key === 'ArrowRight' ? 1 : vis.length - 1)) % vis.length].dataset.tabBtn, true);
+});
+// the Author and Board tabs appear only for authors with a claim or page, and for editors
+const gate = (sel, tab) => { const el = $(sel), b = $(`[data-tab-btn="${tab}"]`); const sync = () => { b.hidden = el.hidden; if (el.hidden && b.getAttribute('aria-selected') === 'true') goTab('reading'); else if (!el.hidden && location.hash === '#' + tab) goTab(tab); }; new MutationObserver(sync).observe(el, { attributes: true, attributeFilter: ['hidden'] }); sync(); };
+gate('[data-author-box]', 'author'); gate('[data-board]', 'board');
+// a soft fade at the edge when the tabs don't all fit (phones with Author and Board tabs)
+const tabBar = $('.lib-tabs');
+const fade = () => { tabBar.classList.toggle('is-scroll', tabBar.scrollWidth > tabBar.clientWidth + 2); tabBar.classList.toggle('at-end', tabBar.scrollLeft + tabBar.clientWidth >= tabBar.scrollWidth - 4); };
+tabBar.addEventListener('scroll', fade, { passive: true }); addEventListener('resize', fade);
+new MutationObserver(fade).observe(tabBar, { attributes: true, subtree: true, attributeFilter: ['hidden'] }); fade();
+goTab(TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'reading');
+addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TABS.includes(h)) goTab(h); });
 
 /* ---------- app & offline: install button and the articles saved on this device ---------- */
 function paintApp() {

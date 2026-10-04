@@ -12,7 +12,13 @@
   "deadline": "",
   "certificates": false,
   "coming_soon_volumes": [2, 3],
-  "firebase": {},
+  "firebase": {
+    "apiKey": "AIzaSyA6bRA80mS4xUrj8xJ0UHG_mZeufq_D2-I",
+    "authDomain": "wvsu-jla.firebaseapp.com",
+    "projectId": "wvsu-jla",
+    "messagingSenderId": "137438152268",
+    "appId": "1:137438152268:web:bea8dbe9469821b484d6e9"
+  },
   "areas": ["Constitutional law", "Privacy and data protection", "Technology and the law", "Election law", "Criminal law", "Environmental law", "Civil law", "Taxation", "Legal ethics and the profession"],
   "kinds": ["Article", "Essay", "Comment", "Editorial", "Student note"],
   "issn_print": "1908-532X",

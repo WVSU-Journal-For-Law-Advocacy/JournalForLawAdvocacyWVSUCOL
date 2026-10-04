@@ -108,8 +108,11 @@
         <svg class="i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
         <svg class="i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       </button>
-      <a class="icon-btn" href="/search/" aria-label="Search"{% if page.url == "/search/" %} aria-current="page"{% endif %}>
+      <a class="icon-btn search-desk" href="/search/" aria-label="Search"{% if page.url == "/search/" %} aria-current="page"{% endif %}>
         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </a>
+      <a class="icon-btn acct-btn" href="/account/" aria-label="My library"{% if page.url == "/account/" %} aria-current="page"{% endif %}>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M4.5 20c1.2-3.7 4-5.6 7.5-5.6s6.3 1.9 7.5 5.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
       </a>
     </div>
   </div>
@@ -146,6 +149,7 @@
   <nav aria-label="Menu">
     <ul>
       <li><a href="/"{% if page.url == "/" %} aria-current="page"{% endif %}>Home</a></li>
+      <li><a href="/account/"{% if page.url == "/account/" %} aria-current="page"{% endif %}>My library</a></li>
       {%- for l in nav %}
       <li><a href="{{ l.url }}"{% if l | navActive(page.url) %} aria-current="page"{% endif %}>{{ l.label }}</a>
         {%- if l.sub %}
@@ -188,6 +192,7 @@
     </ul></details>
     <details open><summary>Policies</summary><ul>
       {%- for p in collections.policies %}<li><a href="{{ p.url }}">{{ p.data.title }}</a></li>{% endfor %}
+      <li><a href="/privacy/">Privacy notice</a></li>
     </ul></details>
   </div>
 
@@ -212,6 +217,9 @@
   <small class="note">© {% year %} {{ site.title }}, {{ site.institution }}. Articles are open access under <a href="/policies/open-access/">CC BY-NC 4.0</a> unless stated otherwise. Views expressed are those of the authors.</small>
 </div></footer>
 <div id="toast" role="status" aria-live="polite"></div>
+{%- if site.firebase and site.firebase.apiKey %}
+<script type="application/json" id="fb-config">{{ site.firebase | jsonScript | safe }}</script>
+{%- endif %}
 <script src="/assets/js/site.js" defer></script>
 </body>
 </html>

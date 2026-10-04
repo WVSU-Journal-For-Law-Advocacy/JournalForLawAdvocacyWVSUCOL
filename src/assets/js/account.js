@@ -1,0 +1,126 @@
+/* "My library" (/account/): sign-in, profile, stats, streak, badges, continue reading, read next. */
+import { local, loadIndex, stats, badges, suggest, badgeHtml, cardHtml } from './jla-core.js';
+
+const root = document.getElementById('acct');
+const $ = (s) => root.querySelector(s), $$ = (s) => [...root.querySelectorAll(s)];
+const say = (m) => { const t = document.getElementById('toast'); if (!t) return; t.textContent = m; t.classList.add('on'); clearTimeout(say.t); say.t = setTimeout(() => t.classList.remove('on'), 2600); };
+const show = (state) => $$('[data-when]').forEach((el) => { el.hidden = el.dataset.when !== state; });
+const fmt = (n) => n >= 10000 ? `${Math.round(n / 1000)}k` : n.toLocaleString('en-PH');
+const initials = (n) => String(n || '?').split(/\s+/).filter((w) => /^[A-Z]/i.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+
+let cloud = null, profile = null;
+
+/* ---------- the dashboard (works signed in or out) ---------- */
+async function paint() {
+  let index; try { index = await loadIndex(); } catch (e) { return; }
+  const all = local.all(), weeks = local.weeks(), st = stats(index, all, weeks);
+  $('[data-s="finished"]').textContent = st.finished;
+  $('[data-s="inProgress"]').textContent = st.inProgress;
+  $('[data-s="unread"]').textContent = st.unread;
+  $('[data-s="streak"]').textContent = st.streak.current;
+  $('[data-s="words"]').textContent = fmt(st.words);
+  const pct = Math.round((100 * st.finished) / st.total);
+  $('[data-overall]').style.width = pct + '%';
+  $('[data-overall-text]').textContent = `${st.finished} of ${st.total} pieces in the journal read (${pct}%)${st.streak.thisWeek ? ' · this week counted ✓' : ' · read 10 minutes this week to keep your streak'}`;
+
+  const bySlug = Object.fromEntries(index.articles.map((a) => [a.slug, a]));
+  const going = Object.entries(all).filter(([s, p]) => bySlug[s] && !p.done && p.pct > 0).sort((a, b) => b[1].updated - a[1].updated).slice(0, 4);
+  $('[data-block="continue"]').hidden = !going.length;
+  $('[data-continue]').innerHTML = going.map(([s, p]) => cardHtml(bySlug[s], p)).join('');
+  $('[data-next]').innerHTML = suggest(index, all, { exclude: going.map(([s]) => s) }).map((a) => cardHtml(a, all[a.slug])).join('');
+
+  const bs = badges(index, all, weeks), earned = bs.filter((b) => b.earned);
+  $('[data-badge-sum]').textContent = `${earned.length} of ${bs.length} earned`;
+  $('[data-badges]').innerHTML = [...earned, ...bs.filter((b) => !b.earned).sort((a, b) => b.have / b.need - a.have / a.need)].map(badgeHtml).join('');
+
+  if (st.finished >= 3) $('[data-write-line]').textContent = `You've read ${st.finished} pieces. You know what makes a good one: write the next.`;
+  if (profile) {
+    $('.ap-streak').textContent = st.streak.current ? `🔥 ${st.streak.current}-week reading streak` : 'Start a weekly reading streak';
+    if (cloud) cloud.saveProfile({ weeks, stats: { finished: st.verified, words: st.words, streak: st.streak.current }, badges: earned.map((b) => b.id) }).catch(() => {});
+  }
+}
+
+/* ---------- profile card ---------- */
+function paintProfile(u) {
+  const p = profile || {}, name = p.name || u.displayName || 'Reader';
+  $('.ap-name').textContent = name;
+  $('.ap-school').textContent = p.school || u.email || '';
+  const img = $('.ap-photo img'), mono = $('.ap-photo .monogram');
+  const photo = p.photo || u.photoURL || '';
+  img.hidden = !photo; if (photo) img.src = photo; mono.hidden = !!photo; mono.textContent = initials(name);
+  const f = $('[data-profile]');
+  f.name.value = name; f.school.value = p.school || ''; f.bio.value = p.bio || ''; f.public.checked = !!p.public;
+  const link = $('[data-public-link]'); link.hidden = !p.public; link.href = `/readers/?u=${encodeURIComponent(u.uid)}`;
+}
+
+// a square, small photo made in the browser (no file storage needed)
+async function shrink(file) {
+  const bmp = await createImageBitmap(file);
+  const s = Math.min(bmp.width, bmp.height), cv = document.createElement('canvas'); cv.width = cv.height = 256;
+  cv.getContext('2d').drawImage(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s, s, 0, 0, 256, 256);
+  for (const [type, q] of [['image/webp', 0.82], ['image/jpeg', 0.8], ['image/jpeg', 0.6]]) {
+    const url = cv.toDataURL(type, q); if (url.startsWith(`data:${type}`) && url.length < 80000) return url;
+  }
+  throw new Error('too big');
+}
+
+function wireProfile(u) {
+  $('[data-profile]').addEventListener('submit', async (e) => {
+    e.preventDefault(); const f = e.target;
+    const data = { name: f.name.value.trim().slice(0, 80), school: f.school.value.trim().slice(0, 80), bio: f.bio.value.trim().slice(0, 280), public: f.public.checked };
+    try { await cloud.saveProfile(data); profile = { ...profile, ...data }; paintProfile(u); say('Profile saved'); $('.ap-editor').open = false; }
+    catch (err) { say('Could not save. Please try again'); }
+  });
+  $('.ap-photo input').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0]; if (!file) return;
+    try { const photo = await shrink(file); await cloud.saveProfile({ photo }); profile = { ...profile, photo }; paintProfile(u); say('Photo updated'); }
+    catch (err) { say('That photo could not be used'); }
+  });
+  $('[data-signout]').addEventListener('click', async () => { await cloud.signOut(); location.reload(); });
+  $('[data-export]').addEventListener('click', async () => {
+    const data = await cloud.exportData();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+    a.download = 'my-jla-data.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  });
+  $('[data-delete]').addEventListener('click', async () => {
+    if (!confirm('Delete your account, profile and reading history for good? This cannot be undone.')) return;
+    try { await cloud.deleteAccount(); say('Your account was deleted'); setTimeout(() => location.reload(), 1200); }
+    catch (err) { say('Please sign out, sign in again, then delete'); }
+  });
+}
+
+/* ---------- sign-in ---------- */
+function wireSignIn() {
+  const consent = $('#consent'), g = $('[data-google]'), form = $('[data-email]'), msg = $('.acct-signin .msg');
+  const sync = () => { g.disabled = !consent.checked; form.querySelector('button').disabled = !consent.checked; };
+  consent.addEventListener('change', sync); sync();
+  g.addEventListener('click', async () => {
+    try { await cloud.signInGoogle(); } catch (e) { if (e.code !== 'auth/popup-closed-by-user') msg.textContent = 'Google sign-in did not finish. Try again, or use the email link.'; }
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); const email = form.email.value.trim();
+    try { await cloud.sendEmailLink(email, location.origin + '/account/'); msg.textContent = `Check ${email} for a sign-in link. Open it on this device.`; }
+    catch (err) { msg.textContent = 'Could not send the link. Check the address and try again.'; }
+  });
+}
+
+/* ---------- start ---------- */
+paint();
+(async () => {
+  const mod = await import('./jla-cloud.js');
+  if (!mod.enabled) { show('off'); return; }
+  cloud = mod; show('out'); wireSignIn();
+  try { await mod.finishEmailLink(async () => prompt('Confirm your email to finish signing in')); }
+  catch (e) { $('.acct-signin .msg').textContent = 'That sign-in link has expired or was already used. Send a new one.'; }
+  let wired = false;
+  mod.onUser(async (u) => {
+    if (!u) { profile = null; show('out'); paint(); return; }
+    const synced = await mod.sync().catch(() => null);
+    profile = (synced && synced.profile) || null;
+    if (!profile) { // first sign-in: create the profile
+      profile = { name: u.displayName || (u.email || 'Reader').split('@')[0], joined: Date.now(), public: false, consent: Date.now() };
+      await mod.saveProfile(profile).catch(() => {});
+    }
+    show('in'); paintProfile(u); if (!wired) { wireProfile(u); wired = true; } paint();
+  });
+})();

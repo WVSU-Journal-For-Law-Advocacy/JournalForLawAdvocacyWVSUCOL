@@ -219,6 +219,22 @@ export default function (eleventyConfig) {
     new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
   );
   eleventyConfig.addFilter("isoDate", (d) => new Date(d).toISOString().slice(0, 10));
+  // /api/articles.json: what reader accounts need to count, suggest and award badges
+  const wordsIn = (md) => String(md || "")
+    .replace(/^\[\^[^\]]+\]:.*$/gm, " ")        // footnote definitions
+    .replace(/\[\^[^\]]+\]/g, " ")              // footnote markers
+    .replace(/[#>*_`|[\]()-]/g, " ")
+    .split(/\s+/).filter((w) => /[A-Za-z0-9]/.test(w)).length;
+  eleventyConfig.addFilter("articleIndex", (articles, issues) => articles.map((a) => {
+    const vol = issues.find((i) => num(i.data.volume) === num(a.data.volume));
+    const words = wordsIn(a.rawInput);
+    return {
+      slug: a.page.fileSlug, url: a.url, title: a.data.title, authors: splitAuthors(a.data.author),
+      volume: num(a.data.volume), year: a.data.year, area: a.data.area, kind: a.data.kind,
+      keywords: a.data.keywords || [], words, text: words > 150,
+      launched: vol && vol.data.launched ? new Date(vol.data.launched).toISOString().slice(0, 10) : null,
+    };
+  }));
   // Top-menu item is "current" when the page is under its URL or any of its sub-links
   eleventyConfig.addFilter("navActive", (item, url = "") =>
     [item.url, ...(item.sub || []).map((s) => s[0])].some((u) => url.startsWith(u))

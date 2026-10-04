@@ -1,0 +1,117 @@
+/* Reader accounts, the Firebase side (Auth + Firestore on the free Spark plan).
+   The SDK is loaded from Google's CDN only when this module is first used. The web config
+   comes from site.json ("firebase") via <script id="fb-config">; it is public by design,
+   and the Firestore security rules (firebase/firestore.rules) decide who may read or write what. */
+
+import { local, mergeAll, mergeWeeks } from './jla-core.js';
+
+const V = '10.14.1', CDN = `https://www.gstatic.com/firebasejs/${V}`;
+const cfgEl = document.getElementById('fb-config');
+export const config = cfgEl ? JSON.parse(cfgEl.textContent || 'null') : null;
+export const enabled = !!(config && config.apiKey && config.projectId);
+
+let sdk;
+async function load() {
+  if (!enabled) throw new Error('Accounts are not set up yet');
+  if (sdk) return sdk;
+  sdk = (async () => {
+    const [app, auth, fs] = await Promise.all([import(`${CDN}/firebase-app.js`), import(`${CDN}/firebase-auth.js`), import(`${CDN}/firebase-firestore.js`)]);
+    const a = app.initializeApp(config);
+    return { app: a, A: auth, F: fs, auth: auth.getAuth(a), db: fs.getFirestore(a) };
+  })();
+  return sdk;
+}
+
+/* ---------- who is signed in ---------- */
+let current; const waiters = [];
+export async function onUser(cb) {
+  const s = await load();
+  s.A.onAuthStateChanged(s.auth, async (u) => {
+    current = u || null;
+    if (u) { const me = await getProfile(u.uid).catch(() => null); local.setMe({ uid: u.uid, name: (me && me.name) || u.displayName || 'Reader', photo: (me && me.photo) || u.photoURL || '' }); }
+    else local.setMe(null);
+    cb(current);
+    waiters.splice(0).forEach((w) => w(current));
+  });
+}
+export const user = () => current;
+
+/* ---------- signing in ---------- */
+export async function signInGoogle() {
+  const s = await load(); const p = new s.A.GoogleAuthProvider();
+  return s.A.signInWithPopup(s.auth, p);
+}
+export async function sendEmailLink(email, returnTo) {
+  const s = await load();
+  await s.A.sendSignInLinkToEmail(s.auth, email, { url: returnTo, handleCodeInApp: true });
+  try { localStorage.setItem('jla:email', email); } catch (e) {}
+}
+export async function finishEmailLink(askEmail) {
+  const s = await load();
+  if (!s.A.isSignInWithEmailLink(s.auth, location.href)) return null;
+  let email = null; try { email = localStorage.getItem('jla:email'); } catch (e) {}
+  if (!email) email = await askEmail();
+  if (!email) return null;
+  const res = await s.A.signInWithEmailLink(s.auth, email, location.href);
+  try { localStorage.removeItem('jla:email'); } catch (e) {}
+  history.replaceState(null, '', location.pathname);
+  return res;
+}
+export async function signOut() { const s = await load(); await s.A.signOut(s.auth); local.setMe(null); }
+
+/* ---------- profile ---------- */
+const PROFILE = ['name', 'bio', 'school', 'photo', 'public', 'joined', 'badges', 'weeks', 'stats', 'consent'];
+export async function getProfile(uid) {
+  const s = await load(); const snap = await s.F.getDoc(s.F.doc(s.db, 'users', uid));
+  return snap.exists() ? snap.data() : null;
+}
+export async function saveProfile(fields) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const clean = Object.fromEntries(Object.entries(fields).filter(([k]) => PROFILE.includes(k)));
+  await s.F.setDoc(s.F.doc(s.db, 'users', u.uid), clean, { merge: true });
+  const me = local.me() || {}; local.setMe({ ...me, uid: u.uid, name: clean.name ?? me.name, photo: clean.photo ?? me.photo });
+}
+
+/* ---------- progress ---------- */
+export async function loadProgress() {
+  const s = await load(); const u = current; if (!u) return {};
+  const snap = await s.F.getDocs(s.F.collection(s.db, 'users', u.uid, 'progress'));
+  const out = {}; snap.forEach((d) => { out[d.id] = d.data(); }); return out;
+}
+export async function saveProgress(slug, p) {
+  const s = await load(); const u = current; if (!u) return;
+  const rec = { read: (p.read || []).slice(0, 3000), pct: Math.min(100, Math.max(0, Math.round(p.pct || 0))), done: !!p.done,
+    doneAt: p.doneAt || null, self: !!p.self, words: p.words || 0, updated: Date.now() };
+  await s.F.setDoc(s.F.doc(s.db, 'users', u.uid, 'progress', slug), rec);
+}
+// on sign-in: merge what this browser has with what the account has, and save the union both ways
+export async function sync() {
+  const u = current; if (!u) return null;
+  const [remote, profile] = await Promise.all([loadProgress(), getProfile(u.uid)]);
+  const mine = local.all(), merged = mergeAll(remote, mine);
+  local.replaceAll(merged);
+  const weeks = mergeWeeks((profile && profile.weeks) || {}, local.weeks());
+  local.setWeeks(weeks);
+  const changed = Object.entries(merged).filter(([k, v]) => JSON.stringify({ ...v, updated: 0 }) !== JSON.stringify({ ...(remote[k] || {}), updated: 0 }));
+  await Promise.all(changed.map(([k, v]) => saveProgress(k, v)));
+  return { progress: merged, weeks, profile };
+}
+
+/* ---------- your data ---------- */
+export async function exportData() {
+  const u = current; if (!u) return null;
+  return { account: { uid: u.uid, email: u.email }, profile: await getProfile(u.uid), progress: await loadProgress() };
+}
+export async function deleteAccount() {
+  const s = await load(); const u = current; if (!u) return;
+  const snap = await s.F.getDocs(s.F.collection(s.db, 'users', u.uid, 'progress'));
+  const batch = s.F.writeBatch(s.db);
+  snap.forEach((d) => batch.delete(d.ref)); batch.delete(s.F.doc(s.db, 'users', u.uid));
+  await batch.commit();
+  try { await s.A.deleteUser(u); }
+  catch (e) {
+    if (e.code !== 'auth/requires-recent-login') throw e;
+    await s.A.reauthenticateWithPopup(u, new s.A.GoogleAuthProvider()).catch(() => {}); await s.A.deleteUser(u);
+  }
+  ['jla:me', 'jla:progress', 'jla:weeks'].forEach((k) => { try { localStorage.removeItem(k); } catch (e) {} });
+}

@@ -61,6 +61,12 @@ layout: layouts/base.njk
     {{ parts.notes | safe }}
   </details>
   {%- endif %}
+  {%- else %}
+  <div class="mark-read" data-mark-read>
+    <p>This piece is online as a PDF. Read it there, then add it to your library.</p>
+    <button class="btn sm alt" type="button" aria-pressed="false">Mark as read</button>
+    <p class="mr-note off" hidden>Counted in your library as read. Badges count only articles read here on the page.</p>
+  </div>
   {%- endif %}
 
   <section class="citebox" id="cite" aria-labelledby="cite-h"
@@ -204,3 +210,4 @@ Read it here: {{ url }}
 } %}
 <script type="application/json" id="share-data">{{ shareData | jsonScript | safe }}</script>
 <script src="/assets/js/share-studio.js" defer></script>
+<script type="module" src="/assets/js/reader.js"></script>

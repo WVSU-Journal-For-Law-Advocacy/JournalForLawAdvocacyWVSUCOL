@@ -30,6 +30,17 @@ if (ribbon) {
   $('.x', ribbon).addEventListener('click', () => { ribbon.hidden = true; store.set(key, '1'); });
 }
 
+/* signed-in readers see their photo (or initials) in the header (set by the account scripts) */
+const acctBtn = $('.acct-btn');
+if (acctBtn) {
+  let me = null; try { me = JSON.parse(store.get('jla:me')); } catch (e) {}
+  if (me && me.name) {
+    acctBtn.classList.add('is-me'); acctBtn.setAttribute('aria-label', `My library (${me.name})`);
+    const ini = me.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+    acctBtn.innerHTML = /^data:image\/|^https:\/\//.test(me.photo || '') ? `<img src="${me.photo.replace(/"/g, '')}" alt="" width="30" height="30">` : `<span class="ini">${ini}</span>`;
+  }
+}
+
 /* scroll lock that keeps the reader's place (works on iOS too) */
 let lockedY = 0;
 const lockScroll = () => { if (document.body.classList.contains('locked')) return; lockedY = scrollY; document.body.style.top = `-${lockedY}px`; document.body.classList.add('locked'); };

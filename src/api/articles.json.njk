@@ -1,0 +1,5 @@
+---
+permalink: /api/articles.json
+eleventyExcludeFromCollections: true
+---
+{{ { count: collections.articles.length, areas: site.areas, articles: collections.articles | articleIndex(collections.issues) } | dump | safe }}

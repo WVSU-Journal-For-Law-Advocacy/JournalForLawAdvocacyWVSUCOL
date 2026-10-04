@@ -1,0 +1,97 @@
+---
+layout: layouts/base.njk
+title: My library
+permalink: /account/
+description: Your reading, badges, and profile on the WVSU Journal for Law Advocacy.
+searchExclude: true
+---
+<header class="pagehead"><div class="wrap">
+  <h1>My library</h1>
+  <p>Your reading, your badges, and what to read next.</p>
+</div></header>
+
+<section class="acct" id="acct"><div class="wrap">
+
+  {#- signed out -#}
+  <div class="acct-signin card-box" data-when="out" hidden>
+    <h2>Sign in to keep your reading</h2>
+    <p class="off">Track every article you finish, keep a weekly streak, earn badges, and pick up where you left off on any device.</p>
+    <label class="consent"><input type="checkbox" id="consent"> I agree to the <a href="/privacy/">privacy notice</a>.</label>
+    <div class="acts"><button class="btn" type="button" data-google disabled>Continue with Google</button></div>
+    <form class="email-form" data-email>
+      <label for="email" class="sr">Email</label>
+      <input id="email" type="email" required placeholder="Or get a sign-in link by email" autocomplete="email">
+      <button class="btn alt" type="submit" disabled>Send link</button>
+    </form>
+    <p class="msg" aria-live="polite"></p>
+  </div>
+  <div class="card-box acct-soon" data-when="off" hidden>
+    <h2>Reader accounts are coming soon</h2>
+    <p class="off">Your reading is already being counted and saved in this browser. When accounts open you can sign in to keep it.</p>
+  </div>
+
+  {#- signed in: profile -#}
+  <div class="acct-profile card-box" data-when="in" hidden>
+    <div class="ap-head">
+      <label class="ap-photo" title="Change photo">
+        <img alt="" width="96" height="96" hidden><span class="monogram" aria-hidden="true"></span>
+        <input type="file" accept="image/*" hidden><span class="ap-edit">Change</span>
+      </label>
+      <div>
+        <h2 class="ap-name"></h2>
+        <p class="ap-school"></p>
+        <p class="ap-streak"></p>
+      </div>
+    </div>
+    <details class="ap-editor">
+      <summary>Edit profile</summary>
+      <form data-profile>
+        <div class="field"><label for="pf-name">Name</label><input id="pf-name" name="name" maxlength="80" required></div>
+        <div class="field"><label for="pf-school">School or office</label><input id="pf-school" name="school" maxlength="80" placeholder="e.g. WVSU College of Law, 2L"></div>
+        <div class="field"><label for="pf-bio">Bio</label><textarea id="pf-bio" name="bio" maxlength="280" rows="3" placeholder="A line about you and the law you care about"></textarea></div>
+        <label class="consent"><input type="checkbox" name="public"> Show my profile, badges and reading count publicly</label>
+        <div class="acts"><button class="btn sm" type="submit">Save profile</button> <a class="btn sm alt" data-public-link hidden>View public profile</a></div>
+      </form>
+    </details>
+  </div>
+
+  {#- everyone: stats -#}
+  <div class="tiles acct-tiles" data-stats>
+    <div><b data-s="finished">0</b><span>articles read</span></div>
+    <div><b data-s="inProgress">0</b><span>in progress</span></div>
+    <div><b data-s="unread">0</b><span>still to read</span></div>
+    <div><b data-s="streak">0</b><span>week streak</span></div>
+    <div><b data-s="words">0</b><span>words read</span></div>
+  </div>
+  <div class="overall"><span class="pbar big"><i data-overall></i></span><p data-overall-text></p></div>
+
+  <div data-block="continue" hidden>
+    <h2 class="title">Continue reading</h2>
+    <div class="next-list" data-continue></div>
+  </div>
+
+  <h2 class="title">Read next</h2>
+  <div class="next-list" data-next></div>
+
+  <h2 class="title">Badges</h2>
+  <p class="sub" data-badge-sum></p>
+  <ul class="badge-list" data-badges></ul>
+
+  <div class="write-cta card-box">
+    <span class="eyebrow">From reader to author</span>
+    <h2>Write for the journal</h2>
+    <p data-write-line>Every article here began as a student's question. Yours could be in the next volume.</p>
+    <div class="acts"><a class="btn" href="/submit/">How to submit</a> <a class="btn alt" href="/call-for-papers/">Call for papers</a></div>
+  </div>
+
+  <div class="acct-data" data-when="in" hidden>
+    <h2 class="title">Your data</h2>
+    <p class="sub">Read the <a href="/privacy/">privacy notice</a>.</p>
+    <div class="acts center">
+      <button class="btn sm alt" type="button" data-export>Download my data</button>
+      <button class="btn sm alt" type="button" data-signout>Sign out</button>
+      <button class="btn sm danger" type="button" data-delete>Delete my account</button>
+    </div>
+  </div>
+</div></section>
+<script type="module" src="/assets/js/account.js"></script>

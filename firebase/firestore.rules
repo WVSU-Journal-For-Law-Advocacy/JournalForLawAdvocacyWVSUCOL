@@ -1,0 +1,47 @@
+rules_version = '2';
+// WVSU Journal for Law Advocacy: reader accounts.
+// Paste this into Firebase console → Firestore Database → Rules → Publish.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isMe(uid) { return signedIn() && request.auth.uid == uid; }
+
+    // A reader's profile. Private unless they turn on "public".
+    match /users/{uid} {
+      allow read: if isMe(uid) || resource.data.public == true;
+      allow create, update: if isMe(uid) && validProfile(request.resource.data);
+      allow delete: if isMe(uid);
+
+      // Reading progress, one document per article. Only the reader sees it.
+      match /progress/{slug} {
+        allow read, delete: if isMe(uid);
+        allow create, update: if isMe(uid) && validProgress(request.resource.data);
+      }
+    }
+
+    // Editors (moderation, submissions). Added by hand in the console; never writable from the site.
+    match /editors/{uid} {
+      allow read: if isMe(uid);
+      allow write: if false;
+    }
+
+    function validProfile(d) {
+      return d.keys().hasOnly(['name', 'bio', 'school', 'photo', 'public', 'joined', 'badges', 'weeks', 'stats', 'consent'])
+        && (!('name' in d) || (d.name is string && d.name.size() <= 80))
+        && (!('bio' in d) || (d.bio is string && d.bio.size() <= 280))
+        && (!('school' in d) || (d.school is string && d.school.size() <= 80))
+        && (!('photo' in d) || (d.photo is string && d.photo.size() <= 90000))
+        && (!('public' in d) || d.public is bool)
+        && (!('badges' in d) || (d.badges is list && d.badges.size() <= 200))
+        && (!('weeks' in d) || (d.weeks is map && d.weeks.size() <= 600))
+        && (!('stats' in d) || d.stats is map);
+    }
+    function validProgress(d) {
+      return d.keys().hasOnly(['read', 'pct', 'done', 'doneAt', 'self', 'words', 'updated'])
+        && d.read is list && d.read.size() <= 3000
+        && d.pct is number && d.pct >= 0 && d.pct <= 100
+        && d.done is bool;
+    }
+  }
+}

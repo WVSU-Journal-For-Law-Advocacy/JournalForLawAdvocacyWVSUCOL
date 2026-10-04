@@ -91,3 +91,7 @@ Requires Node 20 or newer.
 npm install
 npm start
 ```
+
+## Licence
+
+The website code is MIT-licensed. The articles, PDFs, news, photographs and the Journal's seal and name are **all rights reserved** by their authors and the Journal. See [LICENSE.md](LICENSE.md).

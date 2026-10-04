@@ -95,8 +95,15 @@ layout: layouts/base.njk
       <button class="btn sm alt" type="button" data-copy-link>Copy link</button>
     </div>
     <div class="orn" aria-hidden="true"><span>❦</span></div>
-    <h2>Published here? Share it.</h2>
-    <p class="off">Ready-made images for Instagram and Facebook.</p>
+    <h2>Share it on Instagram</h2>
+    <p class="off">Swipe through designs for a Story or a post, put the title over your own photo, or take a transparent sticker for your Story.</p>
+    <div class="studio-open-btns">
+      <button class="btn" type="button" data-studio="classic" data-fmt="story" hidden>Make a Story</button>
+      <button class="btn alt" type="button" data-studio="classic" data-fmt="post" hidden>Make a post</button>
+      <button class="btn alt" type="button" data-studio="photo" hidden>Use my photo</button>
+    </div>
+    <details class="kit-more">
+    <summary>Ready-made images</summary>
     <div class="kit">
       <figure>
         <img src="/share/{{ slug }}-post.png" width="1080" height="1350" loading="lazy" alt="Share image: {{ title }}, published in Volume {{ volume }} of the {{ site.title }}">
@@ -111,6 +118,7 @@ layout: layouts/base.njk
         <a class="btn sm alt" href="/share/{{ slug }}-story.png" download="{{ slug }}-story.png">Download</a>
       </figure>
     </div>
+    </details>
     <p class="caption-box" id="share-caption">Proud to share that my work, “{{ title }},” is published in Volume {{ volume }} of the {{ site.title }}, {{ site.institution }}.
 Read it here: {{ url }}
 #JournalForLawAdvocacy #WVSULaw</p>
@@ -184,3 +192,15 @@ Read it here: {{ url }}
   {%- elif toc and toc.length > 2 %}<a href="#fulltext"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 10h14M5 15h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Text</a>
   {%- else %}<a href="/archive/volume-{{ volume }}/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10l4 4v12H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Volume</a>{% endif %}
 </nav>
+
+{#- data for the share studio (drawn on the reader's device) -#}
+{%- set shareData = {
+  slug: slug, title: title, authors: author | splitAuthors, kind: kind, url: url,
+  host: site.url | replace("https://", "") | replace("http://", ""),
+  volume: volume, roman: volume | roman, year: year, ay: vol.data.academic_year if vol else "",
+  pages: (first_page + ("–" + last_page if last_page and last_page != first_page else "")) if first_page else "",
+  pageCount: (last_page - first_page + 1) if (first_page and last_page) else 0,
+  minutes: minutes or 0, notes: parts.count if hasText else 0
+} %}
+<script type="application/json" id="share-data">{{ shareData | jsonScript | safe }}</script>
+<script src="/assets/js/share-studio.js" defer></script>

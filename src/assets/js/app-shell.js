@@ -143,7 +143,7 @@ if (rank) {
     let tones = {}; try { tones = JSON.parse(document.getElementById('area-tones').textContent); } catch (e) {}
     rank.querySelector('[data-rank-list]').innerHTML = top.map((p, i) => `<li><a href="${esc(p.url)}">
       <span class="rk-n">${i + 1}</span>
-      <span class="cover nc-cover" style="--tone:${esc(tones[p.area] || '#4A2466')}" aria-hidden="true"><span class="cv-title">${esc(coverTitle(p.title))}</span></span>
+      <span class="cover nc-cover" style="--tone:${esc(tones[p.area] || '#4A2466')}" aria-hidden="true"><span class="cv-title${coverTitle(p.title).length > 46 ? ' is-long' : ''}">${esc(coverTitle(p.title))}</span></span>
       <span class="rk-body"><b>${esc(p.title)}</b><span>${esc(p.author)}</span><small>${p.reads.toLocaleString('en-PH')} full reads</small></span></a></li>`).join('');
     rank.hidden = false;
   }).catch(() => {});

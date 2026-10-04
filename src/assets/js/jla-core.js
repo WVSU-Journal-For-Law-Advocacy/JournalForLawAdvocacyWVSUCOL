@@ -103,6 +103,9 @@ export function badges(index, progress, weeks) {
     { id: 'early-bird', name: 'Early Bird', glyph: '☉', how: 'Finish a piece within 14 days of its volume launch',
       have: list.some((a) => done(a) && a.launched && progress[a.slug].doneAt - Date.parse(a.launched) < 14 * 864e5 && progress[a.slug].doneAt >= Date.parse(a.launched)) ? 1 : 0, need: 1 },
   ];
+  // taking part: first paragraph comment (flag kept in this browser by comments.js)
+  let flags = {}; try { flags = JSON.parse(localStorage.getItem('jla:flags') || '{}'); } catch (e) {}
+  out.push({ id: 'amicus-curiae', name: 'Amicus Curiae', glyph: '❝', how: 'Join a discussion on any paragraph', have: flags.commented ? 1 : 0, need: 1 });
   // a volume badge for every volume whose pieces are all online in full
   const vols = [...new Set(list.map((a) => a.volume))].sort((a, b) => b - a);
   for (const v of vols) {

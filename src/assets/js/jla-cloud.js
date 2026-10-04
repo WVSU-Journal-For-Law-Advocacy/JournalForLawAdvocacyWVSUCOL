@@ -27,7 +27,7 @@ let current; const waiters = [];
 export async function onUser(cb) {
   const s = await load();
   s.A.onAuthStateChanged(s.auth, async (u) => {
-    current = u || null;
+    current = u || null; editorP = null;
     if (u) { const me = await getProfile(u.uid).catch(() => null); local.setMe({ uid: u.uid, name: (me && me.name) || u.displayName || 'Reader', photo: (me && me.photo) || u.photoURL || '' }); }
     else local.setMe(null);
     cb(current);
@@ -117,6 +117,55 @@ export async function updateHighlight(id, fields) {
 export async function deleteHighlight(id) {
   const s = await load(); const u = current; if (!u) return;
   await s.F.deleteDoc(s.F.doc(s.db, 'users', u.uid, 'highlights', id));
+}
+
+/* ---------- paragraph comments ---------- */
+// bubble counts for one article: a single public read over plain HTTPS (no SDK needed)
+export async function threadCounts(slug) {
+  if (!enabled) return {};
+  const url = `https://firestore.googleapis.com/v1/projects/${config.projectId}/databases/(default)/documents/threads/${encodeURIComponent(slug)}?key=${config.apiKey}`;
+  const r = await fetch(url); if (!r.ok) return {};
+  const j = await r.json(); const f = (((j.fields || {}).counts || {}).mapValue || {}).fields || {};
+  return Object.fromEntries(Object.entries(f).map(([k, v]) => [k, Number(v.integerValue || v.doubleValue || 0)]));
+}
+export async function loadComments(slug, pid, { editor = false } = {}) {
+  const s = await load(); const col = s.F.collection(s.db, 'comments');
+  const q = editor ? s.F.query(col, s.F.where('slug', '==', slug), s.F.where('pid', '==', pid))
+    : s.F.query(col, s.F.where('slug', '==', slug), s.F.where('pid', '==', pid), s.F.where('hidden', '==', false));
+  const snap = await s.F.getDocs(q); const out = [];
+  snap.forEach((d) => { const x = d.data(); out.push({ id: d.id, ...x, created: x.created && x.created.toMillis ? x.created.toMillis() : Date.now() }); });
+  return out;
+}
+const bump = (s, slug, pid, n) => s.F.setDoc(s.F.doc(s.db, 'threads', slug), { counts: { [pid]: s.F.increment(n) } }, { merge: true });
+export async function addComment({ slug, pid, text, parent = null, name, thumb = '' }) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const ref = await s.F.addDoc(s.F.collection(s.db, 'comments'), {
+    slug, pid, uid: u.uid, name: String(name || 'Reader').slice(0, 80), thumb: String(thumb || '').slice(0, 8000),
+    text: String(text).trim().slice(0, 1000), parent, created: s.F.serverTimestamp(), hidden: false, likedBy: [],
+  });
+  await bump(s, slug, pid, 1).catch(() => {});
+  return ref.id;
+}
+export async function toggleLike(id, liked) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.updateDoc(s.F.doc(s.db, 'comments', id), { likedBy: liked ? s.F.arrayUnion(u.uid) : s.F.arrayRemove(u.uid) });
+}
+export async function deleteComment(c) {
+  const s = await load(); await s.F.deleteDoc(s.F.doc(s.db, 'comments', c.id));
+  if (!c.hidden) await bump(s, c.slug, c.pid, -1).catch(() => {});
+}
+export async function setHidden(c, hidden) {
+  const s = await load(); await s.F.updateDoc(s.F.doc(s.db, 'comments', c.id), { hidden });
+  await bump(s, c.slug, c.pid, hidden ? -1 : 1).catch(() => {});
+}
+export async function reportComment(c, reason) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.addDoc(s.F.collection(s.db, 'reports'), { commentId: c.id, slug: c.slug, pid: c.pid, uid: u.uid, reason: String(reason || '').slice(0, 300), created: s.F.serverTimestamp() });
+}
+let editorP;
+export function isEditor() {
+  const u = current; if (!u) return Promise.resolve(false);
+  return editorP || (editorP = load().then((s) => s.F.getDoc(s.F.doc(s.db, 'editors', u.uid))).then((d) => d.exists()).catch(() => false));
 }
 
 /* ---------- your data ---------- */

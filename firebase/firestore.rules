@@ -26,6 +26,54 @@ service cloud.firestore {
       }
     }
 
+    function isEditor() { return signedIn() && exists(/databases/$(database)/documents/editors/$(request.auth.uid)); }
+
+    // Bubble counts per article: { counts: { paragraphId: n } }. Public to read.
+    // Signed-in readers may only change the counts map (the site adds 1 when posting).
+    match /threads/{slug} {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.resource.data.keys().hasOnly(['counts'])
+        && request.resource.data.counts is map
+        && request.resource.data.counts.size() <= 2000;
+      allow delete: if isEditor();
+    }
+
+    // Paragraph comments: live at once; hidden ones are visible to editors only.
+    match /comments/{id} {
+      allow read: if resource.data.hidden == false || isEditor();
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['slug', 'pid', 'uid', 'name', 'thumb', 'text', 'parent', 'created', 'hidden', 'likedBy'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.slug is string && request.resource.data.slug.size() <= 120
+        && request.resource.data.pid is string && request.resource.data.pid.size() <= 20
+        && request.resource.data.name is string && request.resource.data.name.size() <= 80
+        && request.resource.data.thumb is string && request.resource.data.thumb.size() <= 8000
+        && request.resource.data.text is string && request.resource.data.text.size() > 0 && request.resource.data.text.size() <= 1000
+        && (request.resource.data.parent == null || (request.resource.data.parent is string && request.resource.data.parent.size() <= 40))
+        && request.resource.data.created == request.time
+        && request.resource.data.hidden == false
+        && request.resource.data.likedBy == [];
+      // anyone signed in may like or unlike (their own uid only); editors may hide or restore
+      allow update: if signedIn() && (
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy'])
+          && request.resource.data.likedBy.size() <= 5000
+          && (request.resource.data.likedBy.toSet().difference(resource.data.likedBy.toSet()) == [request.auth.uid].toSet()
+              || resource.data.likedBy.toSet().difference(request.resource.data.likedBy.toSet()) == [request.auth.uid].toSet()))
+        || (isEditor() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['hidden'])));
+      allow delete: if isEditor() || (signedIn() && resource.data.uid == request.auth.uid);
+    }
+
+    // Reports on comments: anyone signed in can file one; only editors read or clear them.
+    match /reports/{id} {
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['commentId', 'slug', 'pid', 'uid', 'reason', 'created'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 300
+        && request.resource.data.created == request.time;
+      allow read, delete: if isEditor();
+    }
+
     // Editors (moderation, submissions). Added by hand in the console; never writable from the site.
     match /editors/{uid} {
       allow read: if isMe(uid);

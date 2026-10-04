@@ -11,7 +11,7 @@ const bar = document.querySelector('.read-tools');
 
 /* ---------- display settings ---------- */
 const PREFS = 'jla:prefs';
-const defaults = { size: 3, lead: 2, theme: '', width: 'comfy' };
+const defaults = { size: 3, lead: 2, theme: '', width: 'comfy', bubbles: 'on' };
 const getPrefs = () => { try { return { ...defaults, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch (e) { return { ...defaults }; } };
 let prefs = getPrefs();
 function apply() {
@@ -19,6 +19,7 @@ function apply() {
   root.style.setProperty('--rl', [1.6, 1.75, 1.95][prefs.lead - 1] || 1.75);
   root.classList.toggle('reading-wide', prefs.width === 'wide');
   root.classList.toggle('reading-sepia', prefs.theme === 'sepia');
+  root.classList.toggle('no-bubbles', prefs.bubbles === 'off');
   if (prefs.theme === 'night' || prefs.theme === 'paper' || prefs.theme === 'sepia') {
     root.dataset.theme = prefs.theme === 'night' ? 'dark' : 'light';
     try { localStorage.setItem('jla-theme', root.dataset.theme); } catch (e) {}
@@ -39,6 +40,7 @@ function openSettings() {
     + seg('lead', 'Line spacing', [[1, 'Tight'], [2, 'Normal'], [3, 'Airy']])
     + seg('theme', 'Page', [['paper', 'Paper'], ['sepia', 'Sepia'], ['night', 'Night']])
     + seg('width', 'Column', [['comfy', 'Comfortable'], ['wide', 'Wide']])
+    + seg('bubbles', 'Paragraph comments', [['on', 'Show'], ['off', 'Hide']])
     + '<p class="rt-row"><button class="btn sm alt" type="button" data-focus-on>Focus mode</button></p>';
   node.addEventListener('click', (e) => {
     const b = e.target.closest('[data-pref]');
@@ -69,7 +71,7 @@ addEventListener('keydown', (e) => { if (e.key === 'Escape' && root.classList.co
 const synth = window.speechSynthesis;
 let player, queue = [], qi = 0, speaking = false, rate = 1;
 const paraEls = () => [...text.querySelectorAll('[data-pid]')];
-const cleanText = (el) => { const c = el.cloneNode(true); c.querySelectorAll('sup, .footnote-ref').forEach((x) => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+const cleanText = (el) => { const c = el.cloneNode(true); c.querySelectorAll('sup, .footnote-ref, .pc-bubble').forEach((x) => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
 const sentences = (t) => t.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) || [t]; // short pieces: some voices stop after ~15 s
 function voice() {
   const vs = synth.getVoices(); return vs.find((v) => /en-PH/i.test(v.lang)) || vs.find((v) => /^en/i.test(v.lang) && /Google|Natural|Samantha|Daniel/i.test(v.name)) || vs.find((v) => /^en/i.test(v.lang));
@@ -136,7 +138,7 @@ let cloud = null, marks = [];
 // wrap the highlighted words inside paragraph `pid`, matching text with footnote numbers left out
 function paint(h) {
   const el = text.querySelector(`[data-pid="${h.pid}"]`); if (!el) return;
-  const nodes = []; const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement.closest('sup, .footnote-ref') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const nodes = []; const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement.closest('sup, .footnote-ref, .pc-bubble') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
   let full = '', n; while ((n = walk.nextNode())) { nodes.push([n, full.length]); full += n.data; }
   const norm = (s) => s.replace(/\s+/g, ' ');
   // map positions in the whitespace-collapsed text back to the raw text

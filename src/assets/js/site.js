@@ -366,7 +366,7 @@ if (quoteZone.length && citebox) {
     const sel = getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return '';
     const range = sel.getRangeAt(0);
     if (!quoteZone.some((z) => z.contains(range.commonAncestorContainer))) return '';
-    const frag = range.cloneContents(); frag.querySelectorAll('.footnote-ref, sup').forEach((x) => x.remove());
+    const frag = range.cloneContents(); frag.querySelectorAll('.footnote-ref, sup, .pc-bubble').forEach((x) => x.remove());
     const div = document.createElement('div'); div.append(frag);
     return div.textContent.replace(/\s+/g, ' ').trim();
   };

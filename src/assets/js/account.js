@@ -66,10 +66,10 @@ function paintProfile(u) {
 }
 
 // a square, small photo made in the browser (no file storage needed)
-async function shrink(file) {
+async function shrink(file, px = 256) {
   const bmp = await createImageBitmap(file);
-  const s = Math.min(bmp.width, bmp.height), cv = document.createElement('canvas'); cv.width = cv.height = 256;
-  cv.getContext('2d').drawImage(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s, s, 0, 0, 256, 256);
+  const s = Math.min(bmp.width, bmp.height), cv = document.createElement('canvas'); cv.width = cv.height = px;
+  cv.getContext('2d').drawImage(bmp, (bmp.width - s) / 2, (bmp.height - s) / 2, s, s, 0, 0, px, px);
   for (const [type, q] of [['image/webp', 0.82], ['image/jpeg', 0.8], ['image/jpeg', 0.6]]) {
     const url = cv.toDataURL(type, q); if (url.startsWith(`data:${type}`) && url.length < 80000) return url;
   }
@@ -85,7 +85,7 @@ function wireProfile(u) {
   });
   $('.ap-photo input').addEventListener('change', async (e) => {
     const file = e.target.files && e.target.files[0]; if (!file) return;
-    try { const photo = await shrink(file); await cloud.saveProfile({ photo }); profile = { ...profile, photo }; paintProfile(u); say('Photo updated'); }
+    try { const photo = await shrink(file), thumb = await shrink(file, 64); await cloud.saveProfile({ photo, thumb }); profile = { ...profile, photo, thumb }; paintProfile(u); say('Photo updated'); }
     catch (err) { say('That photo could not be used'); }
   });
   $('[data-signout]').addEventListener('click', async () => { await cloud.signOut(); location.reload(); });

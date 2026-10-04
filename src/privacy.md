@@ -19,7 +19,9 @@ If you sign in, the Journal keeps:
 - your **name and email address**, and your Google profile photo if you sign in with Google;
 - anything you add to your profile: a **photo**, a short **bio**, and your **school or office**;
 - your **reading record**: which articles you have opened, which paragraphs you have read, what you have finished, and the weeks you read;
-- the **badges** you have earned.
+- the **badges** you have earned;
+- your **highlights and private notes**, which only you can see;
+- any **comments** you post on articles, which are **public**: they show your name and a small version of your profile photo. Reports you file on comments are seen only by the editors.
 
 We use this only to run your library: to save your progress across devices, show your stats and badges, and suggest what to read next. We do not sell it, use it for advertising, or share it with anyone else.
 

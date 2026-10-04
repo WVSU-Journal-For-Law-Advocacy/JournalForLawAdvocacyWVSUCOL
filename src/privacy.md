@@ -14,6 +14,8 @@ You don't need an account to read. The website counts how much of each article y
 
 In the installed app, the faded photographs on the book covers are shown directly from **Unsplash** (unsplash.com), the free photo library they come from, so your device asks Unsplash's servers for those pictures as it would for any image on the web. Nothing about you or your reading is sent with them. The website itself doesn't show them.
 
+Each article shows simple **readership figures** (views, full reads, PDF downloads). When you open, finish, or download an article, your browser adds one to that article's count; it sends only the article and what happened, nothing about you, and remembers on your device that it has already counted (so a view counts at most once a day, and a read or download once).
+
 ## What a reader account keeps
 
 If you sign in, the Journal keeps:

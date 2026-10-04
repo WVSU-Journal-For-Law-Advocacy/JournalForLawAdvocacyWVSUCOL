@@ -26,6 +26,11 @@ layout: layouts/base.njk
 
 <section><div class="wrap">
   {%- if contents.length %}
+  {%- set mtop = [] %}{% for a in contents %}{% set _ = mtop.push({ slug: a.page.fileSlug, title: a.data.title, url: a.url, author: a.data.author }) %}{% endfor %}
+  <aside class="most-read" data-metrics-top="{{ mtop | dump }}" hidden aria-labelledby="mr-h">
+    <h2 id="mr-h">Most read</h2>
+    <ol></ol>
+  </aside>
   <div class="toc" id="contents" style="max-width:46rem">
     <h2>Contents</h2>
     <p class="meta">{{ contents.length }} {{ "item" if contents.length == 1 else "items" }}</p>
@@ -77,3 +82,4 @@ layout: layouts/base.njk
     <button class="btn" type="submit">Subscribe</button>
   </form>
 </div></section>
+<script type="module" src="/assets/js/metrics.js"></script>

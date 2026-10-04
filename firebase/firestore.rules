@@ -143,6 +143,12 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Article metrics (views, full reads, PDF downloads): public to read; only the site's server function counts.
+    match /stats/{slug} {
+      allow read: if true;
+      allow write: if false;
+    }
+
     // Log of board announcements (written by the server only).
     match /announcements/{id} {
       allow read: if isEditor();

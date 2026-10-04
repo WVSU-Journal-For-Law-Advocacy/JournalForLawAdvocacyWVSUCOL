@@ -38,6 +38,8 @@ searchExclude: true
 
 <section><div class="wrap">
   <h2 class="title">Publications</h2>
+  {%- set mslugs = [] %}{% for a in person.articles %}{% set _ = mslugs.push(a.page.fileSlug) %}{% endfor %}
+  <p class="readership" data-metrics-sum="{{ mslugs | join(',') }}" hidden>Readership on this site{% if person.articles.length > 1 %}, across {{ person.articles.length }} pieces{% endif %}: <b data-m="views"></b> views · <b data-m="reads"></b> full reads · <b data-m="downloads"></b> PDF downloads</p>
   <div class="list">
     {%- for a in person.articles %}
     {%- include "entry.njk" %}
@@ -74,3 +76,4 @@ searchExclude: true
 </div></section>
 {%- endif %}
 <script type="module" src="/assets/js/author-page.js"></script>
+<script type="module" src="/assets/js/metrics.js"></script>

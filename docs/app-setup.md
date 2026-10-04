@@ -42,6 +42,6 @@ When the Journal runs as the installed app it switches to an app layer (`src/ass
 an opening animation, a bottom tab bar (Home · Explore · Search · Library · More), a compact app bar with a back arrow,
 slide-in page transitions, and an app Home with book-cover shelves. The website is unchanged.
 
-- **Preview it in any browser:** open `https://journalforlawadvocacy.netlify.app/?app=1`. Turn it off with `?app=0`.
+- **Preview it in any browser:** open `https://wvsujournalforlawadvocacy.netlify.app/?app=1`. Turn it off with `?app=0`.
 - **Cover colours** for each area of law are in `src/_data/site.json` → `area_tones`. A new area without a colour gets plum.
 - The opening animation plays once each time the app is opened (not on every page), and is skipped for readers who turn on "reduce motion".

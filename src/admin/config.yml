@@ -12,7 +12,7 @@ backend:
     uploadMedia: "Upload “{{path}}”"
     deleteMedia: "Delete “{{path}}”"
 
-site_url: https://journalforlawadvocacy.netlify.app
+site_url: https://wvsujournalforlawadvocacy.netlify.app
 logo_url: /assets/img/seal-240.png
 media_folder: src/uploads
 public_folder: /uploads

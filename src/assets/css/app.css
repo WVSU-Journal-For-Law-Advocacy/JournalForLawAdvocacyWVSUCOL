@@ -307,3 +307,106 @@ html.is-app .art-photo a{color:inherit;text-decoration:underline;text-decoration
 .cover .cv-title{min-height:0;-webkit-line-clamp:5}
 .cover .cv-title.is-long{font-size:.84rem;line-height:1.14}
 html.is-app .art-cover .cv-title.is-long{font-size:.9rem}
+
+/* =================== Premium pass: brand, featured carousel, ranking, aura, motion, wide screens =================== */
+
+/* the brand, large, at the top of Home (the app bar's small brand appears once you scroll) */
+.ah-brand{display:flex;align-items:center;gap:1rem;padding:var(--s4) 0 var(--s2)}
+.ah-brand img{flex:none;width:76px;height:76px;border-radius:50%;filter:drop-shadow(0 8px 18px rgba(60,30,10,.28))}
+.ahb-pre{margin:0;font:600 .78rem/1 var(--caps);letter-spacing:.42em;color:var(--gold)}
+.ahb-name{margin:.25rem 0 0;font:600 clamp(1.6rem,6.4vw,2.6rem)/1.02 var(--display);color:var(--ink);letter-spacing:-.005em}
+.ahb-est{margin:.35rem 0 0;font:500 .82rem/1 var(--caps);letter-spacing:.2em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+html.is-app body[data-home] .site-head .brand{opacity:0;transition:opacity .3s}
+html.is-app.scrolled body[data-home] .site-head .brand{opacity:1}
+.app-home .ah-hello{padding:var(--s3) 0 0}
+.app-home .ah-hello h1{font-size:1.7rem}
+
+/* the featured carousel */
+.feature-rail{margin-top:var(--s5)}
+.fr-track{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin-inline:calc(-1 * var(--gutter));padding:0 var(--gutter);scroll-padding-inline:var(--gutter)}
+.fr-track::-webkit-scrollbar{display:none}
+.fr-slide{position:relative;isolation:isolate;flex:none;width:calc(100% - 4px);min-height:220px;scroll-snap-align:start;display:grid;grid-template-columns:minmax(0,1fr) 104px;align-items:center;gap:1rem;
+  padding:1.3rem 1.2rem;overflow:hidden;border-radius:22px;color:#F7F3EA;text-decoration:none;
+  background:linear-gradient(120deg,color-mix(in srgb,var(--tone) 92%,#000),color-mix(in srgb,var(--tone) 55%,#000));box-shadow:0 22px 50px rgba(28,20,36,.28)}
+.fr-slide::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--aura,none) center/cover no-repeat;opacity:.32;mix-blend-mode:luminosity;transform:scale(1.04)}
+.fr-slide::after{content:"";position:absolute;inset:8px;z-index:-1;border:1px solid rgba(226,198,126,.28);border-radius:16px;pointer-events:none}
+.fr-text{display:flex;flex-direction:column;align-items:flex-start;gap:.35rem;min-width:0}
+.fr-eyebrow{font:600 .74rem/1.2 var(--caps);letter-spacing:.18em;text-transform:lowercase;font-variant:small-caps;color:#E2C67E}
+.fr-title{font:600 clamp(1.5rem,5.6vw,2.3rem)/1.04 var(--display);text-wrap:balance}
+.fr-sub{font:italic 500 1rem/1.3 var(--display);color:rgba(247,243,234,.88);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.fr-meta{font-size:.8rem;color:rgba(247,243,234,.65)}
+.fr-cta{margin-top:.5rem;padding:.5rem 1.05rem;border-radius:999px;background:#E2C67E;color:#1C1424;font:600 .9rem/1 var(--caps);letter-spacing:.08em;text-transform:lowercase;font-variant:small-caps}
+.fr-book{width:104px;transform:rotate(3deg);filter:drop-shadow(0 14px 22px rgba(0,0,0,.45));transition:transform .5s var(--ease)}
+.fr-book .cover{box-shadow:none}
+.fr-dots{display:flex;justify-content:center;gap:6px;margin:.75rem 0 0}
+.fr-dots button{width:7px;height:7px;padding:0;border-radius:999px;background:var(--rule-2);transition:width .3s var(--ease),background .3s}
+.fr-dots button.on{width:22px;background:var(--gold)}
+
+/* most read, ranked */
+.ah-note{font-size:.78rem;color:var(--muted)}
+.rank-list{list-style:none;margin:0;padding:0;display:grid;gap:.5rem}
+.rank-list a{display:grid;grid-template-columns:2.2rem 52px minmax(0,1fr);align-items:center;gap:.8rem;padding:.55rem .6rem;border-radius:14px;background:var(--card);border:1px solid var(--rule);color:var(--ink);text-decoration:none}
+.rk-n{font:600 2rem/1 var(--display);text-align:center;color:var(--gold)}
+.rank-list li:first-child .rk-n{background:linear-gradient(180deg,#F4E2A8,#A98236);-webkit-background-clip:text;background-clip:text;color:transparent}
+.rank-list .nc-cover{width:52px;padding:.35rem .3rem .3rem .45rem;border-radius:3px 7px 7px 3px}
+.rank-list .nc-cover .cv-title{font-size:.5rem;background:none;padding:0}
+.rk-body{display:flex;flex-direction:column;min-width:0}
+.rk-body b{font:600 1.02rem/1.2 var(--display);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rk-body span{font-size:.8rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rk-body small{font-size:.74rem;color:var(--plum)}
+
+/* author names on covers: their pride, in small capitals */
+.cover .cv-author{margin:-.2em 0 .7em;font:600 .5rem/1.25 var(--caps);letter-spacing:.14em;text-transform:lowercase;font-variant:small-caps;color:rgba(247,243,234,.82);
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.related-shelf .cv-author{font-size:5.6cqi}
+.entry-cover .cv-author,.cont-card .cv-author,.nc-cover .cv-author{display:none}
+
+/* the article screen: an aura instead of a cover; the photo as a wide, faded backdrop in the area's colour */
+.art-aura{display:none}
+html.is-app .art-head{position:relative;isolation:isolate;padding-top:clamp(2.5rem,9vh,5rem)}
+html.is-app .art-aura{display:block;position:absolute;left:0;right:0;top:calc(-1 * (var(--appbar) + env(safe-area-inset-top)));bottom:0;z-index:-1;pointer-events:none;overflow:hidden;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--tone) 42%,var(--paper)) 0%,color-mix(in srgb,var(--tone) 18%,var(--paper)) 55%,var(--paper) 100%)}
+html.is-app .art-aura::before{content:"";position:absolute;inset:0;background:var(--aura,none) center 35%/cover no-repeat;opacity:.3;mix-blend-mode:luminosity;transform:scale(1.05);
+  -webkit-mask-image:linear-gradient(180deg,#000 25%,transparent 92%);mask-image:linear-gradient(180deg,#000 25%,transparent 92%)}
+html.is-app .art-cover{display:none}
+
+/* motion: covers lift and grow under the pointer; tiles and cards answer */
+@media (hover:hover){
+  html.is-app .cover-card .cover,html.is-app .book-item .cover{transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .45s cubic-bezier(.2,.8,.2,1)}
+  html.is-app .cover-card:hover .cover,html.is-app .book-item:hover .cover{transform:translateY(-8px) scale(1.06);box-shadow:0 26px 40px rgba(28,20,36,.34),0 2px 4px rgba(0,0,0,.15)}
+  html.is-app .cover-card:hover .cc-title{color:var(--plum)}
+  html.is-app .fr-slide:hover .fr-book{transform:rotate(0deg) scale(1.06)}
+  html.is-app .area-tile,html.is-app .rank-list a,html.is-app .cont-card,html.is-app .write-card{transition:transform .3s var(--ease),box-shadow .3s var(--ease),filter .3s}
+  html.is-app .area-tile:hover,html.is-app .rank-list a:hover,html.is-app .cont-card:hover,html.is-app .write-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(28,20,36,.16)}
+  html.is-app .area-tile:hover{filter:brightness(1.12)}
+}
+.app-home .shelf{padding-top:.8rem;padding-bottom:1.2rem}
+
+/* the app on wide screens (a desktop install): a centred page, more per row, a floating tab bar */
+@media (min-width:760px){
+  html.is-app .app-home{max-width:1120px;margin-inline:auto;padding-inline:var(--gutter)}
+  html.is-app .app-home>*{margin-inline:0}
+  html.is-app .ah-brand img{width:96px;height:96px}
+  html.is-app .fr-slide{min-height:300px;grid-template-columns:minmax(0,1fr) 170px;padding:2rem 2.4rem}
+  html.is-app .fr-book{width:170px}
+  html.is-app .fr-title{font-size:2.6rem}
+  html.is-app .cover-card{width:150px}
+  html.is-app .area-grid{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+  html.is-app .area-tile{min-height:92px}
+  html.is-app .rank-list{grid-template-columns:repeat(auto-fill,minmax(320px,1fr))}
+  html.is-app .ah-news{display:grid;grid-template-columns:repeat(3,1fr)}
+  html.is-app .ah-news li+li{border-top:0;border-left:1px solid var(--rule)}
+  html.is-app .app-tabbar{left:50%;right:auto;bottom:18px;width:min(560px,calc(100% - 32px));transform:translateX(-50%);height:66px;padding-bottom:0;
+    border:1px solid color-mix(in srgb,var(--rule) 80%,transparent);border-radius:999px;box-shadow:0 18px 44px rgba(28,20,36,.18)}
+  html.is-app body:not(.has-actionbar){padding-bottom:110px}
+  html.is-app .app-tabbar [aria-current=page]::before{top:6px}
+}
+@media (min-width:1200px){
+  html.is-app .cover-card{width:164px}
+  html.is-app .shelf-book{width:160px}
+}
+/* aura, tuned: a lighter photograph, more of the area's colour, and the app bar clear over it until you scroll */
+html.is-app .art-aura{background:linear-gradient(180deg,color-mix(in srgb,var(--tone) 55%,var(--paper)) 0%,color-mix(in srgb,var(--tone) 22%,var(--paper)) 50%,var(--paper) 100%)}
+html.is-app .art-aura::before{opacity:.16;-webkit-mask-image:linear-gradient(180deg,#000 10%,transparent 75%);mask-image:linear-gradient(180deg,#000 10%,transparent 75%)}
+html.is-app:not(.scrolled) body.has-actionbar .site-head{background:transparent;-webkit-backdrop-filter:none;backdrop-filter:none}
+html.is-app body.has-actionbar .art-eyebrow a{color:var(--ink-2)}

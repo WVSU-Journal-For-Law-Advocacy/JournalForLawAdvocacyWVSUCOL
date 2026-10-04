@@ -31,6 +31,8 @@ const slim = (p, query) => ({
   link: `${p.links.html}?utm_source=${APP}&utm_medium=referral`, color: p.color || "", query: query || "", at: Date.now(),
 });
 // the picture as the covers use it: small, greyscale, cropped to a book's shape
+// the same picture as a wide backdrop (the article screen's aura)
+export const coverHero = (c, w = 1400) => (c && c.raw ? `${c.raw}&w=${w}&q=55&fm=jpg&fit=crop&ar=16:9&sat=-100` : "");
 export const coverSrc = (c, w = 420) => (c && c.raw ? `${c.raw}&w=${w}&q=60&fm=jpg&fit=crop&ar=2:3&sat=-100` : "");
 
 async function firestore() {

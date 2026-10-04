@@ -7,26 +7,66 @@ layout: layouts/base.njk
 {%- set featured = contents | featuredOf %}
 {#- ===== The app's Home (shown only in the installed app; the website keeps the page below) ===== -#}
 <div class="app-home" data-tones="{{ site.area_tones | dump }}">
-  <header class="ah-hello">
+  <header class="ah-brand">
+    <img src="/assets/img/seal-240.png" alt="" width="76" height="76">
+    <div>
+      <p class="ahb-pre">WVSU</p>
+      <p class="ahb-name">Journal for Law Advocacy</p>
+      <p class="ahb-est">Est. MMXXI · {{ site.city | replace(", Philippines", "") }}</p>
+    </div>
+  </header>
+  <div class="ah-hello">
     <p class="ah-date" data-today></p>
     <h1 data-hello>Welcome</h1>
     <a class="ah-streak" href="/account/" data-streak hidden></a>
-  </header>
+  </div>
+
+  {%- if cur %}
+  {#- featured: the current volume, then its lead pieces, as wide banners with their photo as a faded backdrop -#}
+  {%- set feat = [] %}{% set lead = contents | featuredOf %}{% if lead %}{% set _ = feat.push(lead) %}{% endif %}
+  {%- for a in contents %}{% if feat.length < 4 and a.url != lead.url %}{% set _ = feat.push(a) %}{% endif %}{% endfor %}
+  <section class="feature-rail" aria-roledescription="carousel" aria-label="Featured" data-rail>
+    <div class="fr-track" data-rail-track>
+      {%- set vp = ("volume-" + cur.data.volume) | coverFor(collections.coverPhotos) %}
+      <a class="fr-slide" href="{{ cur.url }}" style="--tone:{{ site.volume_tones[cur.data.volume | string] or '#4A2466' }}{% if vp %};--aura:url('{{ vp | coverHero(1000) }}'){% endif %}">
+        <span class="fr-text">
+          <span class="fr-eyebrow">The current volume</span>
+          <span class="fr-title">{{ cur.data.title }}</span>
+          {%- if cur.data.theme %}<span class="fr-sub">{{ cur.data.theme }}</span>{% endif %}
+          <span class="fr-meta">{{ contents.length }} pieces · AY {{ cur.data.academic_year }}</span>
+          <span class="fr-cta">Open the volume</span>
+        </span>
+        <span class="fr-book">{% set v = cur %}{% include "vol-cover.njk" %}</span>
+      </a>
+      {%- for a in feat %}
+      {%- set fp = a.page.fileSlug | coverFor(collections.coverPhotos) %}
+      <a class="fr-slide" href="{{ a.url }}" style="--tone:{{ site.area_tones[a.data.area] or '#4A2466' }}{% if fp %};--aura:url('{{ fp | coverHero(1000) }}'){% endif %}">
+        <span class="fr-text">
+          <span class="fr-eyebrow">{{ "Lead piece" if loop.first and a.data.featured else a.data.area }}</span>
+          <span class="fr-title">{{ a.data.title | coverTitle }}</span>
+          <span class="fr-sub">{{ a.data.author }}</span>
+          <span class="fr-meta">{{ a.data.kind }} · Vol. {{ a.data.volume | roman }}</span>
+          <span class="fr-cta">Read</span>
+        </span>
+        <span class="fr-book">{% set bare = true %}{% include "cover.njk" %}{% set bare = false %}</span>
+      </a>
+      {%- endfor %}
+    </div>
+    <p class="fr-dots" data-rail-dots aria-hidden="true"></p>
+  </section>
+
 
   <section class="ah-sec" data-continue hidden>
     <h2 class="ah-h">Continue reading</h2>
     <div data-continue-card></div>
   </section>
 
-  {%- if cur %}
-  <a class="vol-hero" href="{{ cur.url }}">
-    <span class="vh-num" aria-hidden="true">{{ cur.data.volume | roman }}</span>
-    <span class="vh-eyebrow">The current volume</span>
-    <span class="vh-title">{{ cur.data.title }}</span>
-    {%- if cur.data.theme %}<span class="vh-theme">{{ cur.data.theme }}</span>{% endif %}
-    <span class="vh-meta">{{ contents.length }} pieces · Academic Year {{ cur.data.academic_year }}</span>
-    <span class="vh-cta">Open the volume</span>
-  </a>
+  {#- most read: a ranking, shown once there are real figures -#}
+  {%- set ranked = [] %}{% for a in collections.articles %}{% set _ = ranked.push({ slug: a.page.fileSlug, title: a.data.title, url: a.url, author: a.data.author, area: a.data.area, volume: a.data.volume }) %}{% endfor %}
+  <section class="ah-sec ah-rank" data-rank="{{ ranked | dump }}" hidden>
+    <div class="ah-row"><h2 class="ah-h">Most read</h2><span class="ah-note">full reads on this site</span></div>
+    <ol class="rank-list" data-rank-list></ol>
+  </section>
 
   <section class="ah-sec">
     <div class="ah-row"><h2 class="ah-h">In {{ cur.data.title }}</h2><a href="{{ cur.url }}">See all</a></div>

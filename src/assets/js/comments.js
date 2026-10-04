@@ -8,6 +8,8 @@ const dataEl = document.getElementById('share-data');
 const slug = dataEl ? JSON.parse(dataEl.textContent).slug : null;
 const J = () => window.JLA || { say() {}, Sheet: { open() {}, close() {}, isOpen: () => false } };
 const FLAGS = 'jla:flags';
+// wide screens: discussions open in a panel on the right, so reading carries on beside them
+const sidePanel = () => matchMedia('(min-width: 1100px)').matches;
 
 let cloud, counts = {}, cloudReady = false;
 const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H9l-4 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
@@ -54,7 +56,7 @@ function openDiscussion() {
     ? `<ul>${live.map((el) => `<li><button type="button" data-pid="${el.dataset.pid}"><span class="dl-q">${esc(excerpt(el))}</span><span class="dl-n">${icon}${counts[el.dataset.pid]}</span></button></li>`).join('')}</ul>`
     : '<p class="off">No discussion yet. Tap any paragraph, or select a sentence, and choose <b>Comment</b> to start one.</p>';
   node.addEventListener('click', (e) => { const b = e.target.closest('[data-pid]'); if (b) openThread(b.dataset.pid); });
-  J().Sheet.open({ title: total() ? `Discussion · ${total()}` : 'Discussion', node });
+  J().Sheet.open({ title: total() ? `Discussion · ${total()}` : 'Discussion', node, side: sidePanel() });
 }
 
 /* ---------- the thread ---------- */
@@ -87,7 +89,7 @@ async function openThread(pid) {
   const node = document.createElement('div'); node.className = 'thread';
   node.innerHTML = `<blockquote class="th-quote">${esc(q.length > 220 ? q.slice(0, 220) + '…' : q)}</blockquote><div class="th-list"><p class="off">Loading the discussion…</p></div><div class="th-compose"></div>`;
   current = { pid, list: [], replyTo: null, node };
-  J().Sheet.open({ title: 'Discussion', node, closeHook: () => { current = null; } });
+  J().Sheet.open({ title: 'Discussion', node, side: sidePanel(), closeHook: () => { current = null; } });
   node.addEventListener('click', onThreadClick);
   try {
     const c = await ensureCloud(); if (!c) { node.querySelector('.th-list').innerHTML = '<p class="off">Comments are not available yet.</p>'; return; }

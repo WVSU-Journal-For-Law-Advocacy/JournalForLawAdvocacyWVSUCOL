@@ -171,7 +171,7 @@ const Sheet = (() => {
     el.addEventListener('click', (e) => { if (e.target.closest('[data-sheet-close]')) close(); });
     el.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') close();
-      if (e.key === 'Tab') {
+      if (e.key === 'Tab' && !el.classList.contains('is-side')) {
         const f = $$('a[href],button:not([hidden]),input,[tabindex]:not([tabindex="-1"])', el).filter((x) => x.offsetParent);
         if (!f.length) return;
         if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
@@ -187,19 +187,21 @@ const Sheet = (() => {
       if (dy > 90) close();
     });
   };
-  function open({ title, node, html, closeHook }) {
+  // side: true docks it to the right on wide screens (a reading companion): no dimming, the page keeps scrolling
+  function open({ title, node, html, closeHook, side }) {
     if (!el) build();
     if (isOpen()) close(true);
     lastFocus = document.activeElement; onClose = closeHook;
     titleEl.textContent = title || '';
     body.replaceChildren(); if (node) body.append(node); else body.innerHTML = html || '';
-    el.hidden = false; backdrop.hidden = false; lockScroll();
+    el.classList.toggle('is-side', !!side); el.setAttribute('aria-modal', String(!side)); root.classList.toggle('side-open', !!side);
+    el.hidden = false; backdrop.hidden = !!side; if (!side) lockScroll();
     requestAnimationFrame(() => { el.classList.add('open'); backdrop.classList.add('open'); });
     setTimeout(() => $('[data-sheet-close]', el).focus({ preventScroll: true }), 30);
   }
   function close(instant) {
     if (!isOpen()) return;
-    el.classList.remove('open'); backdrop.classList.remove('open'); unlockScroll();
+    el.classList.remove('open'); backdrop.classList.remove('open'); unlockScroll(); root.classList.remove('side-open');
     const done = () => { el.hidden = true; backdrop.hidden = true; if (onClose) { const h = onClose; onClose = null; h(); } };
     if (instant === true || reduceMotion) done(); else setTimeout(done, 280);
     if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
@@ -359,8 +361,10 @@ if (fnPanel && fulltext) {
     if (e.target.closest('[data-all-notes]')) { Sheet.close(true); fnPanel.open = true; }
   });
 
-  // wide screens: every note in the margin beside its marker, as in a printed law review.
-  // Notes stack without overlapping; long ones fold ("more"); hovering a marker or a note lights up the pair.
+  // wide screens, two ways (the reader chooses under Display → Footnotes):
+  //  · on hover (default): the note appears beside the marker you point at, focus, or click (a click keeps it open);
+  //  · in the margin: every note beside its marker, as in a printed law review, stacked without overlapping,
+  //    long ones folded ("more"), and the marker and its note lit together on hover.
   const side = document.createElement('aside'); side.className = 'sidenotes'; side.setAttribute('aria-hidden', 'true');
   const cards = refs.map((a) => {
     const note = noteOf(a); if (!note) return null;
@@ -369,26 +373,41 @@ if (fnPanel && fulltext) {
     side.append(c); return c;
   });
   fulltext.append(side); fulltext.classList.add('has-sidenotes');
-  const GAP = 10;
+  const GAP = 10, allMode = () => root.classList.contains('notes-margin');
   const layout = () => {
     if (!wide.matches) return;
+    const all = allMode(); side.classList.toggle('mode-all', all);
     const base = fulltext.getBoundingClientRect().top; let floor = 0;
     refs.forEach((a, i) => {
       const c = cards[i]; if (!c) return;
       const want = a.getBoundingClientRect().top - base - 4;
+      if (!all) { c.style.top = Math.max(0, want) + 'px'; return; } // one at a time: right beside its marker
       const top = Math.max(want, floor); c.style.top = top + 'px';
       const more = c.querySelector('.sn-more'); more.hidden = c.classList.contains('is-open') || c.scrollHeight <= c.clientHeight + 2;
       floor = top + c.offsetHeight + GAP;
     });
   };
-  const light = (i, on) => { refs[i].classList.toggle('is-active', on); if (cards[i]) cards[i].classList.toggle('is-active', on); };
+  let pinned = -1; const hideT = [];
+  const light = (i, on) => {
+    clearTimeout(hideT[i]);
+    if (on) { refs[i].classList.add('is-active'); if (cards[i]) cards[i].classList.add('is-active'); return; }
+    // a moment's grace, so the pointer can move from the marker onto the note
+    hideT[i] = setTimeout(() => { if (pinned === i) return; refs[i].classList.remove('is-active'); if (cards[i]) cards[i].classList.remove('is-active'); }, allMode() ? 0 : 250);
+  };
   refs.forEach((a, i) => {
     a.addEventListener('mouseenter', () => light(i, true)); a.addEventListener('mouseleave', () => light(i, false));
     a.addEventListener('focus', () => light(i, true)); a.addEventListener('blur', () => light(i, false));
     if (cards[i]) { cards[i].addEventListener('mouseenter', () => light(i, true)); cards[i].addEventListener('mouseleave', () => light(i, false)); }
-    // on wide screens a click on the marker brings its note into view instead of opening the sheet
-    a.addEventListener('click', () => { if (!wide.matches || !cards[i]) return; cards[i].scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); light(i, true); setTimeout(() => light(i, false), 1600); });
+    // on wide screens a click keeps the note open (hover mode) or brings it into view (margin mode), instead of the sheet
+    a.addEventListener('click', () => {
+      if (!wide.matches || !cards[i]) return;
+      if (allMode()) { cards[i].scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' }); light(i, true); setTimeout(() => light(i, false), 1600); return; }
+      const was = pinned; pinned = pinned === i ? -1 : i;
+      if (was >= 0 && was !== i) { refs[was].classList.remove('is-active'); if (cards[was]) cards[was].classList.remove('is-active'); }
+      if (pinned === i) light(i, true); else light(i, false);
+    });
   });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pinned >= 0) { const i = pinned; pinned = -1; light(i, false); } });
   side.addEventListener('click', (e) => {
     const m = e.target.closest('.sn-more'); if (!m) return;
     m.closest('.sidenote').classList.add('is-open'); layout();
@@ -398,6 +417,7 @@ if (fnPanel && fulltext) {
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
   addEventListener('load', relayout); relayout();
   wide.addEventListener('change', relayout);
+  new MutationObserver(relayout).observe(root, { attributes: true, attributeFilter: ['class'] }); // the reader switched modes
   // the end-of-article list: collapsed on phones, opened when someone jumps to it
   if (!wide.matches && !/^#fn/.test(location.hash)) fnPanel.open = false;
   const openPanel = () => { fnPanel.open = true; };

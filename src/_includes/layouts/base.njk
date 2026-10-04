@@ -104,7 +104,7 @@ try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
 {%- endif %}
 </head>
 {%- set appTabs = ["/", "/articles/", "/search/", "/account/"] %}
-<body{% if isArticle %} class="has-actionbar"{% endif %}{% if page.url in appTabs %} data-app-root{% endif %}>
+<body{% if isArticle %} class="has-actionbar"{% endif %}{% if page.url in appTabs %} data-app-root{% endif %}{% if page.url == "/" %} data-home{% endif %}>
 <div class="launch-screen" aria-hidden="true">
   <div class="ln-mark">
     <span class="ln-glow"></span>

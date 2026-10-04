@@ -11,7 +11,7 @@ const J = () => window.JLA || { say() {}, Sheet: { open() {}, close() {} } }; //
 
 /* ---------- display settings ---------- */
 const PREFS = 'jla:prefs';
-const defaults = { size: 3, lead: 2, theme: '', width: 'comfy', bubbles: 'on' };
+const defaults = { size: 3, lead: 2, theme: '', width: 'comfy', bubbles: 'on', notes: 'hover' };
 const getPrefs = () => { try { return { ...defaults, ...JSON.parse(localStorage.getItem(PREFS) || '{}') }; } catch (e) { return { ...defaults }; } };
 let prefs = getPrefs();
 function apply() {
@@ -20,6 +20,7 @@ function apply() {
   root.classList.toggle('reading-wide', prefs.width === 'wide');
   root.classList.toggle('reading-sepia', prefs.theme === 'sepia');
   root.classList.toggle('no-bubbles', prefs.bubbles === 'off');
+  root.classList.toggle('notes-margin', prefs.notes === 'margin'); // wide screens: every footnote in the margin
   if (prefs.theme === 'night' || prefs.theme === 'paper' || prefs.theme === 'sepia') {
     root.dataset.theme = prefs.theme === 'night' ? 'dark' : 'light';
     try { localStorage.setItem('jla-theme', root.dataset.theme); } catch (e) {}
@@ -41,6 +42,7 @@ function openSettings() {
     + seg('theme', 'Page', [['paper', 'Paper'], ['sepia', 'Sepia'], ['night', 'Night']])
     + seg('width', 'Column', [['comfy', 'Comfortable'], ['wide', 'Wide']])
     + seg('bubbles', 'Paragraph comments', [['on', 'Show'], ['off', 'Hide']])
+    + (matchMedia('(min-width: 1300px)').matches && document.querySelector('.footnote-ref') ? seg('notes', 'Footnotes', [['hover', 'On hover'], ['margin', 'In the margin']]) : '')
     + '<p class="rt-row"><button class="btn sm alt" type="button" data-focus-on>Focus mode</button></p>';
   node.addEventListener('click', (e) => {
     const b = e.target.closest('[data-pref]');

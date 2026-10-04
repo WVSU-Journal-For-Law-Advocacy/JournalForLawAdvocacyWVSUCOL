@@ -1,11 +1,13 @@
-{#- A typographic "book cover" for an article (app shelves). Expects `a` (an article). The colour follows its area of law. -#}
+{#- A typographic "book cover" for an article (app shelves). Expects `a` (an article); set `bare = true` for the artwork alone (inside another link). The colour follows its area of law. -#}
 {%- set cp = a.page.fileSlug | coverFor(collections.coverPhotos) %}
-<a class="cover-card" href="{{ a.url }}">
+{%- if not bare %}<a class="cover-card" href="{{ a.url }}">{% endif %}
   <span class="cover" style="--tone:{{ site.area_tones[a.data.area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}{% if a.data.honors and a.data.honors.length %}<b class="cv-honor">{{ a.data.honors[0] }}</b>{% endif %}
     <span class="cv-top">{{ a.data.area }}</span>
     {%- set st = a.data.title | coverTitle %}<span class="cv-title{% if st.length > 46 %} is-long{% endif %}">{{ st }}</span>
+    {%- set aus = a.data.author | splitAuthors %}<span class="cv-author">{{ aus[0] }}{% if aus.length > 1 %} et al.{% endif %}</span>
     <span class="cv-foot"><i></i>Vol. {{ a.data.volume | roman }} · {{ a.data.year | roman }}</span>
   </span>
+{%- if not bare %}
   <span class="cc-title">{{ a.data.title }}</span>
   <span class="cc-by">{{ a.data.author }}</span>
-</a>
+</a>{% endif %}

@@ -91,7 +91,7 @@ if (home) {
   let tones = {}; try { tones = JSON.parse(home.dataset.tones || '{}'); } catch (e) {}
   const roman = (n) => { n = Number(n) || 0; return [[1000, 'M'], [900, 'CM'], [500, 'D'], [400, 'CD'], [100, 'C'], [90, 'XC'], [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']].reduce((s, [v, r]) => { while (n >= v) { s += r; n -= v; } return s; }, ''); };
   const cover = (a) => `<span class="cover" style="--tone:${esc(tones[a.area] || '#4A2466')}">${photoOf(a)}<span class="cv-top">${esc(a.area || '')}</span>
-    <span class="cv-title${coverTitle(a.title).length > 46 ? ' is-long' : ''}">${esc(coverTitle(a.title))}</span><span class="cv-foot"><i></i>Vol. ${roman(a.volume)} · ${roman(a.year)}</span></span>`;
+    <span class="cv-title${coverTitle(a.title).length > 46 ? ' is-long' : ''}">${esc(coverTitle(a.title))}</span><span class="cv-author">${esc((a.authors || [])[0] || '')}${(a.authors || []).length > 1 ? ' et al.' : ''}</span><span class="cv-foot"><i></i>Vol. ${roman(a.volume)} · ${roman(a.year)}</span></span>`;
 
   loadIndex().then((index) => {
     const bySlug = Object.fromEntries(index.articles.map((a) => [a.slug, a]));
@@ -115,3 +115,36 @@ if (home) {
 
 /* phones have no "/" key */
 const q = document.getElementById('q'); if (q) q.placeholder = 'Search articles';
+
+/* ---------- Home: the featured carousel (swipe, dots, a gentle auto-advance that stops once you touch it) ---------- */
+const rail = document.querySelector('[data-rail]');
+if (rail) {
+  const track = rail.querySelector('[data-rail-track]'), slides = [...track.children], dots = rail.querySelector('[data-rail-dots]');
+  dots.innerHTML = slides.map((_, i) => `<button type="button" data-go="${i}" tabindex="-1"></button>`).join('');
+  const at = () => Math.round(track.scrollLeft / Math.max(1, slides[0].offsetWidth + 12));
+  const paint = () => { const i = at(); [...dots.children].forEach((d, k) => d.classList.toggle('on', k === i)); };
+  const go = (i) => track.scrollTo({ left: slides[(i + slides.length) % slides.length].offsetLeft - slides[0].offsetLeft, behavior: 'smooth' });
+  track.addEventListener('scroll', () => { clearTimeout(paint.t); paint.t = setTimeout(paint, 60); }, { passive: true });
+  dots.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) { stop(); go(+b.dataset.go); } });
+  let timer = 0; const stop = () => clearInterval(timer);
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && slides.length > 1) timer = setInterval(() => { if (!document.hidden) go(at() + 1); }, 6500);
+  ['pointerdown', 'wheel', 'touchstart', 'keydown'].forEach((ev) => track.addEventListener(ev, stop, { passive: true }));
+  paint();
+}
+
+/* ---------- Home: most read, ranked (shown once there are real figures) ---------- */
+const rank = document.querySelector('[data-rank]');
+if (rank) {
+  let pieces = []; try { pieces = JSON.parse(rank.dataset.rank); } catch (e) {}
+  import('./metrics.js').then(({ stats }) => stats(pieces.map((p) => p.slug))).then((all) => {
+    const top = pieces.map((p) => ({ ...p, ...(all[p.slug] || { reads: 0, views: 0 }) })).filter((p) => p.reads >= 3)
+      .sort((a, b) => b.reads - a.reads || b.views - a.views).slice(0, 5);
+    if (top.length < 3) return;
+    let tones = {}; try { tones = JSON.parse(document.getElementById('area-tones').textContent); } catch (e) {}
+    rank.querySelector('[data-rank-list]').innerHTML = top.map((p, i) => `<li><a href="${esc(p.url)}">
+      <span class="rk-n">${i + 1}</span>
+      <span class="cover nc-cover" style="--tone:${esc(tones[p.area] || '#4A2466')}" aria-hidden="true"><span class="cv-title">${esc(coverTitle(p.title))}</span></span>
+      <span class="rk-body"><b>${esc(p.title)}</b><span>${esc(p.author)}</span><small>${p.reads.toLocaleString('en-PH')} full reads</small></span></a></li>`).join('');
+    rank.hidden = false;
+  }).catch(() => {});
+}

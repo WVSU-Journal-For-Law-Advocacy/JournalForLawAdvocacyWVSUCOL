@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import markdownItFootnote from "markdown-it-footnote";
 import { generateShareCards } from "./og-cards.js";
-import { pickCovers, coverSrc } from "./covers.js";
+import { pickCovers, coverSrc, coverHero } from "./covers.js";
 
 export default function (eleventyConfig) {
   // Static files copied as-is
@@ -126,6 +126,7 @@ export default function (eleventyConfig) {
   });
   eleventyConfig.addFilter("coverFor", (slug, list) => (list || []).find((c) => c.slug === slug) || null);
   eleventyConfig.addFilter("coverSrc", (c, w) => coverSrc(c, w));
+  eleventyConfig.addFilter("coverHero", (c, w) => coverHero(c, w));
 
   let shareCardIssues = [];
   eleventyConfig.addCollection("issues", (api) => {

@@ -51,6 +51,10 @@ export async function signInGoogle() {
     throw e;
   }
 }
+// coming back from Google's sign-in page (the redirect fallback): surfaces its error, if any
+export async function redirectResult() { const s = await load(); return s.A.getRedirectResult(s.auth); }
+// is this address an email sign-in link?
+export async function isEmailLink() { const s = await load(); return s.A.isSignInWithEmailLink(s.auth, location.href); }
 // Messenger, Facebook, Instagram and other in-app browsers: Google does not allow signing in inside them
 export const inAppBrowser = () => {
   const ua = navigator.userAgent || '';

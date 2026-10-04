@@ -103,28 +103,106 @@ function wireProfile(u) {
 }
 
 /* ---------- sign-in ---------- */
+// what went wrong, in plain words (Firebase error codes)
+const SIGNIN_ERRORS = {
+  'auth/network-request-failed': "You seem to be offline. Check your connection and try again.",
+  'auth/too-many-requests': 'Too many attempts. Please wait a minute, then try again.',
+  'auth/invalid-email': "That email address doesn't look right.",
+  'auth/missing-email': 'Type your email address first.',
+  'auth/user-disabled': 'This account has been switched off. Write to col_journal@wvsu.edu.ph.',
+  'auth/unauthorized-domain': "Sign-in isn't set up for this address yet. Please tell the editors.",
+  'auth/unauthorized-continue-uri': "Sign-in isn't set up for this address yet. Please tell the editors.",
+  'auth/quota-exceeded': "The Journal has sent all the sign-in emails it can today. Use Google, or try again tomorrow.",
+  'auth/invalid-action-code': 'That sign-in link was already used or has expired. Send yourself a new one.',
+  'auth/expired-action-code': 'That sign-in link has expired. Send yourself a new one.',
+  'auth/account-exists-with-different-credential': 'This email already signs in another way. Try the other option.',
+  'auth/web-storage-unsupported': 'This browser is blocking sign-in (private mode or cookies off). Try your normal browser.',
+  'auth/operation-not-allowed': "This way of signing in isn't switched on. Please tell the editors.",
+};
+const QUIET = ['auth/popup-closed-by-user', 'auth/cancelled-popup-request', 'auth/user-cancelled'];
+const SENT = 'jla:email-sent';
+const TYPOS = { 'gmial.com': 'gmail.com', 'gmai.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com', 'gmail.co': 'gmail.com', 'gmail.con': 'gmail.com', 'gmaill.com': 'gmail.com',
+  'yaho.com': 'yahoo.com', 'yahoo.co': 'yahoo.com', 'hotmial.com': 'hotmail.com', 'hotmail.co': 'hotmail.com', 'outlok.com': 'outlook.com', 'wvsu.edu': 'wvsu.edu.ph' };
+const INBOX = [[/@(gmail|googlemail)\.com$/i, 'Open Gmail', 'https://mail.google.com/mail/u/0/#search/in%3Aanywhere+sign+in'], [/@(outlook|hotmail|live|msn)\./i, 'Open Outlook', 'https://outlook.live.com/mail/'],
+  [/@(yahoo|ymail)\./i, 'Open Yahoo Mail', 'https://mail.yahoo.com/'], [/@(icloud|me|mac)\.com$/i, 'Open iCloud Mail', 'https://www.icloud.com/mail']];
+
 function wireSignIn() {
-  const consent = $('#consent'), g = $('[data-google]'), form = $('[data-email]'), msg = $('.acct-signin .msg');
-  const sync = () => { g.disabled = !consent.checked; form.querySelector('button').disabled = !consent.checked; };
-  consent.addEventListener('change', sync); sync();
-  // inside Messenger / Facebook / Instagram: Google sign-in is blocked, so offer the real browser and the email link
+  const card = $('.si-card'), msg = $('.si-msg'), g = $('[data-google]'), form = $('[data-email]'), typo = $('[data-typo]');
+  const step = (name, busyText) => {
+    $$('[data-si]').forEach((el) => { el.hidden = el.dataset.si !== name; });
+    if (busyText) $('[data-busy-text]').textContent = busyText;
+    card.setAttribute('aria-busy', String(name === 'busy'));
+  };
+  const fail = (e, fallback) => {
+    if (e && QUIET.includes(e.code)) { msg.textContent = ''; return; }
+    msg.textContent = (e && SIGNIN_ERRORS[e.code]) || fallback || `Sign-in didn't finish${e && e.code ? ` (${e.code.replace('auth/', '')})` : ''}. Please try again.`;
+  };
+  const clean = (v) => String(v || '').trim().toLowerCase();
+  const valid = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+
+  // inside Messenger / Facebook / Instagram: Google blocks sign-in, so offer the real browser and the email link
   const app = cloud.inAppBrowser();
   if (app) {
-    const box = $('.inapp'); box.hidden = false; box.querySelector('[data-app]').textContent = app;
-    g.closest('.acts').hidden = true;
+    const box = $('.si-inapp'); box.hidden = false; box.querySelector('[data-app]').textContent = app;
+    $('[data-google-wrap]').hidden = true;
     if (/Android/i.test(navigator.userAgent)) {
       const o = box.querySelector('[data-open-browser]'); o.hidden = false;
       o.href = `intent://${location.host}${location.pathname}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(location.href)};end`;
     }
   }
+
   g.addEventListener('click', async () => {
-    try { await cloud.signInGoogle(); } catch (e) { if (e.code !== 'auth/popup-closed-by-user') msg.textContent = 'Google sign-in did not finish. Try again, or use the email link.'; }
+    msg.textContent = ''; g.disabled = true; g.classList.add('is-busy');
+    try { await cloud.signInGoogle(); } // success: onUser() takes over
+    catch (e) { fail(e); }
+    finally { g.disabled = false; g.classList.remove('is-busy'); }
   });
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault(); const email = form.email.value.trim();
-    try { await cloud.sendEmailLink(email, location.origin + '/account/'); msg.textContent = `Check ${email} for a sign-in link. Open it on this device.`; }
-    catch (err) { msg.textContent = 'Could not send the link. Check the address and try again.'; }
+
+  // "gmial.com" → did you mean gmail.com?
+  form.email.addEventListener('input', () => {
+    const v = clean(form.email.value), dom = v.split('@')[1], fix = dom && TYPOS[dom];
+    typo.hidden = !fix;
+    if (fix) typo.innerHTML = `Did you mean <button type="button" class="si-link" data-fix="${esc(v.split('@')[0])}@${fix}">${esc(v.split('@')[0])}@${fix}</button>?`;
   });
+  typo.addEventListener('click', (e) => { const b = e.target.closest('[data-fix]'); if (b) { form.email.value = b.dataset.fix; typo.hidden = true; form.email.focus(); } });
+
+  let cooldown = 0, timer;
+  const resendBtn = $('[data-resend]');
+  const tick = () => { resendBtn.disabled = cooldown > 0; resendBtn.textContent = cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend'; if (cooldown-- > 0) timer = setTimeout(tick, 1000); };
+  const showSent = (email) => {
+    $('[data-sent-to]').textContent = email;
+    const box = INBOX.find(([re]) => re.test(email)), open = $('[data-open-mail]');
+    open.hidden = !box; if (box) { open.textContent = box[1]; open.href = box[2]; }
+    step('sent'); clearTimeout(timer); cooldown = 30; tick();
+  };
+  async function send(email) {
+    msg.textContent = '';
+    if (!valid(email)) { step('start'); form.email.focus(); return fail({ code: 'auth/invalid-email' }); }
+    step('busy', 'Sending your link…');
+    try {
+      await cloud.sendEmailLink(email, location.origin + '/account/');
+      try { localStorage.setItem(SENT, JSON.stringify({ email, at: Date.now() })); } catch (e) {}
+      showSent(email);
+    } catch (e) { step('start'); fail(e, "Couldn't send the link. Check the address and try again."); }
+  }
+  form.addEventListener('submit', (e) => { e.preventDefault(); send(clean(form.email.value)); });
+  resendBtn.addEventListener('click', () => send($('[data-sent-to]').textContent));
+  $('[data-change-email]').addEventListener('click', () => {
+    try { localStorage.removeItem(SENT); } catch (e) {}
+    clearTimeout(timer); msg.textContent = ''; step('start'); form.email.select();
+  });
+
+  // came back to this page before opening the email: keep showing "Check your inbox" for an hour
+  try { const s = JSON.parse(localStorage.getItem(SENT) || 'null'); if (s && Date.now() - s.at < 36e5) { form.email.value = s.email; showSent(s.email); cooldown = 0; tick(); } } catch (e) {}
+
+  return { step, fail, confirmEmail: () => new Promise((resolve) => {
+    step('confirm'); const f = $('[data-confirm]'); f.email.focus();
+    f.addEventListener('submit', (e) => {
+      e.preventDefault(); const v = clean(f.email.value);
+      if (!valid(v)) return fail({ code: 'auth/invalid-email' });
+      msg.textContent = ''; step('busy', 'Signing you in…'); resolve(v);
+    });
+  }) };
 }
 
 /* ---------- start ---------- */
@@ -240,12 +318,19 @@ paint();
 (async () => {
   const mod = await import('./jla-cloud.js');
   if (!mod.enabled) { show('off'); return; }
-  cloud = mod; show('out'); wireSignIn();
-  try { await mod.finishEmailLink(async () => prompt('Confirm your email to finish signing in')); }
-  catch (e) { $('.acct-signin .msg').textContent = 'That sign-in link has expired or was already used. Send a new one.'; }
+  cloud = mod; show('out'); const si = wireSignIn();
+  // finishing an email link (asks for the address only if it was opened on another device)
+  if (await mod.isEmailLink().catch(() => false)) {
+    si.step('busy', 'Signing you in…');
+    try { if (await mod.finishEmailLink(si.confirmEmail)) { try { localStorage.removeItem('jla:email-sent'); } catch (e) {} } }
+    catch (e) { si.step('start'); si.fail(e, 'That sign-in link was already used or has expired. Send yourself a new one.'); history.replaceState(null, '', location.pathname); }
+  }
+  // back from Google's sign-in page (when the pop-up was blocked)
+  mod.redirectResult().catch((e) => si.fail(e));
   let wired = false;
   mod.onUser(async (u) => {
     if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; $('[data-board]').hidden = true; $('[data-author-box]').hidden = true; paint(); return; }
+    try { localStorage.removeItem('jla:email-sent'); } catch (e) {}
     const synced = await mod.sync().catch(() => null);
     profile = (synced && synced.profile) || null;
     if (!profile) { // first sign-in: create the profile

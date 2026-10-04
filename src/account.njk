@@ -23,22 +23,71 @@ searchExclude: true
     </div>
 
     <div data-when="out" hidden>
-      <h1 class="lib-title">My library</h1>
-      <p class="lib-sub">Your reading is counted on this device. Sign in to keep it everywhere, keep a streak, and earn badges.</p>
-      <div class="acct-signin">
-        <div class="inapp" hidden>
-          <p><b>You're reading inside <span data-app>an app</span>.</b> Google doesn't allow signing in here. Open this page in your phone's browser, or use the email link below.</p>
-          <p class="acts"><a class="btn sm" data-open-browser hidden>Open in Chrome</a><button class="btn sm alt" type="button" data-copy-link>Copy link</button></p>
-          <p class="off inapp-how">Or tap <b>⋯</b> (top right), then <b>Open in browser</b>.</p>
+      <div class="signin">
+        <div class="si-seal" aria-hidden="true">
+          <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="48"/></svg>
+          <img src="/assets/img/seal-240.png" alt="" width="64" height="64">
         </div>
-        <label class="consent"><input type="checkbox" id="consent"> I agree to the <a href="/privacy/">privacy notice</a>.</label>
-        <div class="acts"><button class="btn" type="button" data-google disabled>Continue with Google</button></div>
-        <form class="email-form" data-email>
-          <label for="email" class="sr">Email</label>
-          <input id="email" type="email" required placeholder="Or get a sign-in link by email" autocomplete="email">
-          <button class="btn alt" type="submit" disabled>Send link</button>
-        </form>
-        <p class="msg" aria-live="polite"></p>
+        <span class="si-eyebrow">Reader account · free</span>
+        <h1 class="si-title">Your library, <em>everywhere</em></h1>
+        <ul class="si-perks">
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5h7v13H4zM13 5.5h7v13h-7z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Pick up where you left off, on any device</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c1 3.5 5 5.2 5 10a5 5 0 0 1-10 0c0-2.2 1-3.6 2.3-4.8.3 1.6 1 2.6 2.2 3C11 8.6 11.2 5.6 12 3z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Weekly reading streaks and badges</li>
+          <li><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H9l-4 4z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>Highlights, private notes and discussion</li>
+        </ul>
+
+        <div class="si-card" aria-live="polite">
+          {#- step 1: choose how to sign in -#}
+          <div data-si="start">
+            <div class="si-inapp" hidden>
+              <p><b>You're reading inside <span data-app>an app</span>.</b> Google doesn't allow signing in here. Open this page in your browser, or use your email below.</p>
+              <p class="si-row"><a class="si-btn si-small" data-open-browser hidden>Open in Chrome</a><button class="si-btn si-small si-ghost" type="button" data-copy-link>Copy link</button></p>
+            </div>
+            <div data-google-wrap>
+              <button class="si-google" type="button" data-google>
+                <svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.9 6.1C12.4 13.7 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.6c0-1.6-.1-3.1-.4-4.6H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.8c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.7l-7.9-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.7l7.9-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.4-5.8c-2.1 1.4-4.8 2.2-8.5 2.2-6.3 0-11.6-4.2-13.5-10l-7.9 6.1C6.6 42.6 14.6 48 24 48z"/></svg>
+                <span>Continue with Google</span>
+              </button>
+              <div class="si-or"><span>or</span></div>
+            </div>
+            <form class="si-email" data-email novalidate>
+              <label for="email">Email address</label>
+              <input id="email" name="email" type="email" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com">
+              <p class="si-hint" data-typo hidden></p>
+              <button class="si-btn" type="submit"><span>Email me a sign-in link</span></button>
+            </form>
+            <p class="si-fine">No password needed. By continuing you agree to the <a href="/privacy/">privacy notice</a> and the <a href="/community/">community guidelines</a>.</p>
+          </div>
+
+          {#- step 2: the link is on its way -#}
+          <div data-si="sent" hidden>
+            <div class="si-envelope" aria-hidden="true"><svg viewBox="0 0 64 64"><rect x="6" y="14" width="52" height="36" rx="5"/><path d="M8 17l24 18 24-18"/></svg></div>
+            <h2 class="si-h">Check your inbox</h2>
+            <p class="si-p">We sent a sign-in link to <b data-sent-to></b>. Open it on this device to finish.</p>
+            <p class="si-row"><a class="si-btn si-small" data-open-mail target="_blank" rel="noopener" hidden>Open Gmail</a><button class="si-btn si-small si-ghost" type="button" data-resend>Resend</button></p>
+            <p class="si-fine">Not there? Look in Spam or Promotions. <button class="si-link" type="button" data-change-email>Use a different email</button></p>
+          </div>
+
+          {#- opened the link on another device: confirm the address (instead of a pop-up prompt) -#}
+          <div data-si="confirm" hidden>
+            <h2 class="si-h">One more step</h2>
+            <p class="si-p">For your security, type the email address you asked the link for.</p>
+            <form class="si-email" data-confirm novalidate>
+              <label for="email-confirm" class="sr">Email address</label>
+              <input id="email-confirm" name="email" type="email" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@example.com">
+              <button class="si-btn" type="submit"><span>Finish signing in</span></button>
+            </form>
+          </div>
+
+          {#- working -#}
+          <div data-si="busy" hidden>
+            <span class="si-spin" aria-hidden="true"></span>
+            <p class="si-p" data-busy-text>Signing you in…</p>
+          </div>
+
+          <p class="si-msg" role="alert"></p>
+        </div>
+        <p class="si-local">Not ready? Your reading still counts on this device.</p>
       </div>
     </div>
 

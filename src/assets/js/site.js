@@ -39,6 +39,24 @@ if (acctBtn) {
     const ini = me.name.split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
     acctBtn.innerHTML = /^data:image\/|^https:\/\//.test(me.photo || '') ? `<img src="${me.photo.replace(/"/g, '')}" alt="" width="30" height="30">` : `<span class="ini">${ini}</span>`;
   }
+  // editors get a Board menu (the pages themselves check access again)
+  if (me && me.editor) {
+    const here = location.pathname.startsWith('/editor/');
+    const subs = [['/editor/', 'Board home'], ['/editor/claims/', 'Author claims'], ['/editor/announce/', 'Send an announcement'], ['/editor/editors/', 'Manage editors']];
+    const top = $('.primary > ul');
+    if (top) {
+      const li = document.createElement('li'); li.className = 'has-sub nav-board';
+      li.innerHTML = `<a href="/editor/"${here ? ' aria-current="page"' : ''}>Board<svg class="caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg></a>`
+        + `<ul class="drop">${subs.map(([u, t]) => `<li><a href="${u}"${location.pathname === u ? ' aria-current="page"' : ''}>${t}</a></li>`).join('')}</ul>`;
+      top.append(li);
+    }
+    const sheetList = $('#menusheet nav > ul');
+    if (sheetList) {
+      const li = document.createElement('li');
+      li.innerHTML = `<a href="/editor/"${here ? ' aria-current="page"' : ''}>Board</a><ul class="msub">${subs.slice(1).map(([u, t]) => `<li><a href="${u}">${t}</a></li>`).join('')}</ul>`;
+      sheetList.append(li);
+    }
+  }
 }
 
 /* scroll lock that keeps the reader's place (works on iOS too) */

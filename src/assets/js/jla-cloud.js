@@ -28,7 +28,12 @@ export async function onUser(cb) {
   const s = await load();
   s.A.onAuthStateChanged(s.auth, async (u) => {
     current = u || null; editorP = null;
-    if (u) { const me = await getProfile(u.uid).catch(() => null); local.setMe({ uid: u.uid, name: (me && me.name) || u.displayName || 'Reader', photo: (me && me.photo) || u.photoURL || '' }); }
+    if (u) {
+      const me = await getProfile(u.uid).catch(() => null);
+      // remember editors on this device so every page can show the Board menu without loading Firebase
+      const ed = await s.F.getDoc(s.F.doc(s.db, 'editors', u.uid)).then((d) => d.exists()).catch(() => false);
+      local.setMe({ uid: u.uid, name: (me && me.name) || u.displayName || 'Reader', photo: (me && me.photo) || u.photoURL || '', editor: ed });
+    }
     else local.setMe(null);
     cb(current);
     waiters.splice(0).forEach((w) => w(current));

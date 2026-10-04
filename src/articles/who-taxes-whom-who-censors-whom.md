@@ -15,6 +15,11 @@ keywords:
   - "content regulation"
   - "digital identity"
 abstract: "The 21st-century digital revolution has transformed economies, redefined borders, and reshaped power dynamics between governments, corporations, and individuals. Central among its complications is the issue of control, both in terms of taxation and speech regulation."
+takeaways:
+  - "The digital economy reshapes power among governments, corporations, and individuals, over both taxes and speech."
+  - "Taxing digital services raises legal and practical challenges under the Constitution and recent BIR measures."
+  - "Platforms now act as private governors of speech, blurring public law and private code."
+  - "Answers must rest on constitutional values, democratic participation, and legal innovation, with privacy and free expression protected."
 draft: false
 fulltext_status: "proofread-needed"
 ---

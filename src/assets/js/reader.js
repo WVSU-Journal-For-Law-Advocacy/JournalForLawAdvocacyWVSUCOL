@@ -79,7 +79,8 @@ if (text && slug) {
 
   /* ---------- saving (browser at once; account at most every 20 s, and when leaving) ---------- */
   let dirty = false, lastPush = 0, pushT;
-  const save = () => { rec = { ...rec, read: [...read], pct: rec.done ? 100 : pctNow(), words: totalWords }; local.put(slug, rec); dirty = true; schedule(); };
+  let lastAt = null;
+  const save = () => { rec = { ...rec, read: [...read], pct: rec.done ? 100 : pctNow(), words: totalWords, at: lastAt || rec.at || null }; local.put(slug, rec); dirty = true; schedule(); };
   const schedule = () => { if (!cloud || pushT) return; pushT = setTimeout(push, Math.max(0, 20000 - (Date.now() - lastPush))); };
   async function push() {
     pushT = null; if (!cloud || !dirty) return; dirty = false; lastPush = Date.now();
@@ -110,7 +111,7 @@ if (text && slug) {
     const t = (dwell.get(p.id) || 0) + dt; dwell.set(p.id, t); secs += dt;
     if (secs >= 15) { addSeconds(Math.round(secs)); secs = 0; }
     if (t >= need(p)) {
-      read.add(p.id); p.el.classList.add('is-read');
+      read.add(p.id); p.el.classList.add('is-read'); lastAt = p.id;
       const pct = pctNow();
       if (!rec.done && pct >= 90 && read.has(lastId)) { rec = { ...rec, done: true, doneAt: Date.now(), self: false }; save(); render(); finish(); return; }
       save(); render();

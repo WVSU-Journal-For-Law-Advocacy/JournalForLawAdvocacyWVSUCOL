@@ -15,6 +15,11 @@ keywords:
   - "local government"
   - "Executive Order No. 2"
 abstract: "The people’s right to information on matters of public concern is enshrined under Section 7, Article III of the 1987 Constitution. Albeit a statutory law would give clarity and enforceability to this provision, there has yet to be legislative enactment."
+takeaways:
+  - "The right to information is in the Constitution, but there is still no Freedom of Information law to give it full force."
+  - "Localizing FOI depends on each LGU's technology and budget, so access to information is uneven."
+  - "The digital divide, funding limits for the e-FOI mandate, and data-privacy concerns all slow implementation."
+  - "A comprehensive FOI law is needed to harmonize these efforts and make the right genuinely universal."
 draft: false
 fulltext_status: "proofread-needed"
 ---

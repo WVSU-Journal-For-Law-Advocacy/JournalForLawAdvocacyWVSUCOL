@@ -52,6 +52,7 @@ collections:
       - { label: Article PDF, name: pdf, widget: file, required: false, hint: "The PDF of this article alone." }
       - { label: Keywords, name: keywords, widget: list, required: false, hint: "Separate with commas." }
       - { label: Abstract, name: abstract, widget: text }
+      - { label: Key takeaways, name: takeaways, widget: list, required: false, field: { label: Takeaway, name: takeaway, widget: text }, hint: "3 to 5 short points (one or two sentences each), shown as swipeable cards under the abstract. Leave empty to hide." }
       - { label: Draft (hide from the site), name: draft, widget: boolean, default: false, required: false }
       - { label: Featured on the home page, name: featured, widget: boolean, default: false, required: false, hint: "Shown as the lead piece of the current volume. Tick only one." }
       - label: Full text status

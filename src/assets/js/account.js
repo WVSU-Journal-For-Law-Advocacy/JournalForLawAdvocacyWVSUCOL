@@ -1,5 +1,5 @@
 /* "My library" (/account/): sign-in, profile, stats, streak, badges, continue reading, read next. */
-import { local, loadIndex, stats, badges, suggest, badgeHtml, cardHtml } from './jla-core.js';
+import { local, loadIndex, stats, badges, suggest, badgeHtml, cardHtml, esc } from './jla-core.js';
 
 const root = document.getElementById('acct');
 const $ = (s) => root.querySelector(s), $$ = (s) => [...root.querySelectorAll(s)];
@@ -38,6 +38,18 @@ async function paint() {
     $('.ap-streak').textContent = st.streak.current ? `🔥 ${st.streak.current}-week reading streak` : 'Start a weekly reading streak';
     if (cloud) cloud.saveProfile({ weeks, stats: { finished: st.verified, words: st.words, streak: st.streak.current }, badges: earned.map((b) => b.id) }).catch(() => {});
   }
+}
+
+/* ---------- highlights & notes, grouped by article ---------- */
+async function paintHighlights() {
+  let hs = [], index;
+  try { [hs, index] = await Promise.all([cloud.loadHighlights(), loadIndex()]); } catch (e) { return; }
+  const box = $('[data-block="highlights"]'); box.hidden = !hs.length; if (!hs.length) return;
+  const bySlug = Object.fromEntries(index.articles.map((a) => [a.slug, a])), groups = {};
+  hs.sort((a, b) => (b.created || 0) - (a.created || 0)).forEach((h) => { (groups[h.slug] = groups[h.slug] || []).push(h); });
+  $('[data-highlights]').innerHTML = Object.entries(groups).filter(([s]) => bySlug[s]).map(([s, list]) => `
+    <article class="hl-group"><h3><a href="${bySlug[s].url}">${esc(bySlug[s].title)}</a></h3>
+    ${list.map((h) => `<blockquote>${esc(h.text)}${h.note ? `<p class="hl-note">${esc(h.note)}</p>` : ''}</blockquote>`).join('')}</article>`).join('');
 }
 
 /* ---------- profile card ---------- */
@@ -121,6 +133,6 @@ paint();
       profile = { name: u.displayName || (u.email || 'Reader').split('@')[0], joined: Date.now(), public: false, consent: Date.now() };
       await mod.saveProfile(profile).catch(() => {});
     }
-    show('in'); paintProfile(u); if (!wired) { wireProfile(u); wired = true; } paint();
+    show('in'); paintProfile(u); if (!wired) { wireProfile(u); wired = true; } paint(); paintHighlights();
   });
 })();

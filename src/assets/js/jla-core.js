@@ -26,6 +26,7 @@ export function mergeOne(a, b) {
     read: readSet, pct: Math.max(a.pct || 0, b.pct || 0), done: !!(a.done || b.done),
     doneAt: Math.min(a.doneAt || Infinity, b.doneAt || Infinity) === Infinity ? null : Math.min(a.doneAt || Infinity, b.doneAt || Infinity),
     self: !!((a.done && a.self) && (!b.done || b.self)), words: Math.max(a.words || 0, b.words || 0),
+    at: (a.updated || 0) >= (b.updated || 0) ? (a.at || b.at || null) : (b.at || a.at || null),
     updated: Math.max(a.updated || 0, b.updated || 0),
   };
 }

@@ -15,6 +15,11 @@ keywords:
   - "Bill of Rights"
   - "digital governance"
 abstract: "The digital revolution has ushered Artificial Intelligence into the core functions of Philippine governance and society, presenting novel challenges to our constitutional order. As machine learning systems increasingly mediate access to justice, public services, and democratic participation, they strain traditional interpretations of the 1987 Constitution’s Bill of Rights."
+takeaways:
+  - "AI now mediates access to justice, public services, and democratic participation, straining the Bill of Rights."
+  - "Unchecked state surveillance, opaque platform moderation, and proprietary election systems threaten privacy, free expression, and electoral integrity."
+  - "The paper proposes an 'Algorithmic Bill of Rights': human review of consequential decisions, independent constitutional impact assessments, and explanations for affected citizens."
+  - "It calls for amending the Data Privacy Act and for judicial standards to review algorithmic government action."
 draft: false
 fulltext_status: "proofread-needed"
 ---

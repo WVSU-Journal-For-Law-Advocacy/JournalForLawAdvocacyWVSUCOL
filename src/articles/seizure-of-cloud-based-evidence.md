@@ -15,6 +15,11 @@ keywords:
   - "cloud storage"
   - "unreasonable searches and seizures"
 abstract: "Recent waves of digital transformation brought new ways of how data is processed and stored. As people and businesses migrated online en masse, local and centralized servers became less relevant, and cloud storage became the trend."
+takeaways:
+  - "Data has moved to the cloud, but the Rule on Cybercrime Warrants (A.M. No. 17-11-03-SC) has no specific provisions for cloud-based evidence."
+  - "A single cloud account can hold vast amounts of irrelevant personal data, so even a valid warrant risks overbroad seizure."
+  - "The rules also fall short in protecting the privacy of communications, especially of third parties."
+  - "Clearer, cloud-specific rules are needed to protect the right against unreasonable searches and seizures."
 draft: false
 fulltext_status: "proofread-needed"
 ---

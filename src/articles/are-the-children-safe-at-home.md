@@ -15,6 +15,11 @@ keywords:
   - "child protection"
   - "online exploitation"
 abstract: "The advent of the digital age, while bringing revolutionary changes in connecting people, has enabled a very alarming form of child exploitation that thrives in the virtual world. In recent years, the Philippines has emerged as a hotspot for cases of Online Sexual Abuse and Exploitation of Children."
+takeaways:
+  - "The Philippines has become a hotspot for online sexual abuse and exploitation of children (OSAEC) and child sexual abuse material (CSAEM)."
+  - "R.A. 11930 and earlier laws are substantial, but they must keep being recalibrated as platforms and predators' tactics change."
+  - "Gaps remain: offenders abroad, handling of digital evidence, institutional preparedness, privacy tensions, and community digital literacy."
+  - "Laws alone cannot protect children: funded community education and deeper international cooperation on cross-border cases are essential."
 draft: false
 fulltext_status: "proofread-needed"
 ---

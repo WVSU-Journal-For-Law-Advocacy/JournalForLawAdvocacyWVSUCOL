@@ -15,6 +15,11 @@ keywords:
   - "social media"
   - "disinformation"
 abstract: "Freedom of expression is a fundamental human right enshrined in international legal instruments. In the digital age, the power to express is democratized, but so too is the power to manipulate, misinform, and harm."
+takeaways:
+  - "Digital platforms have democratized speech, but also the power to manipulate, misinform, and harm."
+  - "Surveillance, private platform moderation, and broad laws can chill legitimate expression."
+  - "Laws on digital speech should be narrowly tailored and subject to judicial oversight, with proportionality and necessity."
+  - "Platform transparency, digital literacy, and multi-stakeholder governance are needed alongside regulation."
 draft: false
 fulltext_status: "proofread-needed"
 ---

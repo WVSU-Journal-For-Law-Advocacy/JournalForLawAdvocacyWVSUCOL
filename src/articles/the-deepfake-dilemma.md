@@ -15,6 +15,11 @@ keywords:
   - "cybercrime"
   - "artificial intelligence"
 abstract: "The rise of Artificial Intelligence in the past decade has impacted the way users interact with the digital space. Among the prominent AI technologies used today are deepfakes: images, video, or audio that portray something non-existent in reality."
+takeaways:
+  - "Deepfakes, AI-made images, video, or audio of things that never happened, are now used in cybercrimes."
+  - "The Cybercrime Prevention Act of 2012 did not anticipate AI, and no law yet targets deepfakes specifically."
+  - "Bills such as House Bill No. 3214 and Senate Bill No. 25 would regulate deepfakes and AI, but none has passed."
+  - "Until legislation catches up, cybercriminals exploit the regulatory gap."
 draft: false
 fulltext_status: "proofread-needed"
 ---

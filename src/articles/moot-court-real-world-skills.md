@@ -15,6 +15,11 @@ keywords:
   - "legal education"
   - "Vox Populi"
 abstract: "In contemporary legal education, mooting has become an indispensable component of the curriculum, serving as a preparatory mechanism for the legal training of aspiring members of the legal profession."
+takeaways:
+  - "Mooting has become an indispensable part of legal education, turning theory into advocacy skill."
+  - "WVSU's Vox Populi Moot and Debate Circle won the UC-KAS International Environmental Law Moot Court Competition against 26 teams."
+  - "Its oralists placed first and third in the preliminary rounds."
+  - "Their formula: thorough preparation, teamwork and mentorship, and reflection after every competition."
 draft: false
 fulltext_status: "proofread-needed"
 ---

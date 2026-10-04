@@ -15,6 +15,11 @@ keywords:
   - "CPRA"
   - "AI chatbots"
 abstract: "Ethics, by nature, is a concept that delimits, restricts, and determines the actions of professionals to ensure accountability. In the Philippines, ethics in the practice of law is regulated by the Code of Professional Responsibility and Accountability."
+takeaways:
+  - "Under the Code of Professional Responsibility and Accountability, a lawyer stays answerable for every filing, whatever tool helped draft it."
+  - "AI 'hallucinations', fabricated cases and citations, have already led to sanctions against lawyers abroad."
+  - "Lawyers have a right to use new technology, but it is no excuse for sloth or incompetence: AI must support diligent work, not replace it."
+  - "Neither rejecting AI nor depending on it is prudent; guidelines on accountable use are needed."
 draft: false
 fulltext_status: "proofread-needed"
 ---

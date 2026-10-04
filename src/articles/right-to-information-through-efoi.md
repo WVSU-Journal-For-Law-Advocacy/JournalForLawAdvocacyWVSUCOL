@@ -15,6 +15,11 @@ keywords:
   - "eFOI"
   - "transparency"
 abstract: "Transparency and accountability are essential to a well-functioning democracy. While civic participation is the heart of democracy, shaping this participation entails disclosure of information, especially information concerning governmental processes."
+takeaways:
+  - "The eFOI portal digitized information requests, but technology alone cannot ensure transparency."
+  - "Without an FOI law covering all branches of government, access remains at the discretion of those in power."
+  - "Congress must clearly define what counts as confidential information."
+  - "Real accountability needs both legal standardization and fair, consistent procedures across agencies."
 draft: false
 fulltext_status: "proofread-needed"
 ---

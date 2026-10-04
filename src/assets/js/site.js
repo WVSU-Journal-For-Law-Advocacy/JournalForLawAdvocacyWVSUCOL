@@ -341,12 +341,26 @@ if (shareSlides && navigator.canShare && navigator.share) {
 const quoteZone = $$('#fulltext, .abstract');
 if (quoteZone.length && citebox) {
   const meta = { title: citebox.dataset.title, authors: JSON.parse(citebox.dataset.authors || '[]'), volume: citebox.dataset.volume, year: citebox.dataset.year, url: citebox.dataset.url };
-  const chip = document.createElement('button');
-  chip.type = 'button'; chip.className = 'quote-chip'; chip.hidden = true;
-  chip.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Share quote';
+  // a small toolbar over the selection: Highlight and Note (saved by reading-tools.js) and Share quote
+  const chip = document.createElement('div');
+  chip.className = 'quote-chip'; chip.hidden = true; chip.setAttribute('role', 'toolbar'); chip.setAttribute('aria-label', 'Selected text');
+  chip.innerHTML = '<button type="button" data-q="highlight">Highlight</button><button type="button" data-q="note">Note</button>'
+    + '<button type="button" data-q="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Share quote</button>';
   document.body.append(chip);
   const touch = matchMedia('(hover: none)').matches;
-  let picked = '';
+  let picked = '', pickedPid = '';
+  const pidOf = () => {
+    const sel = getSelection(); if (!sel.rangeCount) return '';
+    const r = sel.getRangeAt(0), n = r.startContainer, el = (n.nodeType === 1 ? n : n.parentElement).closest('[data-pid]');
+    return el && el.contains(r.endContainer) ? el.dataset.pid : '';
+  };
+  chip.addEventListener('mousedown', (e) => e.preventDefault()); // keep the selection when a button is pressed
+  chip.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-q]'); if (!b || b.dataset.q === 'share') return;
+    chip.hidden = true;
+    document.dispatchEvent(new CustomEvent('jla:highlight', { detail: { text: picked, pid: pickedPid, note: b.dataset.q === 'note' } }));
+    getSelection().removeAllRanges();
+  });
 
   const selectedText = () => {
     const sel = getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return '';
@@ -361,8 +375,12 @@ if (quoteZone.length && citebox) {
     clearTimeout(st);
     st = setTimeout(() => {
       const t = selectedText();
-      if (t.length < 25 || t.length > 420) { chip.hidden = true; return; }
+      pickedPid = pidOf();
+      const canShare = t.length >= 25 && t.length <= 420, canMark = !!pickedPid && t.length >= 3 && t.length <= 500;
+      if (!canShare && !canMark) { chip.hidden = true; return; }
       picked = t; chip.hidden = false;
+      $('[data-q=share]', chip).hidden = !canShare;
+      $$('[data-q=highlight], [data-q=note]', chip).forEach((x) => { x.hidden = !canMark; });
       if (touch) { chip.classList.add('dock'); return; } // docked above the action bar; the native menu covers the selection
       const r = getSelection().getRangeAt(0).getBoundingClientRect();
       chip.classList.remove('dock');
@@ -408,7 +426,7 @@ if (quoteZone.length && citebox) {
     return cv;
   };
 
-  chip.addEventListener('click', async () => {
+  $('[data-q=share]', chip).addEventListener('click', async () => {
     // a passage cut mid-sentence gets ellipses, as in a proper quotation
     let quote = picked.replace(/^["“”']+|["“”']+$/g, '');
     if (/^[a-z]/.test(quote)) quote = '…' + quote;
@@ -477,3 +495,7 @@ if (file) {
     if (big) file.reportValidity();
   });
 }
+
+/* shared with the ES modules (reader, reading tools, comments, account) */
+window.JLA = { Sheet, say, copy, store };
+document.dispatchEvent(new Event("jla:ready"));

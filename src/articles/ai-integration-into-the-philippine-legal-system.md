@@ -15,6 +15,11 @@ keywords:
   - "judiciary"
   - "comparative law"
 abstract: "The judiciary’s purpose is the administration of justice, yet it is more often delayed by the number of cases docketed in its courts and the time consumed in sorting through backlogs. A technological solution exists that may help expedite these processes."
+takeaways:
+  - "Docket congestion delays justice, and AI could speed up case processing and cut costs for courts and litigants."
+  - "Foreign judiciaries show both sides: real efficiency gains, but also bias, discrimination, and fake citations."
+  - "AI must be a tool for judges and lawyers, never their replacement, so that the rights to a speedy and impartial trial are protected."
+  - "Two things come first: a legal framework of standards for AI systems, and careful, diligent use."
 draft: false
 fulltext_status: "proofread-needed"
 ---

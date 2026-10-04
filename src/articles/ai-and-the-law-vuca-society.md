@@ -15,6 +15,11 @@ keywords:
   - "arbitration"
   - "generative AI"
 abstract: "Drawing on service as a volunteer arbitrator at the Willem C. Vis East Moot, this essay reflects on the rise of legal technology and generative AI and what it means for legal practice."
+takeaways:
+  - "Generative AI is a paradigm shift for legal practice, not an incremental tool: it automates routine work, cuts errors, and speeds up research."
+  - "Drawing on arbitration practice at the Vis East Moot, the essay sets five guardrails: keep human judgment, verify AI output, never delegate the decision, protect the integrity of the process, and disclose AI use."
+  - "Getting value from AI depends on skill as well as access, including clear, specific prompting."
+  - "Legal education and practice must adapt with ethical frameworks that make AI's use responsible."
 draft: false
 fulltext_status: "proofread-needed"
 ---

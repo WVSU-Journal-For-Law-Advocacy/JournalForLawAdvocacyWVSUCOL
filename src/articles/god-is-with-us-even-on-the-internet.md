@@ -15,6 +15,11 @@ keywords:
   - "AI chatbots"
   - "free exercise clause"
 abstract: "The fabric of traditional Filipino experience involves the threads of religiosity. The tight fusion of religion into the lives of people feeds the interest in discovering the relationship between freedom of religious expression and a modern society reliant on technological advancements."
+takeaways:
+  - "People are turning to AI chatbots for religious comfort and guidance, and the practice may soon be ordinary."
+  - "Garcia v. Character Technologies shows how chatbots can cause real harm, raising questions of liability."
+  - "The State may intervene to protect public safety and the rights of others while staying neutral between religions."
+  - "Legislation should define the liability of AI owners and protect Filipinos exercising religious expression through chatbots."
 draft: false
 fulltext_status: "proofread-needed"
 ---

@@ -15,6 +15,11 @@ keywords:
   - "suffrage"
   - "COMELEC"
 abstract: "The 1987 Philippine Constitution enshrines the right of suffrage in Article V, Section 1. To safeguard this right, the Constitution tasks the Commission on Elections with the duty to conduct free, honest, orderly, and credible elections, a duty now carried out through the Automated Election Law."
+takeaways:
+  - "Election automation since 2010 brought faster canvassing and fewer human errors, but also 'black box' transparency problems, technical failures, and cyber threats."
+  - "The case of Atty. Jeryll Harold Respicio shows the human side: suspending a candidate's proclamation over criticism, without proof of fraud, risks chilling free expression."
+  - "An election's credibility rests on public confidence, not machine accuracy alone."
+  - "Meaningful source-code reviews, regular independent audits, sustained voter education, and tolerance of criticism must accompany technical upgrades."
 draft: false
 fulltext_status: "proofread-needed"
 ---

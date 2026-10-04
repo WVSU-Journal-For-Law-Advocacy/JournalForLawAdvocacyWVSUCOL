@@ -15,6 +15,11 @@ keywords:
   - "right to privacy"
   - "algorithmic accountability"
 abstract: "In the Philippines, the adoption of AI in both public and private sectors is accelerating despite underlying infrastructure challenges, regulatory gaps, and widespread digital inequality. The country stands at a crossroads where the allure of technological innovation must be balanced against the protection of fundamental rights, particularly the right to privacy enshrined in the 1987 Constitution."
+takeaways:
+  - "AI adoption in Philippine government and business is accelerating despite infrastructure gaps, weak regulation, and digital inequality."
+  - "Surveillance, digital ID, and automated welfare decisions risk deepening inequality and state overreach."
+  - "The paper proposes mandatory transparency about public algorithms, audits and bias assessments, a digital-governance ombudsman, and a right to human intervention."
+  - "Civil society, universities, and digitally literate citizens must make AI governance a democratic project, not a technical one."
 draft: false
 fulltext_status: "proofread-needed"
 ---

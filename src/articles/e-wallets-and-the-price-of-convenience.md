@@ -15,6 +15,11 @@ keywords:
   - "financial privacy"
   - "Bangko Sentral ng Pilipinas"
 abstract: "In recent years, the Philippines has experienced a rapid shift toward digital financial services. E-wallet platforms have transitioned from niche payment options to mainstream instruments of daily commerce."
+takeaways:
+  - "E-wallets have gone mainstream in the Philippines, and with them a vast store of personal transaction data."
+  - "Financial privacy should be treated as a constitutional right under Article III, Section 3, not merely as regulatory compliance."
+  - "Following Ople v. Torres and Disini, data retention, monitoring, and reporting duties on e-money issuers must be proportionate and carry safeguards."
+  - "Gaps in the Data Privacy Act and BSP rules call for clearer standards on how e-wallet data is collected and shared."
 draft: false
 fulltext_status: "proofread-needed"
 ---

@@ -60,7 +60,7 @@ export async function finishEmailLink(askEmail) {
 export async function signOut() { const s = await load(); await s.A.signOut(s.auth); local.setMe(null); }
 
 /* ---------- profile ---------- */
-const PROFILE = ['name', 'bio', 'school', 'photo', 'public', 'joined', 'badges', 'weeks', 'stats', 'consent'];
+const PROFILE = ['name', 'bio', 'school', 'photo', 'thumb', 'public', 'joined', 'badges', 'weeks', 'stats', 'consent', 'prefs', 'follows'];
 export async function getProfile(uid) {
   const s = await load(); const snap = await s.F.getDoc(s.F.doc(s.db, 'users', uid));
   return snap.exists() ? snap.data() : null;
@@ -81,7 +81,7 @@ export async function loadProgress() {
 export async function saveProgress(slug, p) {
   const s = await load(); const u = current; if (!u) return;
   const rec = { read: (p.read || []).slice(0, 3000), pct: Math.min(100, Math.max(0, Math.round(p.pct || 0))), done: !!p.done,
-    doneAt: p.doneAt || null, self: !!p.self, words: p.words || 0, updated: Date.now() };
+    doneAt: p.doneAt || null, self: !!p.self, words: p.words || 0, at: p.at || null, updated: Date.now() };
   await s.F.setDoc(s.F.doc(s.db, 'users', u.uid, 'progress', slug), rec);
 }
 // on sign-in: merge what this browser has with what the account has, and save the union both ways
@@ -97,16 +97,38 @@ export async function sync() {
   return { progress: merged, weeks, profile };
 }
 
+/* ---------- highlights & notes (private to the reader) ---------- */
+const hlCol = (s, uid) => s.F.collection(s.db, 'users', uid, 'highlights');
+export async function loadHighlights(slug) {
+  const s = await load(); const u = current; if (!u) return [];
+  const q = slug ? s.F.query(hlCol(s, u.uid), s.F.where('slug', '==', slug)) : hlCol(s, u.uid);
+  const snap = await s.F.getDocs(q); const out = []; snap.forEach((d) => out.push({ id: d.id, ...d.data() }));
+  return out.sort((a, b) => (a.created || 0) - (b.created || 0));
+}
+export async function addHighlight(h) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const ref = await s.F.addDoc(hlCol(s, u.uid), { slug: h.slug, pid: h.pid, text: String(h.text).slice(0, 500), note: String(h.note || '').slice(0, 1000), created: Date.now() });
+  return ref.id;
+}
+export async function updateHighlight(id, fields) {
+  const s = await load(); const u = current; if (!u) return;
+  await s.F.updateDoc(s.F.doc(s.db, 'users', u.uid, 'highlights', id), { note: String(fields.note || '').slice(0, 1000) });
+}
+export async function deleteHighlight(id) {
+  const s = await load(); const u = current; if (!u) return;
+  await s.F.deleteDoc(s.F.doc(s.db, 'users', u.uid, 'highlights', id));
+}
+
 /* ---------- your data ---------- */
 export async function exportData() {
   const u = current; if (!u) return null;
-  return { account: { uid: u.uid, email: u.email }, profile: await getProfile(u.uid), progress: await loadProgress() };
+  return { account: { uid: u.uid, email: u.email }, profile: await getProfile(u.uid), progress: await loadProgress(), highlights: await loadHighlights() };
 }
 export async function deleteAccount() {
   const s = await load(); const u = current; if (!u) return;
-  const snap = await s.F.getDocs(s.F.collection(s.db, 'users', u.uid, 'progress'));
+  const snap = await s.F.getDocs(s.F.collection(s.db, 'users', u.uid, 'progress')), hls = await s.F.getDocs(hlCol(s, u.uid));
   const batch = s.F.writeBatch(s.db);
-  snap.forEach((d) => batch.delete(d.ref)); batch.delete(s.F.doc(s.db, 'users', u.uid));
+  snap.forEach((d) => batch.delete(d.ref)); hls.forEach((d) => batch.delete(d.ref)); batch.delete(s.F.doc(s.db, 'users', u.uid));
   await batch.commit();
   try { await s.A.deleteUser(u); }
   catch (e) {

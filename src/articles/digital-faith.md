@@ -15,6 +15,11 @@ keywords:
   - "artificial intelligence"
   - "religious sectors"
 abstract: "The rapid development of artificial intelligence has reached even the different religious sectors in the Philippines, raising new questions under the 1987 Constitution’s guarantee of the freedom of religion."
+takeaways:
+  - "AI is reaching Philippine religious life, from accessible services to new ways of studying sacred texts."
+  - "Biased training data or manipulated content could spread fake sermons, distort teachings, and deepen divisions between faiths."
+  - "When faith practice is filtered or dictated by algorithms, religious expression risks becoming less authentic and less communal."
+  - "Proactive ethical guidelines and legal frameworks are needed so that AI upholds the constitutional guarantee of religious freedom."
 draft: false
 fulltext_status: "proofread-needed"
 ---

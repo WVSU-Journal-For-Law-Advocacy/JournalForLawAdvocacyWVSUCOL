@@ -15,6 +15,11 @@ keywords:
   - "artificial intelligence"
   - "political propaganda"
 abstract: "Freedom of expression is guaranteed by the Constitution to empower the people in the search of truth, and to test the acceptability of one’s thoughts in the marketplace of ideas. Freedom of expression is not just a right but a duty."
+takeaways:
+  - "Freedom of expression protects the search for truth in the marketplace of ideas; it is not absolute."
+  - "AI-generated videos, such as a fabricated clip of students opposing the Vice President's impeachment, show how deepfakes can mislead the public."
+  - "Spreading misinformation is not protected expression: defamatory, obscene, or seditious content may be regulated."
+  - "Public officials who share AI-made content bear a heightened responsibility because of their influence."
 draft: false
 fulltext_status: "proofread-needed"
 ---

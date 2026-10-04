@@ -15,6 +15,11 @@ keywords:
   - "social media activism"
   - "freedom of expression"
 abstract: "Social media has expanded the range of possibilities for the citizenry to exercise their rights enshrined under the 1987 Constitution. It has afforded marginalized sectors the means to collectively rally for their rights, demand accountability, and call for social justice."
+takeaways:
+  - "Social media gives marginalized groups, including the LGBTQIA+ community, new ways to assert rights and demand accountability."
+  - "The case against drag artist Pura Luka Vega (People v. Pagente) tests where free expression meets religious offense online."
+  - "The SOGIESC Equality Bill has stalled in Congress for nearly two decades."
+  - "Queer expression is a right, not a privilege, and protecting it is part of the larger struggle for gender equity."
 draft: false
 fulltext_status: "proofread-needed"
 ---

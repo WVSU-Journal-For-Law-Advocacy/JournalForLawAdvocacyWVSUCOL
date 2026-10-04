@@ -15,6 +15,11 @@ keywords:
   - "machine learning"
   - "pretrial decisions"
 abstract: "One thing that challenges judges is how they made pretrial decisions before artificial intelligence was ubiquitous. Rules and judicial standards can be too vague, which can lead to unfair and inaccurate bail determinations that may undermine the judicial process."
+takeaways:
+  - "Bail decisions under vague standards can be unfair and inaccurate; machine-learning tools promise more consistency."
+  - "These tools are paradoxical: they can improve accuracy but may compromise fundamental rights."
+  - "Any bail algorithm must earn public trust, given Filipinos' particular regard for fair process."
+  - "Algorithms should be adjuvants only: judges remain the final authority and the guardians of fairness."
 draft: false
 fulltext_status: "proofread-needed"
 ---

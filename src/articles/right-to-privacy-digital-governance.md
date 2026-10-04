@@ -15,6 +15,11 @@ keywords:
   - "Data Privacy Act"
   - "state surveillance"
 abstract: "In today’s digital age, nearly every human action generates a digital trace. The right to privacy, once primarily concerned with the sanctity of one’s home or private conversations, has now expanded into the boundless digital landscape where personal data is continuously gathered, processed, and disseminated."
+takeaways:
+  - "The Data Privacy Act of 2012 is not robust enough for today's cybersecurity and privacy threats."
+  - "Laws like the Anti-Terrorism Act and the SIM Registration Act widen surveillance and erode digital rights."
+  - "Weak enforcement by the National Privacy Commission leaves data breaches and violations unaddressed."
+  - "Urgent reforms: update the Act, strengthen the NPC's independence and powers, and subject surveillance laws to strict constitutional scrutiny."
 draft: false
 fulltext_status: "proofread-needed"
 ---

@@ -15,6 +15,11 @@ keywords:
   - "national budget"
   - "digital literacy"
 abstract: "The digital revolution has provided further potential for the transformation of governance, offering tools like blockchain technology which may be utilized to enhance transparency in public finances."
+takeaways:
+  - "Senate Bill No. 1330 proposes putting the national budget on a blockchain so citizens can track public spending."
+  - "Blockchain could strengthen the right to information and help expose corruption such as ghost projects."
+  - "Low digital literacy, especially in rural areas and among public employees, threatens to leave the benefits to a few."
+  - "Digital education must go hand in hand with the technology for transparency to reach all Filipinos."
 draft: false
 fulltext_status: "proofread-needed"
 ---

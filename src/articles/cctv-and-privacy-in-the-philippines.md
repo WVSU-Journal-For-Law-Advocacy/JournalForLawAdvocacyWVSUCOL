@@ -15,6 +15,11 @@ keywords:
   - "surveillance"
   - "Data Privacy Act"
 abstract: "In every building, whether public or private, closed-circuit television cameras go mainstream through statutory mandate, yet the legal framework governing them remains fundamentally incoherent."
+takeaways:
+  - "Fifteen years of piecemeal rules have left a framework that mandates, restricts, and permits CCTV surveillance all at once, without resolving the conflicts."
+  - "Courts recognize privacy as a fundamental right, but without a statute these protections are hard to enforce in practice."
+  - "A comprehensive CCTV law should set a clear hierarchy, bind government and private actors alike, create independent oversight, give accessible remedies, and stay technology-neutral."
+  - "The window for coherent regulation is still open, but not indefinitely: pervasive surveillance may soon make meaningful protection impractical."
 fulltext_status: "proofread-needed"
 draft: false
 ---

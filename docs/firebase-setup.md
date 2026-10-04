@@ -18,8 +18,7 @@ About 10–15 minutes. Do it from the **journal's own Google account** so future
    - **Email/Password** → Enable **Email link (passwordless sign-in)** → Save. (Leave the plain password option off.)
 3. **Settings → Authorized domains** → **Add domain**:
    - `wvsujournalforlawadvocacy.netlify.app`
-   - `feature-accounts--wvsujournalforlawadvocacy.netlify.app` (the test copy of the site)
-4. **Sign-in on the site's own domain** (needed because `authDomain` is `wvsujournalforlawadvocacy.netlify.app`, proxied to Firebase in `netlify.toml`): in Google Cloud Console → APIs & Services → Credentials → *OAuth 2.0 Client IDs* → "Web client (auto created by Google Service)", add the Authorized redirect URI `https://wvsujournalforlawadvocacy.netlify.app/__/auth/handler` and Save.
+4. **Sign-in on the site's own domain** (needed because `authDomain` is `wvsujournalforlawadvocacy.netlify.app`, proxied to Firebase in `netlify.toml`): in Google Cloud Console → APIs & Services → Credentials → *OAuth 2.0 Client IDs* → "Web client (auto created by Google Service)", add the Authorized JavaScript origin `https://wvsujournalforlawadvocacy.netlify.app` and the Authorized redirect URI `https://wvsujournalforlawadvocacy.netlify.app/__/auth/handler`, and Save. Under *API Keys*, the browser key's website restrictions must include `https://wvsujournalforlawadvocacy.netlify.app/*`.
    - your custom domain later, if the journal gets one.
 
 ## 3. Create the database

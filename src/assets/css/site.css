@@ -1374,3 +1374,18 @@ section.launch{padding:var(--s5) 0 var(--s6)}
 .related-shelf .cv-top{font-size:6.6cqi}
 .related-shelf .cv-title{font-size:13cqi}
 .related-shelf .cv-foot{font-size:6.2cqi}
+
+/* ---------- the authors' kit (inside Share) and the nudge for authors who haven't verified ---------- */
+.share-panel .ak-h{margin:var(--s5) 0 .3rem;font-size:1.2rem;text-align:center}
+.ak-nudge{margin:var(--s5) auto 0;max-width:30rem;padding:.8rem 1rem;border:1px dashed var(--rule-2);border-radius:12px;font-size:.9rem;color:var(--ink-2);text-align:center}
+.ak-nudge[hidden]{display:none}
+.author-kit{margin-top:var(--s6);padding:var(--s5) var(--s4) var(--s4);border:1px solid color-mix(in srgb,var(--gold) 55%,var(--rule));border-radius:18px;
+  background:linear-gradient(180deg,color-mix(in srgb,var(--gold-3) 18%,var(--card)),var(--card) 40%);text-align:center}
+.author-kit[hidden]{display:none}
+.author-kit>h2{margin:.2rem 0 .2rem;font-size:1.6rem}
+.ak-eyebrow{margin:0;font:600 .8rem var(--caps);letter-spacing:.14em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.ak-for-board,.author-kit[data-view=board] .ak-for-author{display:none}
+.author-kit[data-view=board] .ak-for-board{display:inline}
+.af-kit{display:flex;flex-direction:column;gap:.35rem;margin:.2rem 0 1rem;padding:.8rem 1rem;border-radius:12px;background:color-mix(in srgb,var(--gold-3) 16%,var(--card));border:1px solid var(--rule)}
+.af-kit b{font:600 .8rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.af-kit a{font:600 1rem/1.3 var(--display);color:var(--plum)}

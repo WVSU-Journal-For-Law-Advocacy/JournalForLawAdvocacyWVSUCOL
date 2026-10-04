@@ -43,9 +43,9 @@ layout: layouts/base.njk
 {%- if contents.length %}
 {%- set nContents = ((contents.length + 4) / 5) | int %}
 {%- set nSlides = 2 + (nContents if nContents < 17 else 17) %}
-<section class="launch" id="launch-kit" data-volume="{{ volume }}"><div class="wrap">
+<section class="launch" id="launch-kit" data-volume="{{ volume }}" data-board-only hidden><div class="wrap">
   <details class="kit">
-  <summary><span>For the board and authors</span><b>Launch kit</b><small>Instagram carousel and caption</small></summary>
+  <summary><span>Board only</span><b>Launch kit</b><small>Instagram carousel and caption</small></summary>
   <p class="sub">A ready-made carousel for Instagram and Facebook: {{ nSlides }} slides announcing {{ title }}.</p>
   <div class="slides" role="list">
     {%- for k in range(1, nSlides + 1) %}

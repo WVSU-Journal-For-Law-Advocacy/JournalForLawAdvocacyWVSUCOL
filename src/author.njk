@@ -33,7 +33,7 @@ searchExclude: true
     {%- if prof.linkedin %}<a class="btn sm alt" href="{{ prof.linkedin }}" rel="noopener">LinkedIn</a>{% endif %}
     {%- if prof.orcid %}<a class="btn sm alt" href="https://orcid.org/{{ prof.orcid }}" rel="noopener">ORCID</a>{% endif %}
   </div>
-  <div class="claim-box" data-claim hidden></div>
+  <div class="claim-box" id="claim" data-claim hidden></div>
 </div></header>
 
 <section><div class="wrap">
@@ -46,9 +46,10 @@ searchExclude: true
 </div></section>
 
 {%- if site.certificates %}
-<section class="wash"><div class="wrap">
-  <h2 class="title">Certificates</h2>
-  <p class="sub">A certificate of publication for each piece, to print, frame, or share.</p>
+{#- certificates: for the author themself (verified) and the Board -#}
+<section class="wash" id="certs" data-author-only="{{ person.slug }}" hidden><div class="wrap">
+  <h2 class="title">Your certificates</h2>
+  <p class="sub">A certificate of publication for each piece, to print, frame, or share. Only you and the Board see this.</p>
   <div class="certs" style="max-width:52rem;margin:0 auto">
     {%- for a in person.articles %}
     {%- set file = a.page.fileSlug + "--" + person.slug %}

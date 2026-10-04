@@ -219,6 +219,11 @@ document.addEventListener('click', (e) => {
   const heading = $('h2', sec); if (heading) heading.hidden = true;
   Sheet.open({ title: sheetSections[t.dataset.sheet], node: sec, closeHook: () => { marker.replaceWith(sec); if (heading) heading.hidden = false; } });
 });
+// "…#author-kit" (from My library): open Share with the author kit in view
+if (location.hash === '#author-kit' && $('#share')) addEventListener('load', () => {
+  const t = $('[data-sheet="share"]'); if (t) t.click();
+  setTimeout(() => { const k = $('#author-kit'); if (k && !k.hidden) k.scrollIntoView({ block: 'start' }); }, 900);
+});
 
 /* the reading dock: Contents and More open as sheets (Display, Listen, Discuss and progress are handled by the modules) */
 const fromTemplate = (id) => { const t = document.getElementById(id); return t ? t.content.cloneNode(true) : null; };
@@ -612,6 +617,36 @@ document.addEventListener('click', (e) => {
   if (e.target.closest('[data-install-no]')) { store.set('jla:install-no', String(Date.now())); const h = e.target.closest('.app-hint'); if (h) h.remove(); }
 });
 window.JLA_APP = { standalone, inApp, isIOS, installable: () => !!deferredInstall, canInstall: () => !!deferredInstall || isIOS, install: promptInstall, savedList };
+
+/* ---------- who sees what: author-only and Board-only parts ----------
+   [data-author-only="slug,slug"]: shown to the verified author of one of those author pages (authors/{slug}.uid)
+   and to editors; [data-board-only]: editors only. Everyone else (signed in or not) never sees them.
+   These hide tools from people they aren't meant for; the files themselves are public, like every page. */
+(async () => {
+  const parts = $$('[data-author-only], [data-board-only]'); if (!parts.length) return;
+  let me = null; try { me = JSON.parse(store.get('jla:me')); } catch (e) {}
+  if (!me || !me.uid) return;
+  const reveal = (el, view) => {
+    el.hidden = false; el.dataset.view = view;
+    $$(`[data-author-nudge][data-for="${el.id}"]`).forEach((n) => { n.hidden = true; });
+  };
+  let cloud = null;
+  const ownerOf = async (slug) => { // the account that verified this author page ('' if none); remembered for the visit
+    const key = `jla:author-uid:${slug}`;
+    try { const v = sessionStorage.getItem(key); if (v !== null) return v; } catch (e) {}
+    cloud = cloud || await import('/assets/js/jla-cloud.js');
+    const d = await cloud.authorDoc(slug).catch(() => null), uid = (d && d.uid) || '';
+    try { sessionStorage.setItem(key, uid); } catch (e) {}
+    return uid;
+  };
+  for (const el of parts) {
+    if (me.editor) { reveal(el, 'board'); continue; }
+    if (el.hasAttribute('data-board-only')) continue;
+    for (const slug of (el.dataset.authorOnly || '').split(',').filter(Boolean)) {
+      if (await ownerOf(slug) === me.uid) { reveal(el, 'author'); break; }
+    }
+  }
+})();
 
 /* shared with the ES modules (reader, reading tools, comments, account) */
 window.JLA = { Sheet, say, copy, store };

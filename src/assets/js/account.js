@@ -216,9 +216,16 @@ async function paintAuthor() {
   const STATUS = { pending: 'Waiting for the board to review', declined: 'Not approved', approved: 'Approved' };
   $('[data-claims]').innerHTML = open.map((c) => `<li><a href="/authors/${esc(c.slug)}/">${esc(c.authorName)}</a><span class="cl-st cl-${esc(c.status)}">${STATUS[c.status] || esc(c.status)}</span>${c.decisionNote ? `<small>${esc(c.decisionNote)}</small>` : ''}</li>`).join('');
   if (pages.length) { try { const fl = JSON.parse(localStorage.getItem('jla:flags') || '{}'); if (!fl.author) { fl.author = Date.now(); localStorage.setItem('jla:flags', JSON.stringify(fl)); paint(); } } catch (e) {} }
+  // each verified page lists its pieces, each opening that piece's author kit (Instagram designs, images, LinkedIn)
+  const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z]/g, '');
+  const kitLinks = (p, idx) => {
+    const mine = ((idx && idx.articles) || []).filter((a) => a.authors.some((n) => norm(n) === norm(p.name)));
+    return mine.length ? `<div class="af-kit"><b>Your author kits</b>${mine.map((a) => `<a href="${esc(a.url)}#author-kit">${esc(a.title)}</a>`).join('')}</div>` : '';
+  };
   $('[data-author-pages]').innerHTML = pages.map((p) => `
     <form class="author-form" data-slug="${esc(p.slug)}">
       <p class="af-head"><a href="/authors/${esc(p.slug)}/">${esc(p.name || p.slug)}</a> <span class="cl-st cl-approved">Verified</span></p>
+      ${kitLinks(p, index)}
       <label class="ap-photo af-photo" title="Change photo"><img alt="" width="96" height="96"${p.photo ? ` src="${esc(p.photo)}"` : ' hidden'}><span class="monogram"${p.photo ? ' hidden' : ''}>${esc(initials(p.name))}</span><input type="file" accept="image/*" hidden><span class="ap-edit">Change</span></label>
       <div class="field"><label>Affiliation</label><input name="affiliation" maxlength="120" value="${esc(p.affiliation)}" placeholder="e.g. Associate, Law Firm · WVSU College of Law, JD 2024"></div>
       <div class="field"><label>Bio</label><textarea name="bio" maxlength="800" rows="4" placeholder="A few lines about you and your work">${esc(p.bio)}</textarea></div>

@@ -2,7 +2,35 @@
 permalink: /robots.txt
 eleventyExcludeFromCollections: true
 ---
+# {{ site.title }}
+# Search engines and AI assistants are welcome to read, quote with citation, and link to our articles.
+# A guide for AI systems, with a clean text version of every article: {{ site.url }}/llms.txt
+# Private pages (the Board's tools, readers' libraries, the content editor) are not for indexing.
+
 User-agent: *
+Allow: /
 Disallow: /admin/
+Disallow: /editor/
+Disallow: /account/
+
+# AI search, assistants and crawlers: explicitly welcome
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Meta-ExternalAgent
+User-agent: Amazonbot
+User-agent: DuckAssistBot
+User-agent: CCBot
+Allow: /
+Disallow: /admin/
+Disallow: /editor/
+Disallow: /account/
 
 Sitemap: {{ site.url }}/sitemap.xml

@@ -20,6 +20,7 @@ layout: layouts/base.njk
   <div class="art-cover" aria-hidden="true"><span class="cover" style="--tone:{{ site.area_tones[area] or '#4A2466' }}">{% if cp %}<i class="cv-photo" style="background-image:url('{{ cp | coverSrc }}')"></i>{% endif %}<span class="cv-top">{{ area }}</span><span class="cv-title">{{ title.split(":")[0] }}</span><span class="cv-foot"><i></i>Vol. {{ volume | roman }} · {{ year }}</span></span></div>
   <p class="art-eyebrow"><a href="/areas/{{ area | slugify }}/" data-pagefind-filter="Area">{{ area }}</a><span hidden data-pagefind-filter="Type">{{ kind }}</span></p>
   <h1>{{ title }}</h1>
+  {%- if honors and honors.length %}<p class="art-honors">{% for h in honors %}<span>{{ h }}</span>{% endfor %}</p>{% endif %}
   <p class="art-authors">{% for au in author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/" data-pagefind-filter="Author">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</p>
   <p class="art-meta">
     {%- if vol %}<a href="{{ vol.url }}" data-pagefind-filter="Volume">Vol. {{ volume | roman }}</a>{% else %}<span data-pagefind-filter="Volume">Vol. {{ volume | roman }}</span>{% endif %}
@@ -113,6 +114,7 @@ layout: layouts/base.njk
       <button class="btn sm alt" type="button" data-export="bib" hidden>BibTeX</button>
       <button class="btn sm alt" type="button" data-export="ris" hidden>RIS</button>
     </div>
+    <p class="rec-link"><a href="/verify/{{ slug }}/">Official record of publication</a> · {{ { volume: volume, first_page: first_page, slug: slug } | recordId }}</p>
     {%- if doi %}<p class="doi">DOI: <a href="https://doi.org/{{ doi }}">https://doi.org/{{ doi }}</a></p>{% endif %}
   </section>
 
@@ -206,6 +208,15 @@ Read it here: {{ url }}
       </dl>
       <p class="off">On your profile: <em>Add profile section → Recommended → Add publications</em>, then paste each field.</p>
       <div class="acts"><a class="btn sm alt" href="https://www.linkedin.com/in/me/" target="_blank" rel="noopener">Open my LinkedIn profile</a></div>
+
+      <h3 class="ak-h">Add it to your CV</h3>
+      <p class="off">Copy-ready lines, each with the Journal's public record so a school or employer can check it.</p>
+      <div class="cv-lines">
+        <div class="cv-line"><span class="cv-lbl">Law review style</span><p id="cv-law">{{ d | cite(site.short) }}</p><button class="chip" type="button" data-copy="#cv-law" data-copy-msg="Copied">Copy</button></div>
+        <div class="cv-line"><span class="cv-lbl">Résumé</span><p id="cv-res">“{{ title }},” {{ kind }}, {{ site.title }}, Vol. {{ volume }}{% if pages %}, pp. {{ pages }}{% endif %} ({{ year }}){% if honors and honors.length %}. {{ honors | join("; ") }}{% endif %}. Verified: {{ site.url }}/verify/{{ slug }}/</p><button class="chip" type="button" data-copy="#cv-res" data-copy-msg="Copied">Copy</button></div>
+        <div class="cv-line"><span class="cv-lbl">Verification link</span><p id="cv-ver">{{ site.url }}/verify/{{ slug }}/</p><button class="chip" type="button" data-copy="#cv-ver" data-copy-msg="Link copied">Copy</button></div>
+      </div>
+      <p class="acts"><a class="btn sm alt" href="/verify/{{ slug }}/">See the record of publication</a></p>
     </section>
   </section>
   </div>

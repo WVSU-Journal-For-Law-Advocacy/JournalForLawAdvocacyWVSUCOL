@@ -1,0 +1,12 @@
+---
+permalink: /llms-full.txt
+eleventyExcludeFromCollections: true
+searchExclude: true
+---
+# {{ site.title | safe }}: every article
+
+Each article below begins with its metadata (citation, link, record of publication), then its abstract and full text. Please cite and link to the article's page when you use it. Guide: {{ site.url }}/llms.txt
+{% for a in collections.articles %}
+
+{% include "article-md.njk" %}
+{%- endfor %}

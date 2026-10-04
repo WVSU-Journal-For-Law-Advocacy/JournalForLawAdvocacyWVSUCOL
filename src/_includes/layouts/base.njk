@@ -8,6 +8,7 @@
 {%- set ogImage = ("/og/" + page.fileSlug + ".png") if isArticle else "/og/site.png" %}
 <title>{{ pageTitle }}</title>
 <meta name="description" content="{{ pageDesc }}">
+{%- if noindex %}<meta name="robots" content="noindex">{% endif %}
 <link rel="canonical" href="{{ site.url }}{{ page.url }}">
 <meta property="og:type" content="{{ 'article' if isArticle else 'website' }}">
 <meta property="og:site_name" content="{{ site.title }}">
@@ -59,6 +60,10 @@ try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
 {%- if site.issn_online or site.issn_print %}<meta name="citation_issn" content="{{ site.issn_online or site.issn_print }}">{% endif %}
 {%- for k in keywords %}<meta name="citation_keywords" content="{{ k }}">{% endfor %}
 {%- if pdf %}<meta name="citation_pdf_url" content="{{ site.url }}{{ pdf }}">{% endif %}
+<meta name="citation_abstract_html_url" content="{{ site.url }}{{ page.url }}">
+<meta name="citation_language" content="en">
+{#- a clean text version for AI systems and plain-text readers -#}
+<link rel="alternate" type="text/markdown" href="/articles/{{ page.fileSlug }}.md" title="Plain text (Markdown) version">
 <script type="application/ld+json">{{ {
   "@context": "https://schema.org",
   "@type": "ScholarlyArticle",
@@ -68,6 +73,17 @@ try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
   "keywords": (keywords or []) | join(", "),
   "datePublished": year | string,
   "url": site.url + page.url,
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "genre": kind,
+  "about": area,
+  "pageStart": (first_page | string) if first_page else undefined,
+  "pageEnd": (last_page | string) if last_page else undefined,
+  "award": honors if (honors and honors.length) else undefined,
+  "identifier": ({ volume: volume, first_page: first_page, slug: page.fileSlug } | recordId),
+  "encoding": { "@type": "MediaObject", "encodingFormat": "application/pdf", "contentUrl": site.url + pdf } if pdf else undefined,
+  "publisher": { "@type": "CollegeOrUniversity", "name": site.institution, "address": site.city },
+  "copyrightNotice": "© the author(s) and " + site.title + ". Free to read; quote with citation and link.",
   "sameAs": ("https://doi.org/" + doi) if doi else undefined,
   "isPartOf": { "@type": "PublicationVolume", "volumeNumber": volume | string,
     "isPartOf": { "@type": "Periodical", "name": site.title, "issn": (site.issn_online or site.issn_print) or undefined } }

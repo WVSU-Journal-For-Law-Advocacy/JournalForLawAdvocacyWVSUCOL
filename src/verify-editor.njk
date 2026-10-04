@@ -1,0 +1,49 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.editors
+  size: 1
+  alias: p
+permalink: "/verify/editor/{{ p.slug }}/"
+eleventyComputed:
+  title: "Record of editorial service: {{ p.name }}"
+  description: "The WVSU Journal for Law Advocacy's record of editorial service for {{ p.name }}."
+searchExclude: true
+noindex: true
+eleventyExcludeFromCollections: true
+---
+{#- Editors do the work that makes the Journal: their service is on the record too. -#}
+{%- set rec = "JLA-ED-" + (p.slug | upper | replace("-", "")) | truncate(18, true, "") %}
+<section class="record"><div class="wrap">
+  <article class="rec-card" aria-labelledby="rec-title">
+    <header class="rec-head">
+      <img src="/assets/img/seal-240.png" alt="Seal of the WVSU Journal for Law Advocacy" width="72" height="72">
+      <p class="rec-kicker">{{ site.title }}</p>
+      <h1 id="rec-title">Record of editorial service</h1>
+      <p class="rec-status"><span aria-hidden="true">✓</span> On the Journal's official record</p>
+    </header>
+
+    <dl class="rec-fields">
+      <div><dt>Name</dt><dd class="rec-big">{{ p.name }}</dd></div>
+      <div><dt>Service</dt><dd>
+        <ul class="rec-roles">
+          {%- for r in p.roles %}<li><b>{{ r | roleLine }}</b><span>Academic Year {{ r.year }}</span></li>{% endfor %}
+        </ul>
+      </dd></div>
+      <div><dt>Publisher</dt><dd>{{ site.institution }}{% if site.issn_print %} · ISSN {{ site.issn_print }}{% endif %}</dd></div>
+      <div><dt>Record</dt><dd><b>{{ rec }}</b> · {{ site.url }}{{ page.url }}</dd></div>
+    </dl>
+
+    <section class="cv-lines" aria-labelledby="cv-h-{{ p.slug }}">
+      <h2 id="cv-h-{{ p.slug }}">For your CV</h2>
+      {%- for r in p.roles %}
+      {%- set line = (r | roleLine) + ", " + site.title + ", " + site.institution + " (AY " + r.year + ")" %}
+      <div class="cv-line"><p id="cv-{{ p.slug }}-{{ loop.index }}">{{ line }}</p><button class="chip" type="button" data-copy="#cv-{{ p.slug }}-{{ loop.index }}" data-copy-msg="Copied">Copy</button></div>
+      {%- endfor %}
+      <p class="cv-verify">Add the verification link: <a href="{{ page.url }}">{{ site.url }}{{ page.url }}</a></p>
+    </section>
+
+    <p class="rec-acts"><a class="btn alt" href="/board/">The editorial board</a></p>
+    <p class="rec-foot">This record is kept by the Board of Editors from the Journal's own lists of its boards. To confirm it in writing, write to <a href="mailto:{{ site.email }}">{{ site.email }}</a> quoting <b>{{ rec }}</b>.</p>
+  </article>
+</div></section>

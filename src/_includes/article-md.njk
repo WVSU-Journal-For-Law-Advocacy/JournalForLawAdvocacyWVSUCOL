@@ -1,0 +1,60 @@
+{#- One article as clean Markdown for AI systems and plain-text readers. Expects `a` (an article). Everything is output raw (| safe). -#}
+{%- set d = a.data %}
+{%- set url = site.url + a.url %}
+{%- set pages = (d.first_page + ("–" + d.last_page if d.last_page and d.last_page != d.first_page else "")) if d.first_page else "" %}
+{%- set cite = { author: d.author, title: d.title, volume: d.volume, first_page: d.first_page, year: d.year, doi: d.doi } | cite(site.short) -%}
+---
+title: {{ d.title | dump | safe }}
+authors: {{ d.author | splitAuthors | dump | safe }}
+journal: {{ site.title | dump | safe }}
+journal_abbreviation: {{ site.short | dump | safe }}
+publisher: {{ site.institution | dump | safe }}
+volume: {{ d.volume }}
+year: {{ d.year }}
+{%- if pages %}
+pages: {{ pages | dump | safe }}{% endif %}
+type: {{ d.kind | dump | safe }}
+area_of_law: {{ d.area | dump | safe }}
+keywords: {{ (d.keywords or []) | dump | safe }}
+{%- if d.honors and d.honors.length %}
+honors: {{ d.honors | dump | safe }}{% endif %}
+url: {{ url | dump | safe }}
+{%- if d.pdf %}
+pdf: {{ (site.url + d.pdf) | dump | safe }}{% endif %}
+{%- if d.doi %}
+doi: {{ d.doi | dump | safe }}{% endif %}
+citation: {{ cite | dump | safe }}
+record_of_publication: {{ (site.url + "/verify/" + a.page.fileSlug + "/") | dump | safe }}
+{%- if site.issn_print %}
+issn_print: {{ site.issn_print | dump | safe }}{% endif %}
+rights: "© the author(s) and the WVSU Journal for Law Advocacy. Free to read. Quote with citation and a link to the article; republication needs permission."
+---
+
+# {{ d.title | safe }}
+
+{{ d.author | safe }} · *{{ site.title | safe }}*, Vol. {{ d.volume }} ({{ d.year }}){% if pages %}, pp. {{ pages }}{% endif %} · {{ d.kind | safe }}, {{ d.area | safe }}
+
+**Cite as:** {{ cite | safe }}
+**Read online:** {{ url | safe }}
+
+## Abstract
+
+{{ d.abstract | safe }}
+{%- if d.takeaways and d.takeaways.length %}
+
+## Key takeaways (editorial summary)
+{% for t in d.takeaways %}
+{{ loop.index }}. {{ t | safe }}
+{%- endfor %}
+{%- endif %}
+{%- if (a.rawInput | trim) %}
+
+## Full text
+
+{{ a.rawInput | trim | safe }}
+{%- elif d.pdf %}
+
+## Full text
+
+This piece is published as a PDF: {{ (site.url + d.pdf) | safe }}
+{%- endif %}

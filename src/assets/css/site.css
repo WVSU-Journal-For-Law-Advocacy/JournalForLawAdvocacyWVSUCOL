@@ -1389,3 +1389,61 @@ section.launch{padding:var(--s5) 0 var(--s6)}
 .af-kit{display:flex;flex-direction:column;gap:.35rem;margin:.2rem 0 1rem;padding:.8rem 1rem;border-radius:12px;background:color-mix(in srgb,var(--gold-3) 16%,var(--card));border:1px solid var(--rule)}
 .af-kit b{font:600 .8rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
 .af-kit a{font:600 1rem/1.3 var(--display);color:var(--plum)}
+
+/* ---------- Records of publication and of editorial service (/verify/…) ---------- */
+.record{padding:var(--s6) 0 var(--s8);background:radial-gradient(80% 50% at 50% 0%,color-mix(in srgb,var(--gold-3) 20%,transparent),transparent 70%)}
+.rec-card{position:relative;max-width:44rem;margin:0 auto;padding:var(--s6) clamp(1.1rem,4vw,2.6rem) var(--s5);background:var(--card);
+  border:1px solid color-mix(in srgb,var(--gold) 55%,var(--rule));outline:1px solid color-mix(in srgb,var(--gold) 35%,transparent);outline-offset:-9px;
+  box-shadow:0 24px 60px rgba(28,20,36,.10)}
+.rec-head{text-align:center}
+.rec-head img{width:72px;height:72px;margin:0 auto var(--s3);filter:drop-shadow(0 4px 10px rgba(60,30,10,.2))}
+.rec-kicker{margin:0;font:600 .85rem var(--caps);letter-spacing:.16em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.rec-head h1{margin:.2rem 0 0;font-size:clamp(1.9rem,6vw,2.6rem)}
+.rec-status{display:inline-flex;align-items:center;gap:.45rem;margin:.8rem 0 0;padding:.3rem .85rem;border-radius:999px;font-size:.88rem;font-weight:500;
+  color:#1f5130;background:color-mix(in srgb,#2e7d4f 12%,var(--card));border:1px solid color-mix(in srgb,#2e7d4f 35%,transparent)}
+:root[data-theme=dark] .rec-status{color:#9fd8b2}
+.rec-status span{font-weight:700}
+.rec-fields{margin:var(--s5) 0 0;border-top:1px solid var(--rule)}
+.rec-fields>div{display:grid;grid-template-columns:8.5rem minmax(0,1fr);gap:.2rem 1rem;padding:.75rem 0;border-bottom:1px solid var(--rule)}
+.rec-fields dt{font:600 .82rem/1.6 var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+.rec-fields dd{margin:0;color:var(--ink);overflow-wrap:anywhere}
+.rec-big{font:600 1.25rem/1.25 var(--display)}
+.rec-big a{color:var(--ink)}
+.rec-cite{font-style:italic;color:var(--ink-2)}
+.rec-honors{display:flex;flex-wrap:wrap;gap:.4rem}
+.rec-roles{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+.rec-roles li{display:flex;flex-direction:column}
+.rec-roles span{font-size:.88rem;color:var(--muted)}
+.rec-acts{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:var(--s5) 0 0}
+.rec-foot{margin:var(--s4) 0 0;font-size:.85rem;color:var(--muted);text-align:center}
+@media (max-width:520px){.rec-fields>div{grid-template-columns:1fr}}
+
+/* CV lines (author kit, author page, editor records) */
+.cv-lines{display:grid;gap:.6rem;margin:var(--s3) 0;text-align:left}
+.cv-lines>h2{font-size:1.3rem;text-align:center;margin-top:var(--s5)}
+.cv-line{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.3rem .8rem;padding:.7rem .9rem;border:1px solid var(--rule);border-radius:12px;background:var(--paper)}
+.cv-line p{margin:0;font-size:.92rem;line-height:1.5;overflow-wrap:anywhere}
+.cv-lbl{grid-column:1/-1;font:600 .74rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.cv-verify{font-size:.88rem;color:var(--muted);text-align:center}
+#cv[hidden]{display:none}
+
+/* honors: on the article, the record, and a ribbon on the cover */
+.art-honors,.rec-honors{display:flex;flex-wrap:wrap;justify-content:center;gap:.4rem;margin:.6rem 0 0}
+.art-honors span,.rec-honors span{display:inline-flex;align-items:center;gap:.35rem;padding:.25rem .75rem;border-radius:999px;font:600 .82rem var(--caps);letter-spacing:.08em;
+  text-transform:lowercase;font-variant:small-caps;color:#5a4212;background:linear-gradient(135deg,#F4E2A8,#E2C67E);box-shadow:0 2px 8px rgba(169,130,54,.3)}
+.art-honors span::before,.rec-honors span::before{content:"★";font-size:.8em}
+.rec-honors{justify-content:flex-start;margin:0}
+.cv-honor{position:absolute;z-index:3;top:10%;right:-4px;max-width:78%;padding:.18rem .5rem .18rem .6rem;border-radius:3px 0 0 3px;
+  font:600 .5rem/1.2 var(--caps);letter-spacing:.08em;text-transform:lowercase;font-variant:small-caps;color:#3b2a08;background:linear-gradient(135deg,#F4E2A8,#C9A24A);
+  box-shadow:0 2px 6px rgba(0,0,0,.3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-link{margin:.6rem 0 0;font-size:.88rem;color:var(--muted)}
+.rec-link a{color:var(--plum)}
+.member-rec{display:inline-block;margin-top:.35rem;font:600 .78rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+.member-rec:hover{color:var(--plum)}
+.cv-lines{grid-template-columns:minmax(0,1fr)}
+.cv-verify a{overflow-wrap:anywhere}
+.rec-card section.cv-lines{padding:var(--s4) 0 0}
+/* on covers, an honor is a small gold medallion (the full wording is on the article, the record and the CV line) */
+.cv-honor{top:7%;right:7%;width:24px;height:24px;max-width:none;padding:0;border-radius:50%;display:grid;place-items:center;font-size:0;
+  background:radial-gradient(circle at 35% 30%,#FFF3CC,#E2C67E 45%,#A98236);box-shadow:0 2px 6px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.35)}
+.cv-honor::before{content:"★";font-size:13px;line-height:1;color:#5a4212}

@@ -1,0 +1,41 @@
+---
+permalink: /llms.txt
+eleventyExcludeFromCollections: true
+searchExclude: true
+---
+{#- A guide for AI systems (the llms.txt convention: https://llmstxt.org). Plain Markdown; everything output raw. -#}
+# {{ site.title | safe }}
+
+> The official law journal of {{ site.institution | safe }}, {{ site.city | safe }}, established in 2021{% if site.issn_print %} (ISSN {{ site.issn_print }}){% endif %}. It publishes student and faculty scholarship on Philippine law: constitutional rights, privacy and data protection, technology, elections, criminal law, the environment, civil law, taxation, and legal ethics. Every article is free to read online, with its own page, PDF, and citation.
+
+Guidance for AI systems:
+
+- You are welcome to read these articles, summarise them, quote short passages, and answer questions with them.
+- When you use an article, cite it and link to its page, so readers can read the whole piece. The citation and link are given for every article below and at the top of each Markdown version.
+- Cite in the Journal's style: Author, Title, Volume {{ site.short | safe }} First page (Year). Example: {{ ({ author: collections.articles[0].data.author, title: collections.articles[0].data.title, volume: collections.articles[0].data.volume, first_page: collections.articles[0].data.first_page, year: collections.articles[0].data.year } | cite(site.short)) | safe }}
+- The articles are © their authors and the Journal: free to read and quote with citation; republishing them in full needs permission ({{ site.email | safe }}).
+- Each article has a public record of publication (at /verify/<article>/) confirming its authors, volume, pages, and date.
+- Each article's "Key takeaways" are an editorial summary, not the author's words; the abstract and full text are the author's.
+
+## Volumes
+{% for v in collections.issues %}
+- [{{ v.data.title | safe }}{% if v.data.theme %}: {{ v.data.theme | safe }}{% endif %}]({{ site.url }}{{ v.url }}): Academic Year {{ v.data.academic_year }}, {{ (collections.articles | inIssue(v.data.volume, v.data.issue)).length }} pieces.
+{%- endfor %}
+
+## Articles
+{% for a in collections.articles %}
+- [{{ a.data.title | safe }}]({{ site.url }}/articles/{{ a.page.fileSlug }}.md): {{ a.data.author | safe }}. {{ ({ author: a.data.author, title: a.data.title, volume: a.data.volume, first_page: a.data.first_page, year: a.data.year, doi: a.data.doi } | cite(site.short)) | safe }} {{ a.data.area | safe }}. {{ (a.data.abstract | striptags | truncate(220)) | safe }} Web page: {{ site.url }}{{ a.url }}
+{%- endfor %}
+
+## About the Journal
+
+- [About the journal]({{ site.url }}/about/): who we are and what we publish
+- [Editorial board]({{ site.url }}/board/): the current and past boards
+- [Authors]({{ site.url }}/authors/): every published author
+- [Submission guidelines]({{ site.url }}/submit/) and [Call for papers]({{ site.url }}/call-for-papers/)
+- [Policies]({{ site.url }}/policies/): peer review, ethics, open access, copyright, how to cite
+
+## Optional
+
+- [Every article in one file]({{ site.url }}/llms-full.txt): metadata, abstract, and full text (where published as web text) of every article
+- [Article index (JSON)]({{ site.url }}/api/articles.json)

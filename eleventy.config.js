@@ -284,6 +284,27 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addShortcode("year", () => String(new Date().getFullYear()));
 
+  // ---- Records of publication and of editorial service (/verify/…) ----
+  // everyone who has served on the board, with their roles by year (newest first): [{ name, slug, roles: [{ year, role, group }] }]
+  eleventyConfig.addCollection("editors", () => {
+    let board = { boards: [] }; try { board = JSON.parse(fs.readFileSync("src/_data/board.json", "utf8")); } catch (e) {}
+    const people = new Map();
+    for (const b of board.boards || []) for (const m of b.members || []) {
+      const name = canonical(m.name), slug = slugify(name);
+      if (!people.has(slug)) people.set(slug, { name, slug, photo: m.photo || "", roles: [] });
+      people.get(slug).roles.push({ year: b.academic_year, role: m.role, group: m.group });
+    }
+    return [...people.values()].sort((a, b) => a.name.localeCompare(b.name));
+  });
+  eleventyConfig.addFilter("editorSlug", (name) => slugify(canonical(name)));
+  // the board that edited a volume: the one whose academic year matches the volume's
+  eleventyConfig.addFilter("boardOfYear", (board, ay) => ((board && board.boards) || []).find((b) => b.academic_year === ay) || null);
+  eleventyConfig.addFilter("execEditorOf", (b) => (b ? (b.members || []).find((m) => /^executive editor$/i.test(m.role)) : null) || null);
+  // a short, stable record number: JLA-V5-120 (volume and first page), or the slug when there's no page
+  eleventyConfig.addFilter("recordId", (d) => `JLA-V${num(d.volume)}-${d.first_page || String(d.slug || "").slice(0, 12).toUpperCase()}`);
+  // the role as one CV line: "Member, Board of Editors" stays; "Executive Editor" stays; otherwise "Role, Group"
+  eleventyConfig.addFilter("roleLine", (r) => (r.role.includes(r.group) || !r.group ? r.role : `${r.role}, ${r.group}`));
+
   // Facebook / social share images, written straight into _site/og/
   eleventyConfig.on("eleventy.after", async ({ dir, runMode }) => {
     const site = JSON.parse(fs.readFileSync("src/_data/site.json", "utf8"));

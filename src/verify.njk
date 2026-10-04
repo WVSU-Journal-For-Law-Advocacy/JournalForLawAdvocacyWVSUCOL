@@ -1,0 +1,48 @@
+---
+layout: layouts/base.njk
+pagination:
+  data: collections.articles
+  size: 1
+  alias: a
+permalink: "/verify/{{ a.page.fileSlug }}/"
+eleventyComputed:
+  title: "Record of publication: {{ a.data.title }}"
+  description: "The WVSU Journal for Law Advocacy's official record of publication for “{{ a.data.title }}”."
+searchExclude: true
+noindex: true
+eleventyExcludeFromCollections: true
+---
+{#- An official, public record an employer or school can check: what was published, by whom, where and when. -#}
+{%- set d = a.data %}
+{%- set vol = collections.issues | issueOf(d.volume, d.issue) %}
+{%- set ay = vol.data.academic_year if vol else "" %}
+{%- set ed = (board | boardOfYear(ay)) | execEditorOf %}
+{%- set rec = { volume: d.volume, first_page: d.first_page, slug: a.page.fileSlug } | recordId %}
+{%- set pages = (d.first_page + ("–" + d.last_page if d.last_page and d.last_page != d.first_page else "")) if d.first_page else "" %}
+<section class="record"><div class="wrap">
+  <article class="rec-card" aria-labelledby="rec-title">
+    <header class="rec-head">
+      <img src="/assets/img/seal-240.png" alt="Seal of the WVSU Journal for Law Advocacy" width="72" height="72">
+      <p class="rec-kicker">{{ site.title }}</p>
+      <h1 id="rec-title">Record of publication</h1>
+      <p class="rec-status"><span aria-hidden="true">✓</span> On the Journal's official record</p>
+    </header>
+
+    <dl class="rec-fields">
+      <div><dt>Title</dt><dd class="rec-big"><a href="{{ a.url }}">{{ d.title }}</a></dd></div>
+      <div><dt>{{ "Authors" if (d.author | splitAuthors).length > 1 else "Author" }}</dt><dd>{% for au in d.author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</dd></div>
+      <div><dt>Published in</dt><dd>{{ site.title }}, {% if vol %}<a href="{{ vol.url }}">Volume {{ d.volume }}</a>{% else %}Volume {{ d.volume }}{% endif %}{% if pages %}, pages {{ pages }}{% endif %}</dd></div>
+      <div><dt>Year</dt><dd>{{ d.year }}{% if ay %} · Academic Year {{ ay }}{% endif %}{% if vol and vol.data.launched %} · launched {{ vol.data.launched | readableDate }}{% endif %}</dd></div>
+      <div><dt>Type</dt><dd>{{ d.kind }} · {{ d.area }}</dd></div>
+      {%- if d.honors and d.honors.length %}<div><dt>Honors</dt><dd class="rec-honors">{% for h in d.honors %}<span>{{ h }}</span>{% endfor %}</dd></div>{% endif %}
+      {%- if ed %}<div><dt>Edited by</dt><dd>The Board of Editors, AY {{ ay }}, under Executive Editor {{ ed.name }}</dd></div>{% endif %}
+      <div><dt>Publisher</dt><dd>{{ site.institution }}{% if site.issn_print %} · ISSN {{ site.issn_print }} (print){% endif %}{% if site.issn_online %} · ISSN {{ site.issn_online }} (online){% endif %}</dd></div>
+      {%- if d.doi %}<div><dt>DOI</dt><dd><a href="https://doi.org/{{ d.doi }}">{{ d.doi }}</a></dd></div>{% endif %}
+      <div><dt>Cite as</dt><dd class="rec-cite">{{ { author: d.author, title: d.title, volume: d.volume, first_page: d.first_page, year: d.year, doi: d.doi } | cite(site.short) }}</dd></div>
+      <div><dt>Record</dt><dd><b>{{ rec }}</b> · {{ site.url }}{{ page.url }}</dd></div>
+    </dl>
+
+    <p class="rec-acts"><a class="btn" href="{{ a.url }}">Read the article</a>{% if d.pdf %}<a class="btn alt" href="{{ d.pdf }}">PDF</a>{% endif %}</p>
+    <p class="rec-foot">This record is kept by the Board of Editors and published from the Journal's own files; it changes only if the Journal corrects its record. To confirm it in writing, write to <a href="mailto:{{ site.email }}">{{ site.email }}</a> quoting <b>{{ rec }}</b>.</p>
+  </article>
+</div></section>

@@ -1,0 +1,10 @@
+---
+pagination:
+  data: collections.articles
+  size: 1
+  alias: a
+permalink: "/articles/{{ a.page.fileSlug }}.md"
+eleventyExcludeFromCollections: true
+searchExclude: true
+---
+{%- include "article-md.njk" %}

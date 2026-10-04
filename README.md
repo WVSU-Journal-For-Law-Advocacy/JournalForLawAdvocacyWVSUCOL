@@ -34,6 +34,27 @@ The abstracts for Volumes 1, 4 and 5 were drafted from each author's opening par
 - **Launch kit:** each volume page has an Instagram carousel (`/share/volume-<n>/slide-NN.png`: cover, contents, closing) with "Share all slides" on phones and a ready caption.
 - Tick **Featured on the home page** on one article of the current volume to make it the lead piece on the home page.
 
+### Credentials: records, CV lines, honors
+
+- **Record of publication** (`/verify/<article>/`): a public, official-looking page for every article (record number like *JLA-V5-90*, authors, volume, pages, launch date, the Executive Editor of that year, citation). Authors put its link on their CV; anyone can check it. The article's Cite panel links to it.
+- **Record of editorial service** (`/verify/editor/<name>/`): every board member's roles by academic year, from `board.json`, with copy-ready CV lines. Linked from each member on the Board page.
+- **CV lines:** in each author kit (law-review style, résumé line, verification link) and, for the author, on their author page.
+- **Honors** (the Board decides): add to an article's file
+
+  ```
+  honors:
+    - "Best Article, Volume 5"
+  ```
+
+  It appears under the title, as a gold medallion on its cover, on its record, in its CV lines, and in the page's structured data (schema.org `award`).
+
+### For AI systems
+
+- `/llms.txt`: a guide for AI assistants (what the Journal is, how to cite, the terms) listing every volume and article.
+- `/llms-full.txt`: every article (metadata, citation, abstract, full text) in one file.
+- `/articles/<slug>.md`: a clean Markdown version of each article, linked from its page.
+- `robots.txt` welcomes search engines and AI crawlers (ChatGPT, Claude, Perplexity, Gemini, Apple, Meta and others) and keeps them out of the Board tools, My library and the CMS. To stop AI *training* crawlers while keeping AI search, move `GPTBot`, `ClaudeBot`, `Google-Extended`, `Applebot-Extended`, `Meta-ExternalAgent` and `CCBot` into a separate group with `Disallow: /`.
+
 ### Who sees what
 
 - **Every reader, signed in or not:** reading, the reading tools, citing, sharing the link, quote cards, reading comments; progress is kept on the device.

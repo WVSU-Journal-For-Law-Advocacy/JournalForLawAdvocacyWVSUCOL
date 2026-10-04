@@ -28,6 +28,7 @@ description: The Board of Editors, Contribution Editors, and Editorial Apprentic
       <h3>{{ m.name }}</h3>
       <p class="role">{{ m.role }}</p>
       {%- if m.detail %}<p>{{ m.detail }}</p>{% endif %}
+      <a class="member-rec" href="/verify/editor/{{ m.name | editorSlug }}/">Service record</a>
     </div>
     {%- endfor %}
   </div>

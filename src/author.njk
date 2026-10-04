@@ -45,6 +45,17 @@ searchExclude: true
   </div>
 </div></section>
 
+{#- for the author themself (verified) and the Board: every piece as a CV line with its public record -#}
+<section id="cv" data-author-only="{{ person.slug }}" hidden><div class="wrap">
+  <h2 class="title">Your publications, for your CV</h2>
+  <p class="sub">Copy-ready lines with the Journal's public record. Only you and the Board see this section.</p>
+  <div class="cv-lines" style="max-width:46rem;margin:0 auto">
+    {%- for a in person.articles %}
+    <div class="cv-line"><span class="cv-lbl">{{ a.data.kind }} · Vol. {{ a.data.volume }}</span><p id="cvp-{{ loop.index }}">{{ { author: a.data.author, title: a.data.title, volume: a.data.volume, first_page: a.data.first_page, year: a.data.year, doi: a.data.doi } | cite(site.short) }}{% if a.data.honors and a.data.honors.length %} {{ a.data.honors | join("; ") }}.{% endif %} Verified: {{ site.url }}/verify/{{ a.page.fileSlug }}/</p><button class="chip" type="button" data-copy="#cvp-{{ loop.index }}" data-copy-msg="Copied">Copy</button></div>
+    {%- endfor %}
+  </div>
+</div></section>
+
 {%- if site.certificates %}
 {#- certificates: for the author themself (verified) and the Board -#}
 <section class="wash" id="certs" data-author-only="{{ person.slug }}" hidden><div class="wrap">

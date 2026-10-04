@@ -5,7 +5,7 @@ summary: Everything we publish is free to read, share, and cite.
 draft_notice: true
 ---
 
-The Journal for Law Advocacy is an **open-access** journal. Every article is free to read and download, with no subscription, registration, or fee.
+The WVSU Journal for Law Advocacy is an **open-access** journal. Every article is free to read and download, with no subscription, registration, or fee.
 
 ## License
 

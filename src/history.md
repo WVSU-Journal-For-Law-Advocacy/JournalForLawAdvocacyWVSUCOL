@@ -2,12 +2,12 @@
 layout: layouts/history.njk
 title: Organization and history
 permalink: /about/history/
-description: How the Journal for Law Advocacy of the WVSU College of Law began, how it is organized, and every volume it has published.
+description: How the WVSU Journal for Law Advocacy of the WVSU College of Law began, how it is organized, and every volume it has published.
 founded: 2021
 draft_notice: true
 ---
 
-The **Journal for Law Advocacy** is a student publication of the West Visayas State University College of Law in Iloilo City. It was founded in 2021, the year on its seal, and published its inaugural issue, Volume 1, in Academic Year 2021–2022. Its founding editors, **Batch Banaag**, took their oath in early 2022. Under the theme "Electoral Laws and the 2022 Philippine Election," the first volume came out week by week from August 2022, opening with an overview of the national elections written by the seven founding editors.
+The **WVSU Journal for Law Advocacy** is a student publication of the West Visayas State University College of Law in Iloilo City. It was founded in 2021, the year on its seal, and published its inaugural issue, Volume 1, in Academic Year 2021–2022. Its founding editors, **Batch Banaag**, took their oath in early 2022. Under the theme "Electoral Laws and the 2022 Philippine Election," the first volume came out week by week from August 2022, opening with an overview of the national elections written by the seven founding editors.
 
 From the start the journal has had the support of the College of Law's deanship and of its adviser, Judge Enrique Z. Trespeces. He administers the oath to each new board. Atty. Regina Johanna V. Gustilo and Prosecutor Victoria Heler have also served as advisers.
 

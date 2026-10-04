@@ -236,7 +236,7 @@ collections:
         file: src/_data/site.json
         fields:
           - { label: Journal name, name: title, widget: string }
-          - { label: Citation abbreviation, name: short, widget: string, hint: "Used in citations, e.g. J. Law Advoc." }
+          - { label: Citation abbreviation, name: short, widget: string, hint: "Used in citations, e.g. WVSU J.L. Advoc." }
           - { label: Institution, name: institution, widget: string }
           - { label: City, name: city, widget: string }
           - { label: Tagline, name: tagline, widget: string }

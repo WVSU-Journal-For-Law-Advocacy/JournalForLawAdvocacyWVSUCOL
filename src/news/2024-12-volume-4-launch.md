@@ -6,7 +6,7 @@ source: https://www.facebook.com/JournalforLawAdvocacy/posts/601049202438367/
 milestone: Volume 4, on environmental law, is launched at Quezon Hall.
 ---
 
-The Journal for Law Advocacy launched Volume 4 on December 14, 2024, during the WVSU College of Law's Year-End Assessment of Activities at the Quezon Hall grounds. The volume is titled **"Enhancing Environmental Laws in the Philippines: Strengths, Weaknesses, and Reforms Toward a Balanced and Healthful Ecology."**
+The WVSU Journal for Law Advocacy launched Volume 4 on December 14, 2024, during the WVSU College of Law's Year-End Assessment of Activities at the Quezon Hall grounds. The volume is titled **"Enhancing Environmental Laws in the Philippines: Strengths, Weaknesses, and Reforms Toward a Balanced and Healthful Ecology."**
 
 JLA advisers Judge Enrique Z. Trespeces and Prosecutor Victoria Heler both gave messages. Executive Editor Luigi Bien Villanueva delivered the editor's note, and Mary Gemzel Alcazar, a member of the Board of Editors, spoke on the design of the cover. Contributors received certificates and tokens of appreciation.
 

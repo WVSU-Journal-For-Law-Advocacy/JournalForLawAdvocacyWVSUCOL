@@ -7,7 +7,7 @@ pagination:
 permalink: "/areas/{{ area | slugify }}/"
 eleventyComputed:
   title: "{{ area }}"
-  description: "Articles on {{ area | lower }} in the Journal for Law Advocacy."
+  description: "Articles on {{ area | lower }} in the WVSU Journal for Law Advocacy."
 searchExclude: true
 ---
 {%- set list = collections.articles | byArea(area) %}

@@ -7,7 +7,7 @@ source: https://www.facebook.com/JournalforLawAdvocacy/posts/889073763635908/
 milestone: Four former editors pass the 2025 Bar Examinations.
 ---
 
-The Journal for Law Advocacy congratulated its alumni who passed the 2025 Bar Examinations:
+The WVSU Journal for Law Advocacy congratulated its alumni who passed the 2025 Bar Examinations:
 
 - **Atty. Clint Deo Genciana**, Executive Editor
 - **Atty. Rodante Navallasca**, Member, Board of Editors

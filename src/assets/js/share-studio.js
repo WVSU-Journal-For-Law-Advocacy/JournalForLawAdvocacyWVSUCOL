@@ -50,7 +50,7 @@
   }));
   const capsRow = (ctx, text, x, size, color, track = 4, align = 'center', max = 900) => {
     ctx.font = `600 ${size}px "Cormorant SC"`; spacing(ctx, track);
-    const lines = wrap(ctx, text.toLowerCase(), max); spacing(ctx, 0);
+    const lines = wrap(ctx, text.toLowerCase().replace(/wvsu/g, "WVSU"), max); spacing(ctx, 0);
     return lines.map((l) => ({ h: size * 1.3, draw: (y) => { ctx.font = `600 ${size}px "Cormorant SC"`; spacing(ctx, track); ctx.fillStyle = color; ctx.textAlign = align; ctx.fillText(l, x, y + size); spacing(ctx, 0); } }));
   };
   const lineRow = (ctx, text, x, font, color, h, align = 'center') => ({ h, draw: (y) => { ctx.font = font; ctx.fillStyle = color; ctx.textAlign = align; ctx.fillText(text, x, y + h * 0.75); } });
@@ -80,7 +80,7 @@
       stack([
         sealRow(ctx, a.seal, W / 2, story ? 220 : 140), gap(story ? 52 : 40),
         ...capsRow(ctx, 'Published in', W / 2, story ? 36 : 30, C.gold, 6), gap(10),
-        lineRow(ctx, 'Journal for Law Advocacy', W / 2, `600 ${story ? 74 : 62}px "Cormorant Garamond"`, C.ink, story ? 84 : 70),
+        lineRow(ctx, 'WVSU Journal for Law Advocacy', W / 2, `600 ${story ? 74 : 62}px "Cormorant Garamond"`, C.ink, story ? 84 : 70),
         ruleRow(ctx, W / 2, 140, C.gold2, 2, story ? 40 : 30),
         ...textRows(ctx, t, W / 2, C.ink), gap(story ? 44 : 34),
         ...capsRow(ctx, authorsLine(), W / 2, story ? 40 : 34, C.plum, 3, 'center', 860), gap(story ? 60 : 40),
@@ -104,7 +104,7 @@
         ...textRows(ctx, t, W / 2, C.ivory),
         ruleRow(ctx, W / 2, 120, C.gold2, 2, story ? 40 : 30),
         ...capsRow(ctx, authorsLine(), W / 2, story ? 40 : 34, C.gold3, 3, 'center', 860), gap(story ? 60 : 40),
-        lineRow(ctx, `Journal for Law Advocacy · Volume ${D.roman}`, W / 2, `italic 500 ${story ? 42 : 34}px "Cormorant Garamond"`, 'rgba(241,234,221,.82)', story ? 54 : 44),
+        lineRow(ctx, `WVSU Journal for Law Advocacy · Volume ${D.roman}`, W / 2, `italic 500 ${story ? 42 : 34}px "Cormorant Garamond"`, 'rgba(241,234,221,.82)', story ? 54 : 44),
       ], top, bottom);
       hostLine(ctx, W, H, 'rgba(227,199,126,.85)', H - (story ? H * 0.1 : 96));
     } },
@@ -127,7 +127,7 @@
       const [top, bottom] = safe(H, story);
       stack([
         sealRow(ctx, a.seal, W / 2, story ? 170 : 110), gap(26),
-        ...capsRow(ctx, 'Journal for Law Advocacy', W / 2, story ? 34 : 30, C.gold, 6), gap(story ? 56 : 40),
+        ...capsRow(ctx, 'WVSU Journal for Law Advocacy', W / 2, story ? 34 : 30, C.gold, 6), gap(story ? 56 : 40),
         ...textRows(ctx, t, W / 2, C.ink), gap(story ? 30 : 24),
         ...capsRow(ctx, authorsLine(), W / 2, 32, C.plum, 3, 'center', 860),
         ruleRow(ctx, W / 2, 860, 'rgba(201,162,74,.6)', 1, story ? 50 : 36),
@@ -146,7 +146,7 @@
       const top = safe(H, story)[0];
       drawSeal(ctx, a.seal, L, top - 10, 84, C.gold3);
       ctx.textAlign = 'left'; ctx.font = '600 30px "Cormorant SC"'; spacing(ctx, 5); ctx.fillStyle = C.ivory;
-      ctx.fillText('journal for law advocacy', L + 110, top + 30); ctx.fillStyle = C.gold3; ctx.fillText(`vol. ${D.roman.toLowerCase()} · ${D.year}`, L + 110, top + 72); spacing(ctx, 0);
+      ctx.fillText('WVSU journal for law advocacy', L + 110, top + 30); ctx.fillStyle = C.gold3; ctx.fillText(`vol. ${D.roman.toLowerCase()} · ${D.year}`, L + 110, top + 72); spacing(ctx, 0);
       ctx.fillStyle = 'rgba(227,199,126,.6)'; ctx.fillRect(L, top + 112, W - L * 2, 1);
       const t = fit(ctx, D.title, { font: (s) => `600 ${s}px "Cormorant Garamond"`, max: W - L * 2, lines: story ? 7 : 5, size: story ? 108 : 92, min: 46, lh: 1.04 });
       const rows = [
@@ -175,7 +175,7 @@
       const topShade = ctx.createLinearGradient(0, 0, 0, H * 0.22); topShade.addColorStop(0, 'rgba(18,11,25,.55)'); topShade.addColorStop(1, 'rgba(18,11,25,0)'); ctx.fillStyle = topShade; ctx.fillRect(0, 0, W, H * 0.22);
       const top = safe(H, story)[0] - (story ? 60 : 20);
       drawSeal(ctx, a.seal, L, top, 76, C.gold3);
-      ctx.textAlign = 'left'; ctx.font = '600 28px "Cormorant SC"'; spacing(ctx, 5); ctx.fillStyle = C.ivory; ctx.fillText('journal for law advocacy', L + 98, top + 48); spacing(ctx, 0);
+      ctx.textAlign = 'left'; ctx.font = '600 28px "Cormorant SC"'; spacing(ctx, 5); ctx.fillStyle = C.ivory; ctx.fillText('WVSU journal for law advocacy', L + 98, top + 48); spacing(ctx, 0);
       const t = fit(ctx, D.title, { font: (s) => `600 ${s}px "Cormorant Garamond"`, max: W - L * 2, lines: 4, size: story ? 84 : 72, min: 40, lh: 1.08 });
       const rows = [
         ...capsRow(ctx, 'Published', L, 28, C.gold3, 7, 'left'), gap(12),
@@ -199,7 +199,7 @@
     const t = fit(ctx, D.title, { font: (s) => `600 ${s}px "Cormorant Garamond"`, max: 900, lines: 4, size: 70, min: 40 });
     return [
       sealRow(ctx, a.seal, 540, 150, '#FFFFFF'), gap(34),
-      ...capsRow(ctx, 'Published in the Journal for Law Advocacy', 540, 28, C.gold3, 5, 'center', 960), gap(20),
+      ...capsRow(ctx, 'Published in the WVSU Journal for Law Advocacy', 540, 28, C.gold3, 5, 'center', 960), gap(20),
       ...textRows(ctx, t, 540, '#FFFFFF'), gap(24),
       ...capsRow(ctx, authorsLine(), 540, 32, C.gold3, 3, 'center', 900), gap(12),
       lineRow(ctx, volLine(), 540, '500 28px "Newsreader"', '#FFFFFF', 36),

@@ -7,7 +7,7 @@ pagination:
 permalink: "/authors/{{ person.slug }}/"
 eleventyComputed:
   title: "{{ person.name }}"
-  description: "{{ person.name }}: publications in the Journal for Law Advocacy, WVSU College of Law."
+  description: "{{ person.name }}: publications in the WVSU Journal for Law Advocacy, WVSU College of Law."
 searchExclude: true
 ---
 {%- set prof = person | profileFor(authorProfiles, board) %}

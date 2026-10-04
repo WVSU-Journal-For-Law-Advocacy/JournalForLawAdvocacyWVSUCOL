@@ -2,11 +2,11 @@
 layout: layouts/base.njk
 title: Call for papers
 permalink: /call-for-papers/
-description: Calls for papers and writing competitions of the Journal for Law Advocacy, WVSU College of Law.
+description: Calls for papers and writing competitions of the WVSU Journal for Law Advocacy, WVSU College of Law.
 ---
 <header class="pagehead"><div class="wrap">
   <h1>{% if cfp.active and cfp.title %}{{ cfp.title }}{% else %}Call for papers{% endif %}</h1>
-  <p>{% if cfp.active %}{{ cfp.kind }}{% if cfp.deadline %} · Deadline: {{ cfp.deadline }}{% endif %}{% else %}Write for the Journal for Law Advocacy.{% endif %}</p>
+  <p>{% if cfp.active %}{{ cfp.kind }}{% if cfp.deadline %} · Deadline: {{ cfp.deadline }}{% endif %}{% else %}Write for the WVSU Journal for Law Advocacy.{% endif %}</p>
 </div></header>
 
 {%- if cfp.active %}

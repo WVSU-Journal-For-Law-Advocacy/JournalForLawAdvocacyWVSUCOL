@@ -33,7 +33,7 @@ function card(f, { title, author, meta, kicker, seal, host }) {
       el("div", { flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", border: `1px solid ${C.gold2}`, padding: `${f.gap}px ${f.pad * 1.4}px`, textAlign: "center" }, [
         { type: "img", props: { src: seal, width: f.seal, height: f.seal, style: { marginBottom: f.gap } } },
         caps(f.eyebrow * 0.85, C.gold, kicker),
-        caps(f.eyebrow, C.ink, "journal for law advocacy", { marginTop: 6 }),
+        caps(f.eyebrow, C.ink, "WVSU journal for law advocacy", { marginTop: 6 }),
         fleuron,
         el("div", { display: "flex", justifyContent: "center", fontFamily: "Cormorant Garamond", fontWeight: 600, fontSize: titleSize(f, title), lineHeight: 1.08, color: C.ink, maxWidth: f.w * 0.78 }, clip(title, f.max)),
         el("div", { display: "flex", fontFamily: "Cormorant Garamond", fontStyle: "italic", fontWeight: 500, fontSize: f.author * 0.8, color: C.muted, marginTop: f.gap * 0.8 }, "by"),
@@ -71,7 +71,7 @@ function certificate({ name, title, volume, ay, pages, issn, verify, seal }) {
   ]);
   return framed(CERT.w, CERT.h, 64, [
     { type: "img", props: { src: seal, width: 190, height: 190, style: { marginBottom: 26 } } },
-    caps(40, C.ink, "journal for law advocacy"),
+    caps(40, C.ink, "WVSU journal for law advocacy"),
     caps(24, C.muted, "west visayas state university college of law", { marginTop: 10 }),
     fleuronOf(220, 40, "26px 0"),
     serif(118, C.ink, "Certificate of Publication", { letterSpacing: -1 }),
@@ -80,7 +80,7 @@ function certificate({ name, title, volume, ay, pages, issn, verify, seal }) {
     italic(46, C.muted, "is the author of", { marginTop: 18 }),
     // the full title, always (a certificate must not truncate); smaller type for long titles
     serif(title.length > 160 ? 42 : title.length > 110 ? 50 : 60, C.ink, `“${title}”`, { marginTop: 14, maxWidth: CERT.w * 0.74, justifyContent: "center", lineHeight: 1.15 }),
-    body(36, C.ink2, `published in Volume ${volume} of the Journal for Law Advocacy, Academic Year ${ay}${pages ? `, ${pages}` : ""}.`, { marginTop: 30 }),
+    body(36, C.ink2, `published in Volume ${volume} of the WVSU Journal for Law Advocacy, Academic Year ${ay}${pages ? `, ${pages}` : ""}.`, { marginTop: 30 }),
     body(28, C.muted, issn, { marginTop: 10 }),
     el("div", { display: "flex", justifyContent: "space-between", width: 1400, marginTop: 70 }, [sigLine("executive editor"), sigLine("faculty adviser")]),
     body(22, C.muted, verify, { marginTop: 40 }),
@@ -92,7 +92,7 @@ const SL = { w: 1080, h: 1350 };
 function slideCover({ volume, ay, theme, host, seal }) {
   return framed(SL.w, SL.h, 44, [
     { type: "img", props: { src: seal, width: 170, height: 170, style: { marginBottom: 30 } } },
-    caps(30, C.ink, "journal for law advocacy"),
+    caps(30, C.ink, "WVSU journal for law advocacy"),
     fleuronOf(130, 30, "26px 0"),
     serif(230, C.gold, roman(volume), { lineHeight: 1 }),
     caps(58, C.ink, `volume ${volume}`, { marginTop: 16 }),

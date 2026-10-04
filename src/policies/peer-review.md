@@ -5,7 +5,7 @@ summary: How manuscripts are screened, reviewed, and accepted.
 draft_notice: true
 ---
 
-The Journal for Law Advocacy follows a two-stage review process.
+The WVSU Journal for Law Advocacy follows a two-stage review process.
 
 ## 1. Editorial screening
 

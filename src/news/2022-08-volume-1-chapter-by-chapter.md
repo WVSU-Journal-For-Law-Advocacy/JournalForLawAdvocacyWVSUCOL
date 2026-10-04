@@ -6,7 +6,7 @@ source: https://www.facebook.com/JournalforLawAdvocacy/posts/pfbid0263DdEJDGjsk2
 milestone: Volume 1, on electoral law and the 2022 elections, is released one chapter a week.
 ---
 
-The inaugural issue of the Journal for Law Advocacy carries the theme **"Electoral Laws and the 2022 Philippine Election."** Its chapters analyze the legal issues that limit free and fair elections in the Philippines. Before the issue's official launch, the journal released them online one at a time, starting in August 2022.
+The inaugural issue of the WVSU Journal for Law Advocacy carries the theme **"Electoral Laws and the 2022 Philippine Election."** Its chapters analyze the legal issues that limit free and fair elections in the Philippines. Before the issue's official launch, the journal released them online one at a time, starting in August 2022.
 
 - [Back to the Future's Past](/articles/back-to-the-futures-past/): an overview of the 2022 national elections, written by the seven founding editors.
 - [No Time Runs Against Families?](/articles/no-time-runs-against-families/), by Clyde Ben A. Gacayan, on the long record of failed anti-dynasty bills.

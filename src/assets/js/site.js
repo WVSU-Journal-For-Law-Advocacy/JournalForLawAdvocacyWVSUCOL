@@ -391,7 +391,7 @@ if (quoteZone.length && citebox) {
     ctx.fillStyle = '#3A3044'; ctx.font = '600 34px "Cormorant Garamond"';
     titleLines.forEach((l, i) => ctx.fillText(l, W / 2, y + 52 + i * 42));
     ctx.fillStyle = '#A98236'; ctx.font = '600 26px "Cormorant SC"'; if ('letterSpacing' in ctx) ctx.letterSpacing = '5px';
-    ctx.fillText(`journal for law advocacy · vol. ${meta.volume}`, W / 2, H - 150);
+    ctx.fillText(`WVSU journal for law advocacy · vol. ${meta.volume}`, W / 2, H - 150);
     ctx.fillStyle = '#6A6070'; ctx.font = '400 22px "Newsreader"'; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
     ctx.fillText(location.host + location.pathname, W / 2, H - 112);
     return cv;

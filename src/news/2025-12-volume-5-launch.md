@@ -6,7 +6,7 @@ source: https://www.facebook.com/JournalforLawAdvocacy/posts/873505935192691/
 milestone: Volume 5, on the Bill of Rights in the digital revolution, is launched.
 ---
 
-On December 15, 2025, the Journal for Law Advocacy launched its fifth volume, **"Championing Constitutional Rights: Navigating the Bill of Rights in the Digital Revolution."**
+On December 15, 2025, the WVSU Journal for Law Advocacy launched its fifth volume, **"Championing Constitutional Rights: Navigating the Bill of Rights in the Digital Revolution."**
 
 The contributions examine rights in the digital revolution in six areas: governance; cybersecurity; commerce and taxation; the courts and the judiciary; freedom of speech and expression; and religious practice. A special section covers arbitration, mooting, and debate.
 

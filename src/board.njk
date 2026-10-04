@@ -7,7 +7,7 @@ pagination:
 permalink: "{% if pagination.pageNumber == 0 %}/board/{% else %}/board/{{ b.academic_year | slugify }}/{% endif %}"
 eleventyComputed:
   title: "{% if pagination.pageNumber == 0 %}Editorial board{% else %}Editorial board {{ b.academic_year }}{% endif %}"
-description: The Board of Editors, Contribution Editors, and Editorial Apprentices of the Journal for Law Advocacy.
+description: The Board of Editors, Contribution Editors, and Editorial Apprentices of the WVSU Journal for Law Advocacy.
 ---
 <header class="pagehead"><div class="wrap">
   {%- if pagination.pageNumber > 0 %}<p class="crumb"><a href="/board/">Editorial board</a></p>{% endif %}

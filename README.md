@@ -1,6 +1,6 @@
-# Journal for Law Advocacy website
+# WVSU Journal for Law Advocacy website
 
-Website of the Journal for Law Advocacy, WVSU College of Law. Built with [Eleventy](https://www.11ty.dev/), edited with [Decap CMS](https://decapcms.org/), hosted on Netlify. Every push to `main` rebuilds the site.
+Website of the WVSU Journal for Law Advocacy, WVSU College of Law. Built with [Eleventy](https://www.11ty.dev/), edited with [Decap CMS](https://decapcms.org/), hosted on Netlify. Every push to `main` rebuilds the site.
 
 ## For editors
 

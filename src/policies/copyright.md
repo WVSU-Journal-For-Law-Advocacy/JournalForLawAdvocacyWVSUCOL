@@ -7,7 +7,7 @@ draft_notice: true
 
 **Authors keep the copyright** to their work.
 
-By publishing with the journal, authors grant the Journal for Law Advocacy a non-exclusive license to publish the work in print and online, to include it in the journal's archive, and to make it available under the [open-access license](/policies/open-access/).
+By publishing with the journal, authors grant the WVSU Journal for Law Advocacy a non-exclusive license to publish the work in print and online, to include it in the journal's archive, and to make it available under the [open-access license](/policies/open-access/).
 
 ## What authors may do
 

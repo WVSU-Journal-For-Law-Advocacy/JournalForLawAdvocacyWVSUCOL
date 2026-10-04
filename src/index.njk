@@ -6,7 +6,7 @@ layout: layouts/base.njk
 {%- set contents = (collections.articles | inIssue(cur.data.volume, cur.data.issue)) if cur else [] %}
 {%- set featured = contents | featuredOf %}
 <header class="masthead"><div class="wrap">
-  <img class="seal" src="/assets/img/seal-240.png" width="120" height="120" alt="Seal of the Journal for Law Advocacy, WVSU College of Law, 2021">
+  <img class="seal" src="/assets/img/seal-240.png" width="120" height="120" alt="Seal of the WVSU Journal for Law Advocacy, WVSU College of Law, 2021">
   <h1>{{ site.title }}</h1>
   <p class="est">Est. MMXXI · {{ site.city }}</p>
   <p class="inst">{{ site.tagline }}</p>

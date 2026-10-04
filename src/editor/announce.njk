@@ -1,0 +1,57 @@
+---
+layout: layouts/base.njk
+title: Announce
+permalink: /editor/announce/
+description: Send a notification to readers (board members only).
+searchExclude: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb">Board</p>
+  <h1>Announce</h1>
+  <p>Send a notification to readers who turned it on.</p>
+</div></header>
+
+<section class="acct"><div class="wrap">
+  <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
+  <form class="card-box announce" data-announce hidden>
+    <fieldset class="rt-seg"><legend>Who gets it</legend><div>
+      <button type="button" data-topic="volumes" aria-pressed="true">New volume</button>
+      <button type="button" data-topic="cfp" aria-pressed="false">Call for papers</button>
+    </div></fieldset>
+    <div class="field"><label for="an-title">Title</label><input id="an-title" name="title" maxlength="120" required placeholder="Volume 6 is now online"></div>
+    <div class="field"><label for="an-body">Message</label><textarea id="an-body" name="body" maxlength="300" rows="3" placeholder="Combatting Impunity: 20 new pieces on public accountability."></textarea></div>
+    <div class="field"><label for="an-url">Link (a page on this site)</label><input id="an-url" name="url" value="/archive/" placeholder="/archive/volume-6/"></div>
+    <div class="acts"><button class="btn alt" type="button" data-test>Send a test to me</button><button class="btn" type="submit">Send to readers</button></div>
+    <p class="msg" aria-live="polite"></p>
+  </form>
+</div></section>
+<script type="module">
+  const cloud = await import('/assets/js/jla-cloud.js');
+  const gate = document.querySelector('[data-gate]'), form = document.querySelector('[data-announce]'), msg = form.querySelector('.msg');
+  let topic = 'volumes';
+  if (!cloud.enabled || !cloud.pushConfigured()) { gate.innerHTML = '<p class="off">Notifications are not switched on yet (see docs/app-setup.md).</p>'; }
+  else cloud.onUser(async (u) => {
+    if (!u) { gate.innerHTML = '<p class="off">Board members only. <a href="/account/">Sign in</a> first.</p>'; form.hidden = true; return; }
+    if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only.</p>'; form.hidden = true; return; }
+    gate.hidden = true; form.hidden = false;
+  });
+  form.addEventListener('click', (e) => {
+    const t = e.target.closest('[data-topic]'); if (!t) return;
+    topic = t.dataset.topic; form.querySelectorAll('[data-topic]').forEach((b) => b.setAttribute('aria-pressed', b === t));
+  });
+  const payload = (test) => ({ topic, title: form.title.value.trim(), body: form.body.value.trim(), url: form.url.value.trim() || '/', test });
+  form.querySelector('[data-test]').addEventListener('click', async () => {
+    if (!form.title.value.trim()) return form.title.reportValidity();
+    msg.textContent = 'Sending a test…';
+    try { const r = await cloud.callFunction('push-broadcast', payload(true)); msg.textContent = r.sent ? `Test sent to your device. ${r.audience} device(s) would get the real one.` : `No test sent: turn this kind of notification on for yourself in My library first. ${r.audience} device(s) would get the real one.`; }
+    catch (e) { msg.textContent = `Could not send: ${e.message}`; }
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!confirm(`Send “${form.title.value.trim()}” to every reader who turned on “${topic === 'volumes' ? 'New volume' : 'Calls for papers'}”?`)) return;
+    msg.textContent = 'Sending…';
+    try { const r = await cloud.callFunction('push-broadcast', payload(false)); msg.textContent = `Sent to ${r.sent} of ${r.audience} device(s).`; }
+    catch (err) { msg.textContent = `Could not send: ${err.message}`; }
+  });
+</script>

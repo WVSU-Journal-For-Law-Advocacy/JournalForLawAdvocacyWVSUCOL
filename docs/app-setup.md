@@ -16,12 +16,21 @@ updates the website and the app together.
 Files: `src/manifest.webmanifest.njk`, `src/sw.njk` (the service worker, `/sw.js`), `src/offline.njk`,
 the install and save code at the end of `src/assets/js/site.js`, and the icons in `src/assets/img/app/`.
 
-## Next: push notifications (needs two console steps)
+## Notifications (built; switch on with two console steps)
+Readers choose in **My library → Notifications**: new volume, replies to my comments, calls for papers, and a
+weekly reading reminder (Saturdays 9 AM, only if they haven't read that week). Board members send new-volume and
+call-for-papers alerts from **/editor/announce/** (with a "send a test to me" button). Replies are sent automatically.
+On iPhone, notifications work once the app is installed (iOS 16.4+).
+
+To switch them on:
 1. Firebase console → **Project settings → Cloud Messaging → Web Push certificates → Generate key pair**.
-   Send the key to the web admin (it goes in `src/_data/site.json`; it is public).
+   Copy the **Key pair** value into `src/_data/site.json` → `firebase.vapidKey` (it is public), or send it to the web admin.
 2. Firebase console → **Project settings → Service accounts → Generate new private key**. This file is **secret**:
-   don't email or commit it. In Netlify → **Site configuration → Environment variables**, add
-   `FIREBASE_SERVICE_ACCOUNT` and paste the whole file's contents as the value.
+   don't email, message, or commit it. In Netlify → **Site configuration → Environment variables → Add a variable**:
+   key `FIREBASE_SERVICE_ACCOUNT`, value = the whole contents of the file, scopes = Functions. Then delete the file.
+3. Publish the latest `firebase/firestore.rules` (adds `pushDevices` and `announcements`).
+4. Redeploy. The functions are in `netlify/functions/`: `push-reply`, `push-broadcast` (editors only),
+   and `push-streak` (scheduled). Their logs are under Netlify → Logs → Functions.
 
 ## Later: Google Play
 Uses PWABuilder.com (no software to install) and a Google Play Console account ($25 one-time, in the

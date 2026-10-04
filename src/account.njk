@@ -87,6 +87,18 @@ searchExclude: true
   <p class="sub" data-badge-sum></p>
   <ul class="badge-list" data-badges></ul>
 
+  <div class="push-box card-box" data-push-box hidden>
+    <h2>Notifications</h2>
+    <p class="off">Choose what the Journal may tell you about. You can change this any time.</p>
+    <ul class="toggles">
+      <li><label><input type="checkbox" value="volumes"> <span><b>New volume published</b><small>When a new volume goes online.</small></span></label></li>
+      <li><label><input type="checkbox" value="replies"> <span><b>Replies to my comments</b><small>When someone replies to you in a discussion.</small></span></label></li>
+      <li><label><input type="checkbox" value="cfp"> <span><b>Calls for papers</b><small>When the Journal opens a call for submissions.</small></span></label></li>
+      <li><label><input type="checkbox" value="streak"> <span><b>Weekly reading reminder</b><small>Saturday morning, only if you haven't read that week.</small></span></label></li>
+    </ul>
+    <p class="msg push-msg" aria-live="polite"></p>
+  </div>
+
   <div class="app-box card-box" data-app-box hidden>
     <h2>App &amp; offline</h2>
     <p class="off" data-app-line>Put the Journal on your home screen. It opens full screen and keeps your saved articles for reading offline.</p>

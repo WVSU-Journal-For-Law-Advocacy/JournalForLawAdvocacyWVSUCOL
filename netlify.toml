@@ -2,6 +2,11 @@
   command = "npm run build"
   publish = "_site"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+  external_node_modules = ["firebase-admin"]
+
 [build.environment]
   NODE_VERSION = "22"
 

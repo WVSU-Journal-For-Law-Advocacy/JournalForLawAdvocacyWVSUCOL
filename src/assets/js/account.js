@@ -127,6 +127,26 @@ function wireSignIn() {
 }
 
 /* ---------- start ---------- */
+/* ---------- notifications: opt in per kind, on this device ---------- */
+function wirePush() {
+  const box = $('[data-push-box]'); if (!cloud || !cloud.pushConfigured()) return;
+  box.hidden = false;
+  const msg = box.querySelector('.push-msg'), boxes = [...box.querySelectorAll('input[type=checkbox]')];
+  const st = cloud.pushState(), blocker = cloud.pushBlocker();
+  boxes.forEach((b) => { b.checked = !!(st && st.topics.includes(b.value) && Notification.permission === 'granted'); b.disabled = !!blocker; });
+  if (blocker) { msg.textContent = blocker; return; }
+  box.addEventListener('change', async () => {
+    const topics = boxes.filter((b) => b.checked).map((b) => b.value);
+    boxes.forEach((b) => { b.disabled = true; }); msg.textContent = topics.length ? 'Saving…' : '';
+    try { await cloud.setPushTopics(topics); msg.textContent = topics.length ? 'Saved. Notifications will come to this device.' : 'Notifications are off on this device.'; }
+    catch (e) {
+      boxes.forEach((b) => { b.checked = false; });
+      msg.textContent = e.message === 'permission' ? 'You chose not to allow notifications. You can allow them in your browser settings.' : 'Could not turn notifications on here. Try again, or try in Chrome.';
+    }
+    boxes.forEach((b) => { b.disabled = false; });
+  });
+}
+
 /* ---------- app & offline: install button and the articles saved on this device ---------- */
 function paintApp() {
   const A = window.JLA_APP; if (!A) return;
@@ -157,13 +177,13 @@ paint();
   catch (e) { $('.acct-signin .msg').textContent = 'That sign-in link has expired or was already used. Send a new one.'; }
   let wired = false;
   mod.onUser(async (u) => {
-    if (!u) { profile = null; show('out'); paint(); return; }
+    if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; paint(); return; }
     const synced = await mod.sync().catch(() => null);
     profile = (synced && synced.profile) || null;
     if (!profile) { // first sign-in: create the profile
       profile = { name: u.displayName || (u.email || 'Reader').split('@')[0], joined: Date.now(), public: false, consent: Date.now() };
       await mod.saveProfile(profile).catch(() => {});
     }
-    show('in'); paintProfile(u); if (!wired) { wireProfile(u); wired = true; } paint(); paintHighlights();
+    show('in'); paintProfile(u); if (!wired) { wireProfile(u); wirePush(); wired = true; } paint(); paintHighlights();
   });
 })();

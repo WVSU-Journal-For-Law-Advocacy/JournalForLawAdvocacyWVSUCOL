@@ -25,6 +25,10 @@ If you sign in, the Journal keeps:
 
 We use this only to run your library: to save your progress across devices, show your stats and badges, and suggest what to read next. We do not sell it, use it for advertising, or share it with anyone else.
 
+## Notifications
+
+Notifications are off unless you turn them on in **My library → Notifications**, choosing which kinds you want (new volumes, replies to your comments, calls for papers, a weekly reading reminder). When you do, the Journal keeps a code for your device that lets it send them through Google's Firebase Cloud Messaging, together with the kinds you chose. Turn them off, sign out, or delete your account and that code is removed. The weekly reminder only checks whether you read that week; it doesn't share what you read.
+
 ## Who can see it
 
 Your profile and reading record are **private** unless you choose **"Show my profile publicly"**. A public profile shows your name, photo, school, bio, badges, and the number of articles you have read; never your email address or what exactly you read. The Journal's web administrators can see account data when maintaining the service.

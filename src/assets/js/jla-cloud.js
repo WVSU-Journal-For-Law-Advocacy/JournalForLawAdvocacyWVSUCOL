@@ -69,7 +69,13 @@ export async function finishEmailLink(askEmail) {
   history.replaceState(null, '', location.pathname);
   return res;
 }
-export async function signOut() { const s = await load(); await s.A.signOut(s.auth); local.setMe(null); }
+export async function signOut() {
+  const s = await load();
+  // this device stops getting this reader's notifications
+  try { const st = JSON.parse(localStorage.getItem('jla:push') || 'null'); if (st && st.id) await s.F.deleteDoc(s.F.doc(s.db, 'pushDevices', st.id)); } catch (e) {}
+  localStorage.removeItem('jla:push');
+  await s.A.signOut(s.auth); local.setMe(null);
+}
 
 /* ---------- profile ---------- */
 const PROFILE = ['name', 'bio', 'school', 'photo', 'thumb', 'public', 'joined', 'badges', 'weeks', 'stats', 'consent', 'prefs', 'follows'];
@@ -180,6 +186,45 @@ export function isEditor() {
   return editorP || (editorP = load().then((s) => s.F.getDoc(s.F.doc(s.db, 'editors', u.uid))).then((d) => d.exists()).catch(() => false));
 }
 
+/* ---------- notifications (Firebase Cloud Messaging, opt-in) ---------- */
+export const pushConfigured = () => enabled && !!config.vapidKey;
+export async function idToken() { const u = current; return u ? u.getIdToken() : null; }
+// why notifications can't work here, or '' if they can
+export function pushBlocker() {
+  if (!pushConfigured()) return 'Notifications are not switched on yet.';
+  if (/iPhone|iPad|iPod/.test(navigator.userAgent) && !(window.matchMedia('(display-mode: standalone)').matches || navigator.standalone)) return 'On iPhone, install the app first (Safari → Share → Add to Home Screen), then turn these on from the app.';
+  if (!('Notification' in window) || !('serviceWorker' in navigator) || !('PushManager' in window)) return "This browser can't show notifications.";
+  if (Notification.permission === 'denied') return 'Notifications are blocked for this site. Allow them in your browser or phone settings, then try again.';
+  return '';
+}
+const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t)))].map((b) => b.toString(16).padStart(2, '0')).join('');
+const PUSH = 'jla:push';
+export const pushState = () => { try { return JSON.parse(localStorage.getItem(PUSH) || 'null'); } catch (e) { return null; } };
+// turn notifications on for these topics (asks the browser for permission the first time)
+export async function setPushTopics(topics) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const docs = s.F;
+  if (!topics.length) {
+    const st = pushState(); if (st && st.id) await docs.deleteDoc(docs.doc(s.db, 'pushDevices', st.id)).catch(() => {});
+    localStorage.removeItem(PUSH); return null;
+  }
+  if (Notification.permission !== 'granted' && (await Notification.requestPermission()) !== 'granted') throw new Error('permission');
+  const M = await import(`${CDN}/firebase-messaging.js`);
+  if (!(await M.isSupported())) throw new Error('unsupported');
+  const reg = await navigator.serviceWorker.ready;
+  const token = await M.getToken(M.getMessaging(s.app), { vapidKey: config.vapidKey, serviceWorkerRegistration: reg });
+  const id = await sha(token);
+  const platform = /Android/i.test(navigator.userAgent) ? 'android' : /iPhone|iPad/i.test(navigator.userAgent) ? 'ios' : 'desktop';
+  await docs.setDoc(docs.doc(s.db, 'pushDevices', id), { uid: u.uid, token, topics, platform, updated: Date.now() });
+  const st = { id, topics }; localStorage.setItem(PUSH, JSON.stringify(st)); return st;
+}
+// ask a Netlify function to do something that needs the server (send a reply alert, a board announcement)
+export async function callFunction(name, body) {
+  const t = await idToken(); if (!t) throw new Error('Not signed in');
+  const r = await fetch(`/.netlify/functions/${name}`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${t}` }, body: JSON.stringify(body) });
+  const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || `HTTP ${r.status}`); return j;
+}
+
 /* ---------- your data ---------- */
 export async function exportData() {
   const u = current; if (!u) return null;
@@ -188,13 +233,15 @@ export async function exportData() {
 export async function deleteAccount() {
   const s = await load(); const u = current; if (!u) return;
   const snap = await s.F.getDocs(s.F.collection(s.db, 'users', u.uid, 'progress')), hls = await s.F.getDocs(hlCol(s, u.uid));
+  const devs = await s.F.getDocs(s.F.query(s.F.collection(s.db, 'pushDevices'), s.F.where('uid', '==', u.uid))).catch(() => ({ forEach() {} }));
   const batch = s.F.writeBatch(s.db);
-  snap.forEach((d) => batch.delete(d.ref)); hls.forEach((d) => batch.delete(d.ref)); batch.delete(s.F.doc(s.db, 'users', u.uid));
+  snap.forEach((d) => batch.delete(d.ref)); hls.forEach((d) => batch.delete(d.ref)); devs.forEach((d) => batch.delete(d.ref));
+  batch.delete(s.F.doc(s.db, 'users', u.uid));
   await batch.commit();
   try { await s.A.deleteUser(u); }
   catch (e) {
     if (e.code !== 'auth/requires-recent-login') throw e;
     await s.A.reauthenticateWithPopup(u, new s.A.GoogleAuthProvider()).catch(() => {}); await s.A.deleteUser(u);
   }
-  ['jla:me', 'jla:progress', 'jla:weeks'].forEach((k) => { try { localStorage.removeItem(k); } catch (e) {} });
+  ['jla:me', 'jla:progress', 'jla:weeks', 'jla:push'].forEach((k) => { try { localStorage.removeItem(k); } catch (e) {} });
 }

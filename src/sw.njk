@@ -65,3 +65,23 @@ self.addEventListener('message', (e) => {
   if (d.type === 'save') e.waitUntil(caches.open(SAVED).then((c) => Promise.all(d.urls.map((u) => c.add(new Request(u, { cache: 'reload' })).catch(() => {})))).then(() => e.source && e.source.postMessage({ type: 'saved', urls: d.urls })));
   if (d.type === 'unsave') e.waitUntil(caches.open(SAVED).then((c) => Promise.all(d.urls.map((u) => c.delete(u)))));
 });
+
+// Notifications (Firebase Cloud Messaging delivers them as data-only web pushes)
+self.addEventListener('push', (e) => {
+  let d = {}; try { const j = e.data ? e.data.json() : {}; d = j.data || j; } catch (err) {}
+  const title = d.title || 'WVSU Journal for Law Advocacy';
+  e.waitUntil(self.registration.showNotification(title, {
+    body: d.body || '', tag: d.tag || 'jla', renotify: !!d.tag,
+    icon: '/assets/img/app/icon-192.png', badge: '/assets/img/app/icon-192.png',
+    data: { url: d.url || '/' },
+  }));
+});
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = new URL((e.notification.data && e.notification.data.url) || '/', self.location.origin).href;
+  e.waitUntil(self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+    const same = list.find((c) => c.url.split('#')[0] === url.split('#')[0]);
+    if (same) return same.focus();
+    return self.clients.openWindow(url);
+  }));
+});

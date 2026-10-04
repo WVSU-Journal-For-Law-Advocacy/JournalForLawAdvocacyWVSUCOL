@@ -144,6 +144,7 @@ async function post(e) {
   try {
     const who = await myThumb();
     const id = await cloud.addComment({ slug, pid: current.pid, text: t, parent: current.replyTo, name: who.name, thumb: who.thumb });
+    if (current.replyTo && cloud.pushConfigured()) cloud.callFunction('push-reply', { commentId: id }).catch(() => {}); // tell the person you replied to
     current.list.push({ id, slug, pid: current.pid, uid: me.uid, name: who.name, thumb: who.thumb, text: t, parent: current.replyTo, created: Date.now(), hidden: false, likedBy: [] });
     current.replyTo = null; counts[current.pid] = (counts[current.pid] || 0) + 1;
     drawBubbles();
@@ -188,6 +189,9 @@ if (text && slug) {
     const mod = await import('./jla-cloud.js'); if (!mod.enabled) return;
     cloudReady = true;
     try { counts = await mod.threadCounts(slug); } catch (e) { counts = {}; }
+    // opened from a notification: ?thread=<paragraph> goes straight to that discussion
+    const th = new URLSearchParams(location.search).get('thread');
+    if (th) { const el = text.querySelector('[data-pid="' + CSS.escape(th) + '"]'); if (el) { el.scrollIntoView({ block: 'center' }); setTimeout(() => openThread(th), 400); } }
     drawBubbles();
     if (local.me()) ensureCloud(); // signed-in readers: get ready to post
   })();

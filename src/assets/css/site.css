@@ -983,3 +983,16 @@ html.is-app .site-head{padding-top:env(safe-area-inset-top)}
 .saved-list a{color:var(--ink);font:600 1.02rem/1.3 var(--display)}
 .saved-list button{color:var(--muted);font-size:.85rem;min-height:32px;flex:none}
 .app-box [hidden],.install-card [hidden]{display:none!important}
+/* My library: notification switches */
+.toggles{list-style:none;margin:var(--s4) 0 0;padding:0;text-align:left}
+.toggles li{border-top:1px solid var(--rule)}
+.toggles label{display:flex;align-items:flex-start;gap:.8rem;padding:.75rem 0;cursor:pointer}
+.toggles input{appearance:none;-webkit-appearance:none;flex:none;width:42px;height:24px;margin-top:.1rem;border-radius:999px;background:var(--rule-2);position:relative;cursor:pointer;transition:background .2s}
+.toggles input::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s var(--ease)}
+.toggles input:checked{background:var(--plum)}
+.toggles input:checked::after{transform:translateX(18px)}
+.toggles input:disabled{opacity:.45;cursor:not-allowed}
+.toggles input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.toggles b{display:block;font:600 1.02rem/1.3 var(--display)}
+.toggles small{display:block;color:var(--muted);font-size:.86rem}
+.push-msg{text-align:left;font-size:.9rem}

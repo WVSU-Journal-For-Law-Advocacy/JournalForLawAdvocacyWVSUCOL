@@ -45,10 +45,11 @@ About 10–15 minutes. Do it from the **journal's own Google account** so future
 
    (Or send the block to the web admin.) Once it's deployed, **Sign in** appears in *My library*.
 
-## 5. Editors (for comment moderation and submissions, later phases)
-To make a board member an editor: have them sign in once, then in **Firestore → Data** create a collection
-`editors` with a document whose **ID is their user ID** (Authentication → Users → *User UID*), with any field,
-e.g. `name: "Felice Nafarrete"`. Remove the document to take the role away.
+## 5. Editors (for comment moderation and announcements)
+The **first** editor is added by hand: have them sign in on the site once, then in **Firestore → Data** create a collection
+`editors` with a document whose **ID is their User UID** (Authentication → Users), with a field like `name`.
+After that, editors manage the list on the site: **My library → Board tools → Manage editors** (`/editor/editors/`),
+adding people by the email they signed in with, or removing them.
 
 ## Keeping an eye on it
 **Firestore → Usage** shows reads and writes per day. The free plan allows 50,000 reads and 20,000 writes a

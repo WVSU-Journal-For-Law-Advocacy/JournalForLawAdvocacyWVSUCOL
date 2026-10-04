@@ -1,0 +1,62 @@
+---
+layout: layouts/base.njk
+title: Editors
+permalink: /editor/editors/
+description: Who can moderate discussions and send announcements (board members only).
+searchExclude: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb">Board</p>
+  <h1>Editors</h1>
+  <p>Editors can hide or delete comments and send announcements to readers.</p>
+</div></header>
+
+<section class="acct"><div class="wrap">
+  <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
+  <div data-tools hidden>
+    <div class="card-box">
+      <ul class="ed-list" data-list><li class="off">Loading…</li></ul>
+    </div>
+    <form class="card-box announce" data-add>
+      <h2>Add an editor</h2>
+      <p class="off">They must have signed in on the site once (My library), with the email you enter here.</p>
+      <div class="field"><label for="ed-email">Their sign-in email</label><input id="ed-email" name="email" type="email" required placeholder="name@wvsu.edu.ph"></div>
+      <div class="field"><label for="ed-name">Name</label><input id="ed-name" name="name" maxlength="80" placeholder="Felice Marie P. Nafarrete"></div>
+      <div class="field"><label for="ed-role">Role (optional)</label><input id="ed-role" name="role" maxlength="80" placeholder="Executive Editor"></div>
+      <div class="acts"><button class="btn" type="submit">Add editor</button></div>
+      <p class="msg" aria-live="polite"></p>
+    </form>
+    <p class="more"><a href="/editor/announce/">Send an announcement →</a></p>
+  </div>
+</div></section>
+<script type="module">
+  const cloud = await import('/assets/js/jla-cloud.js');
+  const gate = document.querySelector('[data-gate]'), tools = document.querySelector('[data-tools]');
+  const list = document.querySelector('[data-list]'), form = document.querySelector('[data-add]'), msg = form.querySelector('.msg');
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  async function load() {
+    try {
+      const { editors } = await cloud.callFunction('editors', { action: 'list' });
+      list.innerHTML = editors.map((e) => `<li><div><b>${esc(e.name || e.email)}</b>${e.me ? ' <span class="ed-you">you</span>' : ''}<small>${esc([e.role, e.email].filter(Boolean).join(' · '))}</small></div>
+        <button type="button" class="btn sm alt" data-remove="${esc(e.uid)}" data-name="${esc(e.name || e.email)}">Remove</button></li>`).join('');
+    } catch (err) { list.innerHTML = `<li class="off">Could not load the list: ${esc(err.message)}</li>`; }
+  }
+  if (!cloud.enabled) gate.innerHTML = '<p class="off">Reader accounts are not switched on.</p>';
+  else cloud.onUser(async (u) => {
+    if (!u) { gate.innerHTML = '<p class="off">Board members only. <a href="/account/">Sign in</a> first.</p>'; tools.hidden = true; return; }
+    if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only. Ask an editor to add you here.</p>'; tools.hidden = true; return; }
+    gate.hidden = true; tools.hidden = false; load();
+  });
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault(); msg.textContent = 'Adding…';
+    try { await cloud.callFunction('editors', { action: 'add', email: form.email.value, name: form.name.value, role: form.role.value }); msg.textContent = 'Added. They have editor tools the next time they open a page.'; form.reset(); load(); }
+    catch (err) { msg.textContent = err.message; }
+  });
+  list.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-remove]'); if (!b) return;
+    if (!confirm(`Remove ${b.dataset.name} as an editor?`)) return;
+    try { await cloud.callFunction('editors', { action: 'remove', uid: b.dataset.remove }); load(); }
+    catch (err) { alert(err.message); }
+  });
+</script>

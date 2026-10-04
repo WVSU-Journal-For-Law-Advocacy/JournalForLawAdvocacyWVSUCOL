@@ -177,7 +177,7 @@ paint();
   catch (e) { $('.acct-signin .msg').textContent = 'That sign-in link has expired or was already used. Send a new one.'; }
   let wired = false;
   mod.onUser(async (u) => {
-    if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; paint(); return; }
+    if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; $('[data-board]').hidden = true; paint(); return; }
     const synced = await mod.sync().catch(() => null);
     profile = (synced && synced.profile) || null;
     if (!profile) { // first sign-in: create the profile
@@ -185,5 +185,6 @@ paint();
       await mod.saveProfile(profile).catch(() => {});
     }
     show('in'); paintProfile(u); if (!wired) { wireProfile(u); wirePush(); wired = true; } paint(); paintHighlights();
+    mod.isEditor().then((ed) => { $('[data-board]').hidden = !ed; });
   });
 })();

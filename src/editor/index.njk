@@ -15,12 +15,12 @@ eleventyExcludeFromCollections: true
   <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
   <div data-tools hidden>
     <ul class="lib-menu">
+      <li><a href="/editor/moderation/"><b>Moderation</b><span>Reported comments, recent discussion, muted readers, and the log</span><span class="dk-count" data-report-count hidden></span></a></li>
       <li><a href="/editor/claims/"><b>Author claims</b><span>Approve readers who claim author pages</span><span class="dk-count" data-claim-count hidden></span></a></li>
       <li><a href="/editor/announce/"><b>Send an announcement</b><span>New volume or call for papers, to readers who turned notifications on</span></a></li>
       <li><a href="/editor/editors/"><b>Manage editors</b><span>Who can moderate discussions and send announcements</span></a></li>
-      <li><a href="/admin/"><b>Edit the website</b><span>Articles, volumes, news, the board list and settings (the CMS)</span></a></li>
     </ul>
-    <p class="lib-note" style="margin-top:var(--s5)">In any article's discussion, editors also see <b>Hide</b> and <b>Delete</b> on every comment.</p>
+    <p class="lib-note" style="margin-top:var(--s5)">In any article's discussion, editors also see <b>Hide</b> and <b>Delete</b> on every comment. Both are logged in Moderation.</p>
   </div>
 </div></section>
 <script type="module">
@@ -32,5 +32,6 @@ eleventyExcludeFromCollections: true
     if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only. If you are on the board, ask an editor to add you in <b>Manage editors</b>.</p>'; tools.hidden = true; return; }
     gate.hidden = true; tools.hidden = false;
     const n = (await cloud.pendingClaims().catch(() => [])).length, c = document.querySelector('[data-claim-count]'); c.hidden = !n; c.textContent = n;
+    const r = new Set((await cloud.modReports().catch(() => [])).map((x) => x.commentId)).size, rc = document.querySelector('[data-report-count]'); rc.hidden = !r; rc.textContent = r;
   });
 </script>

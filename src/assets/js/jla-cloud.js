@@ -183,12 +183,106 @@ export async function setHidden(c, hidden) {
 }
 export async function reportComment(c, reason) {
   const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
-  await s.F.addDoc(s.F.collection(s.db, 'reports'), { commentId: c.id, slug: c.slug, pid: c.pid, uid: u.uid, reason: String(reason || '').slice(0, 300), created: s.F.serverTimestamp() });
+  // one report per reader per comment (reporting twice is quietly ignored)
+  try {
+    await s.F.setDoc(s.F.doc(s.db, 'reports', `${c.id}_${u.uid}`), { commentId: c.id, slug: c.slug, pid: c.pid, uid: u.uid, reason: String(reason || '').slice(0, 300), created: s.F.serverTimestamp() });
+  } catch (e) { return; }
+  // tells the editors, and hides the comment once three readers have reported it
+  callFunction('comment-report', { commentId: c.id }).catch(() => {});
 }
 let editorP;
 export function isEditor() {
   const u = current; if (!u) return Promise.resolve(false);
   return editorP || (editorP = load().then((s) => s.F.getDoc(s.F.doc(s.db, 'editors', u.uid))).then((d) => d.exists()).catch(() => false));
+}
+// is this reader muted (can't post)? returns the mute or null
+export async function myMute() {
+  const s = await load(); const u = current; if (!u) return null;
+  const d = await s.F.getDoc(s.F.doc(s.db, 'mutes', u.uid)).catch(() => null);
+  if (!d || !d.exists()) return null;
+  const m = d.data(); return m.until && m.until < Date.now() ? null : m;
+}
+
+/* ---------- moderation (editors only; the rules check again) ---------- */
+const ms = (t) => (t && t.toMillis ? t.toMillis() : +t || 0);
+const rows = (snap) => { const out = []; snap.forEach((d) => { const x = d.data(); out.push({ id: d.id, ...x, created: ms(x.created), at: ms(x.at) }); }); return out; };
+export async function modReports() {
+  const s = await load();
+  return rows(await s.F.getDocs(s.F.query(s.F.collection(s.db, 'reports'), s.F.orderBy('created', 'desc'), s.F.limit(300))));
+}
+export async function modComment(id) {
+  const s = await load(); const d = await s.F.getDoc(s.F.doc(s.db, 'comments', id));
+  if (!d.exists()) return null; const x = d.data(); return { id: d.id, ...x, created: ms(x.created) };
+}
+export async function modRecent(n = 60) {
+  const s = await load();
+  return rows(await s.F.getDocs(s.F.query(s.F.collection(s.db, 'comments'), s.F.orderBy('created', 'desc'), s.F.limit(n))));
+}
+export async function modHidden() {
+  const s = await load();
+  return rows(await s.F.getDocs(s.F.query(s.F.collection(s.db, 'comments'), s.F.where('hidden', '==', true), s.F.limit(200)))).sort((a, b) => b.created - a.created);
+}
+export async function modByReader(uid) {
+  const s = await load();
+  return rows(await s.F.getDocs(s.F.query(s.F.collection(s.db, 'comments'), s.F.where('uid', '==', uid), s.F.limit(200)))).sort((a, b) => b.created - a.created);
+}
+export async function modMutes() {
+  const s = await load(); return rows(await s.F.getDocs(s.F.collection(s.db, 'mutes'))).sort((a, b) => b.at - a.at);
+}
+export async function modLog(n = 80) {
+  const s = await load();
+  return rows(await s.F.getDocs(s.F.query(s.F.collection(s.db, 'modlog'), s.F.orderBy('at', 'desc'), s.F.limit(n))));
+}
+async function logAction(s, b, action, c, note = '') {
+  const u = current;
+  b.set(s.F.doc(s.F.collection(s.db, 'modlog')), {
+    action, by: u.uid, byName: (local.me() && local.me().name) || u.displayName || 'Editor', at: s.F.serverTimestamp(), note: String(note || '').slice(0, 300),
+    commentId: (c && c.commentId) || (c && c.id) || '', slug: (c && c.slug) || '', pid: (c && c.pid) || '',
+    target: (c && c.uid) || '', targetName: String((c && c.name) || '').slice(0, 80), text: String((c && c.text) || '').slice(0, 300),
+  });
+}
+const clearReports = async (s, b, commentId) => (await s.F.getDocs(s.F.query(s.F.collection(s.db, 'reports'), s.F.where('commentId', '==', commentId)))).forEach((d) => b.delete(d.ref));
+// hide or restore; restoring also clears its reports (an editor looked and it's fine)
+export async function modSetHidden(c, hidden, note = '') {
+  const s = await load(); const b = s.F.writeBatch(s.db);
+  b.update(s.F.doc(s.db, 'comments', c.id), { hidden });
+  if (!hidden) await clearReports(s, b, c.id);
+  await logAction(s, b, hidden ? 'hide' : 'restore', c, note);
+  await b.commit();
+  await bump(s, c.slug, c.pid, hidden ? -1 : 1).catch(() => {});
+}
+// delete a comment with its replies and reports
+export async function modDelete(c, note = '') {
+  const s = await load(); const b = s.F.writeBatch(s.db);
+  const replies = rows(await s.F.getDocs(s.F.query(s.F.collection(s.db, 'comments'), s.F.where('parent', '==', c.id))));
+  [c, ...replies].forEach((x) => b.delete(s.F.doc(s.db, 'comments', x.id)));
+  await clearReports(s, b, c.id);
+  await logAction(s, b, 'delete', c, note || (replies.length ? `with ${replies.length} repl${replies.length > 1 ? 'ies' : 'y'}` : ''));
+  await b.commit();
+  const visible = [c, ...replies].filter((x) => !x.hidden).length;
+  if (visible) await bump(s, c.slug, c.pid, -visible).catch(() => {});
+}
+// reports on a comment that no longer exists
+export async function modDropReports(commentId) {
+  const s = await load(); const b = s.F.writeBatch(s.db); await clearReports(s, b, commentId); await b.commit();
+}
+// keep the comment, close its reports
+export async function modDismiss(c, note = '') {
+  const s = await load(); const b = s.F.writeBatch(s.db);
+  await clearReports(s, b, c.id); await logAction(s, b, 'dismiss', c, note); await b.commit();
+}
+// mute a reader: they can still read, but not post. days = 0 means until an editor unmutes them
+export async function modMute(c, days, reason = '') {
+  const s = await load(); const u = current; const b = s.F.writeBatch(s.db);
+  b.set(s.F.doc(s.db, 'mutes', c.uid), { name: String(c.name || 'Reader').slice(0, 80), reason: String(reason || '').slice(0, 300), by: u.uid, at: s.F.serverTimestamp(), until: days ? Date.now() + days * 864e5 : 0 });
+  await logAction(s, b, 'mute', c, `${days ? `${days} days` : 'until unmuted'}${reason ? `: ${reason}` : ''}`);
+  await b.commit();
+}
+export async function modUnmute(m) {
+  const s = await load(); const b = s.F.writeBatch(s.db);
+  b.delete(s.F.doc(s.db, 'mutes', m.id));
+  await logAction(s, b, 'unmute', { uid: m.id, name: m.name });
+  await b.commit();
 }
 
 /* ---------- notifications (Firebase Cloud Messaging, opt-in) ---------- */

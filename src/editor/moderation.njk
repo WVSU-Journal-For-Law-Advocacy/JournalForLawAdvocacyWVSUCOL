@@ -1,0 +1,176 @@
+---
+layout: layouts/base.njk
+title: Moderation
+permalink: /editor/moderation/
+description: Reported comments, recent discussion and muted readers (board members only).
+searchExclude: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/editor/">Board</a></p>
+  <h1>Moderation</h1>
+  <p>Reported comments, recent discussion, and readers who can't post for now. Everything you do here is logged for the board.</p>
+</div></header>
+
+<section class="lib acct mod"><div class="wrap">
+  <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
+  <div data-tools hidden>
+    <nav class="lib-tabs" role="tablist" aria-label="Moderation">
+      <button type="button" role="tab" data-view="reports" aria-selected="true">Reported <span class="dk-count" data-n="reports" hidden></span></button>
+      <button type="button" role="tab" data-view="recent" aria-selected="false">Recent</button>
+      <button type="button" role="tab" data-view="hidden" aria-selected="false">Hidden <span class="dk-count" data-n="hidden" hidden></span></button>
+      <button type="button" role="tab" data-view="muted" aria-selected="false">Muted</button>
+      <button type="button" role="tab" data-view="log" aria-selected="false">Log</button>
+    </nav>
+    <p class="lib-note mod-help" data-help></p>
+    <div class="mod-list" data-list aria-live="polite"></div>
+    <details class="mod-how">
+      <summary>How moderation works</summary>
+      <ul>
+        <li>Comments go live at once. Readers can <b>Report</b> one; the first report alerts editors who turned on any notification in <a href="/account/#settings">Settings</a>.</li>
+        <li>When <b>three readers</b> report the same comment, it is <b>hidden automatically</b> until an editor looks.</li>
+        <li><b>Hide</b> keeps a comment out of sight but recoverable. <b>Restore</b> brings it back and closes its reports. <b>Delete</b> removes it and its replies for good.</li>
+        <li><b>Keep</b> closes the reports on a comment that is fine.</li>
+        <li><b>Mute</b> stops a reader from posting (for 7 days, 30 days, or until unmuted). They can still read and keep their library.</li>
+        <li>Moderate against the <a href="/community/">community guidelines</a>: disagreement is welcome; insults, harassment, spam and personal data are not.</li>
+      </ul>
+    </details>
+  </div>
+</div></section>
+
+<template id="tpl-mute">
+  <form class="mod-mute">
+    <label>Mute for <select name="days"><option value="7">7 days</option><option value="30">30 days</option><option value="0">until unmuted</option></select></label>
+    <input name="reason" maxlength="300" placeholder="Reason (for the board's log)">
+    <button class="btn sm danger" type="submit">Mute</button> <button class="btn sm alt" type="button" data-a="cancel-mute">Cancel</button>
+  </form>
+</template>
+
+<script type="module">
+  const cloud = await import('/assets/js/jla-cloud.js');
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const gate = $('[data-gate]'), tools = $('[data-tools]'), list = $('[data-list]'), help = $('[data-help]');
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const when = (ms) => ms ? new Date(ms).toLocaleString('en-PH', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) : '';
+  const say = (m) => (window.JLA ? window.JLA.say(m) : alert(m));
+  const HELP = {
+    reports: 'Comments readers have reported, most reported first.',
+    recent: 'The latest comments across all articles, hidden ones included.',
+    hidden: 'Hidden comments: by an editor, or automatically after three reports.',
+    muted: 'Readers who cannot post for now.',
+    log: 'Every moderation action, newest first.',
+  };
+  const LOG = { hide: 'hid', restore: 'restored', delete: 'deleted', dismiss: 'kept (closed reports on)', mute: 'muted', unmute: 'unmuted', 'auto-hide': 'hid automatically' };
+  let view = 'reports', byReader = null, items = [], mutes = [];
+
+  const card = (c, extra = {}) => {
+    const reps = extra.reports || [];
+    return `<article class="card-box mod-item${c.hidden ? ' is-hidden' : ''}" data-id="${esc(c.id)}">
+      <p class="mi-head"><b>${esc(c.name)}</b>${c.hidden ? '<em>hidden</em>' : ''}${mutes.some((m) => m.id === c.uid) ? '<em>muted</em>' : ''}
+        <span>${when(c.created)} · <a href="/articles/${esc(c.slug)}/?thread=${encodeURIComponent(c.pid)}" target="_blank" rel="noopener">${esc(c.slug)}</a>${c.parent ? ' · reply' : ''}</span></p>
+      <p class="mi-text">${esc(c.text)}</p>
+      ${reps.length ? `<div class="mi-reps"><b>${reps.length} report${reps.length > 1 ? 's' : ''}</b>${reps.filter((r) => r.reason).map((r) => `<q>${esc(r.reason)}</q>`).join('')}</div>` : ''}
+      <p class="acts mi-acts">
+        ${reps.length && !c.hidden ? '<button class="btn sm alt" type="button" data-a="keep">Keep</button>' : ''}
+        ${c.hidden ? '<button class="btn sm alt" type="button" data-a="restore">Restore</button>' : '<button class="btn sm alt" type="button" data-a="hide">Hide</button>'}
+        <button class="btn sm danger" type="button" data-a="delete">Delete</button>
+        ${mutes.some((m) => m.id === c.uid) ? '' : '<button class="btn sm alt" type="button" data-a="mute">Mute reader</button>'}
+        <button class="mi-more" type="button" data-a="reader">All by ${esc(c.name.split(' ')[0])}</button>
+      </p></article>`;
+  };
+
+  async function counts() {
+    try {
+      const [reps, hid] = await Promise.all([cloud.modReports(), cloud.modHidden()]);
+      const n = new Set(reps.map((r) => r.commentId)).size; // (may include comments already deleted until the list is opened)
+      const a = $('[data-n="reports"]'); a.hidden = !n; a.textContent = n;
+      const b = $('[data-n="hidden"]'); b.hidden = !hid.length; b.textContent = hid.length;
+    } catch (e) {}
+  }
+
+  async function show(v) {
+    view = v; $$('[data-view]').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === v && !byReader)));
+    help.textContent = byReader ? '' : HELP[v];
+    list.innerHTML = '<p class="off">Loading…</p>';
+    try {
+      mutes = await cloud.modMutes().catch(() => []);
+      if (byReader) {
+        items = await cloud.modByReader(byReader.uid);
+        list.innerHTML = `<p class="mod-back"><button class="mi-more" type="button" data-a="back">← Back</button> Comments by <b>${esc(byReader.name)}</b> (${items.length})</p>` + items.map((c) => card(c)).join('');
+        return;
+      }
+      if (v === 'reports') {
+        const reps = await cloud.modReports(), groups = new Map();
+        reps.forEach((r) => { if (!groups.has(r.commentId)) groups.set(r.commentId, []); groups.get(r.commentId).push(r); });
+        const ids = [...groups.keys()], loaded = await Promise.all(ids.map((id) => cloud.modComment(id).catch(() => undefined)));
+        ids.forEach((id, i) => { if (loaded[i] === null) cloud.modDropReports(id).catch(() => {}); }); // the comment is already gone
+        items = loaded.filter(Boolean).map((c) => ({ ...c, _reps: groups.get(c.id) })).sort((a, b) => b._reps.length - a._reps.length || b.created - a.created);
+        list.innerHTML = items.length ? items.map((c) => card(c, { reports: c._reps })).join('') : '<div class="card-box"><p class="off">Nothing reported. 🎉</p></div>';
+      }
+      if (v === 'recent') { items = await cloud.modRecent(60); list.innerHTML = items.length ? items.map((c) => card(c)).join('') : '<div class="card-box"><p class="off">No comments yet.</p></div>'; }
+      if (v === 'hidden') { items = await cloud.modHidden(); list.innerHTML = items.length ? items.map((c) => card(c)).join('') : '<div class="card-box"><p class="off">No hidden comments.</p></div>'; }
+      if (v === 'muted') {
+        list.innerHTML = mutes.length ? mutes.map((m) => `<article class="card-box mod-item" data-mute="${esc(m.id)}">
+          <p class="mi-head"><b>${esc(m.name)}</b><span>since ${when(m.at)} · ${m.until ? (m.until < Date.now() ? 'ran out' : `until ${when(m.until)}`) : 'until unmuted'}</span></p>
+          ${m.reason ? `<p class="mi-text">${esc(m.reason)}</p>` : ''}
+          <p class="acts mi-acts"><button class="btn sm alt" type="button" data-a="unmute">Unmute</button> <button class="mi-more" type="button" data-a="reader-m">Their comments</button></p></article>`).join('')
+          : '<div class="card-box"><p class="off">No one is muted.</p></div>';
+      }
+      if (v === 'log') {
+        const log = await cloud.modLog(80);
+        list.innerHTML = log.length ? `<ol class="mod-log">${log.map((l) => `<li><span class="ml-when">${when(l.at)}</span>
+          <b>${esc(l.byName || 'An editor')}</b> ${LOG[l.action] || esc(l.action)} ${l.action === 'mute' || l.action === 'unmute' ? `<b>${esc(l.targetName)}</b>` : `a comment by <b>${esc(l.targetName || 'a reader')}</b>`}${l.note ? ` <span class="ml-note">(${esc(l.note)})</span>` : ''}
+          ${l.text ? `<q>${esc(l.text.length > 160 ? l.text.slice(0, 160) + '…' : l.text)}</q>` : ''}</li>`).join('')}</ol>`
+          : '<div class="card-box"><p class="off">Nothing logged yet.</p></div>';
+      }
+    } catch (e) { list.innerHTML = `<div class="card-box"><p class="off">Could not load: ${esc(e.message)}. If this says "permission", publish the latest Firestore rules (firebase/firestore.rules).</p></div>`; }
+  }
+
+  $('.lib-tabs').addEventListener('click', (e) => { const b = e.target.closest('[data-view]'); if (b) { byReader = null; show(b.dataset.view); } });
+
+  list.addEventListener('click', async (e) => {
+    const b = e.target.closest('[data-a]'); if (!b) return;
+    const a = b.dataset.a;
+    if (a === 'back') { byReader = null; return show(view); }
+    if (a === 'unmute' || a === 'reader-m') {
+      const m = mutes.find((x) => x.id === b.closest('[data-mute]').dataset.mute); if (!m) return;
+      if (a === 'reader-m') { byReader = { uid: m.id, name: m.name }; return show(view); }
+      if (!confirm(`Let ${m.name} post again?`)) return;
+      try { await cloud.modUnmute(m); say(`${m.name} can post again`); show(view); } catch (err) { alert('That did not go through: ' + err.message); }
+      return;
+    }
+    const el = b.closest('[data-id]'); const c = el && items.find((x) => x.id === el.dataset.id); if (!c) return;
+    if (a === 'reader') { byReader = { uid: c.uid, name: c.name }; return show(view); }
+    if (a === 'mute') {
+      if (el.querySelector('.mod-mute')) return;
+      el.append($('#tpl-mute').content.cloneNode(true));
+      const f = el.querySelector('.mod-mute'); f.reason.focus();
+      f.addEventListener('submit', async (ev) => {
+        ev.preventDefault(); const days = +f.days.value;
+        try { await cloud.modMute(c, days, f.reason.value.trim()); say(`${c.name} is muted`); show(view); } catch (err) { alert('That did not go through: ' + err.message); }
+      });
+      return;
+    }
+    if (a === 'cancel-mute') { b.closest('.mod-mute').remove(); return; }
+    b.disabled = true;
+    try {
+      if (a === 'keep') { await cloud.modDismiss(c); say('Kept: reports closed'); }
+      if (a === 'hide') { const note = prompt('Hide this comment? Reason for the log (optional):', ''); if (note === null) { b.disabled = false; return; } await cloud.modSetHidden(c, true, note); say('Hidden'); }
+      if (a === 'restore') { await cloud.modSetHidden(c, false); say('Restored'); }
+      if (a === 'delete') {
+        const note = prompt('Delete this comment and its replies for good? Reason for the log (optional):', ''); if (note === null) { b.disabled = false; return; }
+        await cloud.modDelete(c, note); say('Deleted');
+      }
+      await show(view); counts();
+    } catch (err) { b.disabled = false; alert('That did not go through: ' + err.message); }
+  });
+
+  if (!cloud.enabled) gate.innerHTML = '<p class="off">Reader accounts are not switched on.</p>';
+  else cloud.onUser(async (u) => {
+    if (!u) { gate.innerHTML = '<p class="off">Board members only. <a href="/account/">Sign in</a> first.</p>'; tools.hidden = true; return; }
+    if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only.</p>'; tools.hidden = true; return; }
+    gate.hidden = true; tools.hidden = false;
+    const start = new URLSearchParams(location.search).get('view');
+    show(['reports', 'recent', 'hidden', 'muted', 'log'].includes(start) ? start : 'reports'); counts();
+  });
+</script>

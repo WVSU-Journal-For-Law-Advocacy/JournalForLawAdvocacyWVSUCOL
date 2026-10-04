@@ -24,7 +24,7 @@ Signed-in readers can discuss any paragraph of an article. Discussions are publi
 
 ## How moderation works
 
-Comments appear as soon as they are posted. Any signed-in reader can **Report** a comment, and the Journal's editors review reports. Editors may **hide** or **delete** comments that break these guidelines, and may suspend repeated offenders. You can delete your own comments at any time.
+Comments appear as soon as they are posted. Any signed-in reader can **Report** a comment, and the Journal's editors review reports. When three readers report the same comment, it is hidden until an editor looks at it. Editors may **hide** or **delete** comments that break these guidelines, and may **mute** a reader who keeps breaking them: a muted reader can still read and keep their library, but can't post for 7 days, 30 days, or until an editor lifts it. Every moderation decision is recorded for the board. You can delete your own comments at any time.
 
 Comments are the views of their writers, not of the Journal, its editors, or the WVSU College of Law. Nothing posted here is legal advice.
 

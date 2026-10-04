@@ -50,6 +50,7 @@ if (acctBtn) {
       <a role="menuitem" href="/account/#badges">Badges</a>
       <a role="menuitem" href="/account/#settings">Settings</a>
       ${me.editor ? '<a role="menuitem" href="/editor/" class="am-board">Board</a>' : ''}
+      <a role="menuitem" href="/app/" class="am-app">Get the app</a>
       <button role="menuitem" type="button" class="am-out" data-signout-menu>Sign out</button>`;
     acctBtn.after(menu);
     acctBtn.setAttribute('aria-haspopup', 'menu'); acctBtn.setAttribute('aria-expanded', 'false'); acctBtn.setAttribute('aria-controls', 'acct-menu');
@@ -73,7 +74,7 @@ if (acctBtn) {
   // editors get a Board menu (the pages themselves check access again)
   if (me && me.editor) {
     const here = location.pathname.startsWith('/editor/');
-    const subs = [['/editor/', 'Board home'], ['/editor/claims/', 'Author claims'], ['/editor/announce/', 'Send an announcement'], ['/editor/editors/', 'Manage editors']];
+    const subs = [['/editor/', 'Board home'], ['/editor/moderation/', 'Moderation'], ['/editor/claims/', 'Author claims'], ['/editor/announce/', 'Send an announcement'], ['/editor/editors/', 'Manage editors']];
     const top = $('.primary > ul');
     if (top) {
       const li = document.createElement('li'); li.className = 'has-sub nav-board';
@@ -581,32 +582,36 @@ document.addEventListener('click', async (e) => {
   Sheet.close(true); say('Saved for offline: open it any time, even without signal');
 });
 
-// Install invitation: once, after a second visit (Android/Chrome), or a short how-to on iPhone. Never inside Messenger & co.
+// Installing the app, without pop-ups: a 'Get the app' link in the footer and account menu, the /app/ page,
+// My library, and one quiet line at the end of an article for returning readers. Never inside Messenger & co.
 const inApp = /FBAN|FBAV|FB_IAB|Orca|Instagram|Line\/|MicroMessenger|TikTok/i.test(navigator.userAgent);
-const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.MSStream;
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 let deferredInstall = null;
 const visits = (() => { const today = new Date().toDateString(); let v = {}; try { v = JSON.parse(store.get('jla:visits') || '{}'); } catch (e) {} if (v.last !== today) { v.n = (v.n || 0) + 1; v.last = today; store.set('jla:visits', JSON.stringify(v)); } return v.n; })();
-const dismissed = () => { const t = +(store.get('jla:install-no') || 0); return Date.now() - t < 30 * 864e5; };
-function installCard() {
-  if (standalone || inApp || dismissed() || document.querySelector('.install-card')) return;
-  const c = document.createElement('div'); c.className = 'install-card'; c.setAttribute('role', 'dialog'); c.setAttribute('aria-label', 'Install the app');
-  c.innerHTML = `<img src="/assets/img/app/icon-192.png" alt="" width="48" height="48"><div><b>Read the Journal like an app</b>
-    <span>${deferredInstall ? 'One tap: on your home screen, works offline.' : 'Tap <b>Share</b> <span aria-hidden="true">⎋</span>, then <b>Add to Home Screen</b>.'}</span></div>
-    <div class="ic-acts">${deferredInstall ? '<button type="button" class="btn sm" data-install>Install</button>' : ''}<button type="button" class="ic-x" data-install-no aria-label="Not now">Not now</button></div>`;
-  document.body.append(c); requestAnimationFrame(() => c.classList.add('on'));
+const dismissed = () => { const t = +(store.get('jla:install-no') || 0); return Date.now() - t < 60 * 864e5; };
+const installed = () => standalone || store.get('jla:installed') === '1';
+if (installed()) root.classList.add('app-installed');
+const related = $('.related');
+if (related && !installed() && !inApp && !dismissed() && visits >= 2) {
+  const hint = document.createElement('p'); hint.className = 'app-hint';
+  hint.innerHTML = '<span>Reading often? <a href="/app/">Get the app</a>: free, on your home screen, works offline.</span><button type="button" data-install-no aria-label="Hide this">✕</button>';
+  related.before(hint);
 }
-addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstall = e; document.dispatchEvent(new Event('jla:installable')); if (visits >= 2) setTimeout(installCard, 4000); });
-if (isIOS && !standalone && visits >= 2) setTimeout(installCard, 6000);
-document.addEventListener('click', async (e) => {
-  if (e.target.closest('[data-install]')) {
-    const card = document.querySelector('.install-card'); if (card) card.remove();
-    if (deferredInstall) { deferredInstall.prompt(); const r = await deferredInstall.userChoice.catch(() => null); deferredInstall = null; if (r && r.outcome === 'accepted') say('Installed: find the Journal on your home screen'); }
-    else if (isIOS) Sheet.open({ title: 'Install the app', html: '<p>In Safari, tap <b>Share</b> (the square with an arrow), then <b>Add to Home Screen</b>.</p>' });
-    else Sheet.open({ title: 'Install the app', html: '<p>Open your browser menu <b>⋮</b> and choose <b>Install app</b> or <b>Add to Home screen</b>.</p>' });
+addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredInstall = e; document.dispatchEvent(new Event('jla:installable')); });
+addEventListener('appinstalled', () => { store.set('jla:installed', '1'); deferredInstall = null; root.classList.add('app-installed'); document.dispatchEvent(new Event('jla:installable')); });
+async function promptInstall() {
+  if (deferredInstall) {
+    deferredInstall.prompt(); const r = await deferredInstall.userChoice.catch(() => null); deferredInstall = null;
+    if (r && r.outcome === 'accepted') say('Installed: find the Journal on your home screen');
+    document.dispatchEvent(new Event('jla:installable')); return;
   }
-  if (e.target.closest('[data-install-no]')) { store.set('jla:install-no', String(Date.now())); const card = document.querySelector('.install-card'); if (card) card.remove(); }
+  location.href = '/app/';
+}
+document.addEventListener('click', (e) => {
+  if (e.target.closest('[data-install]')) { e.preventDefault(); promptInstall(); }
+  if (e.target.closest('[data-install-no]')) { store.set('jla:install-no', String(Date.now())); const h = e.target.closest('.app-hint'); if (h) h.remove(); }
 });
-window.JLA_APP = { standalone, canInstall: () => !!deferredInstall || isIOS, savedList };
+window.JLA_APP = { standalone, inApp, isIOS, installable: () => !!deferredInstall, canInstall: () => !!deferredInstall || isIOS, install: promptInstall, savedList };
 
 /* shared with the ES modules (reader, reading tools, comments, account) */
 window.JLA = { Sheet, say, copy, store };

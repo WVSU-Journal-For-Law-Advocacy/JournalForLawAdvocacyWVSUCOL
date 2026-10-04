@@ -58,11 +58,11 @@ function openDiscussion() {
 }
 
 /* ---------- the thread ---------- */
-let me = null, editor = false, current = null; // current = { pid, list, replyTo }
+let me = null, editor = false, muted = null, current = null; // current = { pid, list, replyTo }
 async function ensureCloud() {
   if (cloud) return cloud;
   const mod = await import('./jla-cloud.js'); if (!mod.enabled) return null;
-  await new Promise((ok) => { let first = true; mod.onUser(async (u) => { me = u; editor = u ? await mod.isEditor() : false; if (first) { first = false; ok(); } else if (current) render(); }); });
+  await new Promise((ok) => { let first = true; mod.onUser(async (u) => { me = u; editor = u ? await mod.isEditor() : false; muted = u && !editor ? await mod.myMute().catch(() => null) : null; if (first) { first = false; ok(); } else if (current) render(); }); });
   cloud = mod; return mod;
 }
 async function myThumb() {
@@ -123,6 +123,8 @@ function render() {
   const box = node.querySelector('.th-compose');
   if (!me) {
     box.innerHTML = `<p class="th-signin">Sign in to join the discussion. <a class="btn sm" href="/account/">Sign in</a></p>`;
+  } else if (muted) {
+    box.innerHTML = `<p class="th-signin">You can't post in discussions${muted.until ? ` until ${new Date(muted.until).toLocaleDateString('en-PH', { month: 'long', day: 'numeric' })}` : ' for now'}. See the <a href="/community/">community guidelines</a>, or write to the editors.</p>`;
   } else {
     const to = current.replyTo && live.find((c) => c.id === current.replyTo);
     box.innerHTML = `<form class="th-form">
@@ -171,12 +173,12 @@ async function onThreadClick(e) {
     }
     if (b.dataset.a === 'delete') {
       if (!confirm('Delete this comment?')) return;
-      await cloud.deleteComment(c); current.list = current.list.filter((x) => x.id !== c.id && x.parent !== c.id);
+      await (editor && c.uid !== me.uid ? cloud.modDelete(c) : cloud.deleteComment(c)); current.list = current.list.filter((x) => x.id !== c.id && x.parent !== c.id);
       if (!c.hidden) { counts[c.pid] = Math.max(0, (counts[c.pid] || 1) - 1); drawBubbles(); }
       render();
     }
     if (b.dataset.a === 'hide') {
-      await cloud.setHidden(c, !c.hidden); c.hidden = !c.hidden;
+      await cloud.modSetHidden(c, !c.hidden); c.hidden = !c.hidden;
       counts[c.pid] = Math.max(0, (counts[c.pid] || 0) + (c.hidden ? -1 : 1)); drawBubbles();
       render();
     }

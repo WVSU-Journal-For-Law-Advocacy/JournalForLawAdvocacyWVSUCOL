@@ -27,6 +27,9 @@ service cloud.firestore {
     }
 
     function isEditor() { return signedIn() && exists(/databases/$(database)/documents/editors/$(request.auth.uid)); }
+    // muted readers can read but not post (a mute whose "until" has passed has run out)
+    function mutePath() { return /databases/$(database)/documents/mutes/$(request.auth.uid); }
+    function notMuted() { return !exists(mutePath()) || (get(mutePath()).data.until > 0 && get(mutePath()).data.until < request.time.toMillis()); }
 
     // Bubble counts per article: { counts: { paragraphId: n } }. Public to read.
     // Signed-in readers may only change the counts map (the site adds 1 when posting).
@@ -42,7 +45,7 @@ service cloud.firestore {
     // Paragraph comments: live at once; hidden ones are visible to editors only.
     match /comments/{id} {
       allow read: if resource.data.hidden == false || isEditor();
-      allow create: if signedIn()
+      allow create: if signedIn() && notMuted()
         && request.resource.data.keys().hasOnly(['slug', 'pid', 'uid', 'name', 'thumb', 'text', 'parent', 'created', 'hidden', 'likedBy'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.slug is string && request.resource.data.slug.size() <= 120
@@ -64,9 +67,10 @@ service cloud.firestore {
       allow delete: if isEditor() || (signedIn() && resource.data.uid == request.auth.uid);
     }
 
-    // Reports on comments: anyone signed in can file one; only editors read or clear them.
+    // Reports on comments: anyone signed in can file one (id = commentId_uid, so one each); only editors read or clear them.
     match /reports/{id} {
       allow create: if signedIn()
+        && id == request.resource.data.commentId + '_' + request.auth.uid
         && request.resource.data.keys().hasOnly(['commentId', 'slug', 'pid', 'uid', 'reason', 'created'])
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.reason is string && request.resource.data.reason.size() <= 300
@@ -117,6 +121,26 @@ service cloud.firestore {
         && (!('orcid' in request.resource.data) || request.resource.data.orcid.size() <= 40)
         && (!('facebook' in request.resource.data) || request.resource.data.facebook.size() <= 200)
         && (!('website' in request.resource.data) || request.resource.data.website.size() <= 200));
+    }
+
+    // Muted readers: editors set and lift them; a reader can see their own.
+    match /mutes/{uid} {
+      allow read: if isEditor() || isMe(uid);
+      allow create, update: if isEditor()
+        && request.resource.data.keys().hasOnly(['name', 'reason', 'by', 'at', 'until'])
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.until is number
+        && request.resource.data.reason is string && request.resource.data.reason.size() <= 300;
+      allow delete: if isEditor();
+    }
+
+    // Moderation log: what editors did and why. Editors add entries; nobody edits or deletes them.
+    match /modlog/{id} {
+      allow read: if isEditor();
+      allow create: if isEditor()
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.at == request.time;
+      allow update, delete: if false;
     }
 
     // Log of board announcements (written by the server only).

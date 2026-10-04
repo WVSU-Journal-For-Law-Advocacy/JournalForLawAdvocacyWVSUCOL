@@ -1,0 +1,78 @@
+---
+layout: layouts/base.njk
+title: Get the app
+permalink: /app/
+description: Put the WVSU Journal for Law Advocacy on your phone's home screen. Free, no app store, works offline.
+---
+<header class="pagehead"><div class="wrap">
+  <h1>Get the app</h1>
+  <p>The Journal on your home screen: it opens full screen, keeps your place, and reads offline. It's free, needs no app store, and takes almost no space.</p>
+</div></header>
+
+<section class="getapp"><div class="wrap">
+  <div class="ga-now" data-ga-now hidden></div>
+
+  <div class="ga-steps">
+    <details class="ga-dev" data-dev="android">
+      <summary><b>Android</b><span>Chrome, Samsung Internet, Edge</span></summary>
+      <ol>
+        <li>Open <b>{{ site.url | replace("https://", "") }}</b> in <b>Chrome</b>.</li>
+        <li>Tap the menu <b class="ga-k" aria-label="three dots">⋮</b> at the top right.</li>
+        <li>Choose <b>Install app</b> (or <b>Add to Home screen</b>), then <b>Install</b>.</li>
+      </ol>
+    </details>
+
+    <details class="ga-dev" data-dev="ios">
+      <summary><b>iPhone &amp; iPad</b><span>Safari</span></summary>
+      <ol>
+        <li>Open <b>{{ site.url | replace("https://", "") }}</b> in <b>Safari</b>.</li>
+        <li>Tap <b>Share</b> <svg class="ga-i" viewBox="0 0 24 24" aria-label="the Share icon"><path d="M12 3v12M8 7l4-4 4 4M6 11v9h12v-9" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg> at the bottom of the screen.</li>
+        <li>Scroll down and tap <b>Add to Home Screen</b>, then <b>Add</b>.</li>
+      </ol>
+      <p class="ga-note">To get notifications on iPhone, turn them on from the installed app (iOS 16.4 or later).</p>
+    </details>
+
+    <details class="ga-dev" data-dev="desktop">
+      <summary><b>Computer</b><span>Chrome or Edge</span></summary>
+      <ol>
+        <li>Look for the install icon <svg class="ga-i" viewBox="0 0 24 24" aria-label="the install icon"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v6M9.5 11.5 12 14l2.5-2.5M8 20h8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg> at the right end of the address bar.</li>
+        <li>Click it, then <b>Install</b>. (Or open the browser menu and choose <b>Install WVSU JLA</b>.)</li>
+      </ol>
+    </details>
+
+    <details class="ga-dev" data-dev="inapp">
+      <summary><b>Reading inside Facebook or Messenger?</b><span>Open the site in your browser first</span></summary>
+      <ol>
+        <li>Tap <b>⋯</b> at the top right and choose <b>Open in browser</b> (or <b>Open in Chrome</b> / <b>Open in Safari</b>).</li>
+        <li>Then follow the steps for your phone above.</li>
+      </ol>
+    </details>
+  </div>
+
+  <ul class="ga-why">
+    <li><b>Offline reading</b><span>Articles you've opened, or saved with <i>More → Save for offline</i>, open without signal.</span></li>
+    <li><b>Your place, kept</b><span>Your reading, streaks and highlights follow your account.</span></li>
+    <li><b>Only the news you want</b><span>Optional notifications for new volumes, calls for papers and replies, in <a href="/account/#settings">Settings</a>.</span></li>
+  </ul>
+  <p class="ga-foot">To remove it, delete it like any app: press and hold its icon. Your account isn't affected.</p>
+</div></section>
+
+<script>
+  (function () {
+    var ua = navigator.userAgent;
+    var dev = /FBAN|FBAV|FB_IAB|Orca|Instagram|Line\/|MicroMessenger|TikTok/i.test(ua) ? 'inapp'
+      : (/iPhone|iPad|iPod/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)) ? 'ios'
+      : /Android/i.test(ua) ? 'android' : 'desktop';
+    var mine = document.querySelector('[data-dev="' + dev + '"]');
+    if (mine) { mine.open = true; mine.classList.add('is-mine'); mine.parentNode.prepend(mine); var s = mine.querySelector('summary span'); s.textContent += ' · this device'; }
+    var now = document.querySelector('[data-ga-now]');
+    function paint() {
+      var A = window.JLA_APP; if (!A) return;
+      if (A.standalone) { now.hidden = false; now.innerHTML = '<p><b>You’re using the app.</b> Nothing else to do.</p>'; return; }
+      if (A.installable()) { now.hidden = false; now.innerHTML = '<p>Your browser can install it in one tap.</p><button class="btn" type="button" data-install>Install the app</button>'; }
+      else now.hidden = true;
+    }
+    document.addEventListener('jla:installable', paint);
+    if (window.JLA_APP) paint(); else document.addEventListener('jla:ready', paint);
+  })();
+</script>

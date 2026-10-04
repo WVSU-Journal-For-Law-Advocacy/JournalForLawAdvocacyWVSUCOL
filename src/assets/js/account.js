@@ -218,12 +218,13 @@ addEventListener('hashchange', () => { const h = location.hash.slice(1); if (TAB
 function paintApp() {
   const A = window.JLA_APP; if (!A) return;
   const box = $('[data-app-box]'), btn = $('[data-install-btn]'), saved = Object.entries(A.savedList());
-  btn.hidden = A.standalone || !A.canInstall();
+  btn.hidden = A.standalone || !A.installable();
+  $('[data-install-how]').hidden = A.standalone || !btn.hidden;
   if (A.standalone) $('[data-app-line]').textContent = "You're using the app. Articles you save stay readable without a connection.";
   $('[data-saved-wrap]').hidden = !saved.length;
   $('[data-saved]').innerHTML = saved.sort((a, b) => b[1].saved - a[1].saved).map(([url, s]) =>
     `<li><a href="${esc(url)}">${esc(s.title)}</a><button type="button" data-unsave="${esc(url)}" aria-label="Remove from offline">Remove</button></li>`).join('');
-  box.hidden = btn.hidden && !saved.length && !A.standalone;
+  box.hidden = false;
 }
 root.addEventListener('click', (e) => {
   const u = e.target.closest('[data-unsave]'); if (!u) return;

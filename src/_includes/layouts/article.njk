@@ -11,63 +11,42 @@ layout: layouts/base.njk
   {%- set toc = parts.main | headings %}
   {%- set minutes = parts.main | readingTime %}
 {%- endif %}
+{%- set pages = (first_page + ("–" + last_page if last_page and last_page != first_page else "")) if first_page else "" %}
 
+{#- The opening: area, title, authors, one quiet line. Everything else lives in the dock and the end matter. -#}
 <header class="art-head"><div class="art-wrap">
-  <div class="art-eyebrow">
-    <p><a href="/areas/{{ area | slugify }}/" data-pagefind-filter="Area">{{ area }}</a><span class="star" aria-hidden="true">✦</span><span data-pagefind-filter="Type">{{ kind }}</span></p>
-    <p class="art-cite" title="Official citation">{{ volume }} {{ site.short }}{% if first_page %} {{ first_page }}{% endif %} ({{ year }})</p>
-  </div>
+  <p class="art-eyebrow"><a href="/areas/{{ area | slugify }}/" data-pagefind-filter="Area">{{ area }}</a><span hidden data-pagefind-filter="Type">{{ kind }}</span></p>
   <h1>{{ title }}</h1>
   <p class="art-authors">{% for au in author | authorLinks %}{% if not loop.first %}{{ " and " if loop.last else ", " }}{% endif %}{% if au.slug %}<a href="/authors/{{ au.slug }}/" data-pagefind-filter="Author">{{ au.name }}</a>{% else %}{{ au.name }}{% endif %}{% endfor %}</p>
   <p class="art-meta">
-    {%- if vol %}<a href="{{ vol.url }}" data-pagefind-filter="Volume">Volume {{ volume }}</a>{% else %}<span data-pagefind-filter="Volume">Volume {{ volume }}</span>{% endif %}
-    <span class="dot" aria-hidden="true">·</span><span>{% if vol %}AY {{ vol.data.academic_year }}{% else %}{{ year }}{% endif %}</span>
-    {%- if first_page %}<span class="dot" aria-hidden="true">·</span><span>pp. {{ first_page }}{% if last_page and last_page != first_page %}–{{ last_page }}{% endif %}</span>{% endif %}
-    {%- if minutes %}<span class="dot" aria-hidden="true">·</span><span>{{ minutes }} min read</span>{% endif %}
+    {%- if vol %}<a href="{{ vol.url }}" data-pagefind-filter="Volume">Vol. {{ volume | roman }}</a>{% else %}<span data-pagefind-filter="Volume">Vol. {{ volume | roman }}</span>{% endif %}
+    <span class="dot" aria-hidden="true">·</span><span>{{ year }}</span>
+    {%- if minutes %}<span class="dot" aria-hidden="true">·</span><span>{{ minutes }} min</span>{% endif %}
   </p>
-  <div class="orn" aria-hidden="true"><span>❦</span></div>
-  <div class="art-actions">
-    {%- if pdf %}<a class="btn" href="{{ pdf }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Download PDF</a>{% endif %}
-    {%- if vol and vol.data.pdf and pdf_page %}<a class="btn alt" href="{{ vol.data.pdf }}#page={{ pdf_page }}">Original volume</a>{% endif %}
-    <a class="btn alt" href="#cite" data-sheet="cite">Cite</a>
-    <a class="btn alt" href="#share" data-sheet="share">Share</a>
-  </div>
+  {%- if hasText and fulltext_status == "proofread-needed" %}
+  <p class="art-note">Web text converted from the PDF · not yet proofread{% if pdf %} · <a href="{{ pdf }}">Read the PDF</a>{% endif %}</p>
+  {%- elif not pdf %}
+  <p class="art-note">The PDF of this article has not been uploaded yet.</p>
+  {%- endif %}
 </div></header>
 
 <section class="art-body"><div class="art-wrap">
-  {%- if not pdf %}<p class="off">The PDF of this article has not been uploaded yet.</p>{% endif %}
-
-  <div class="abstract">
-    <h2>Abstract</h2>
+  <section class="abstract" aria-labelledby="abs-h">
+    <h2 id="abs-h">Abstract</h2>
     <p>{{ abstract }}</p>
-  </div>
-
-  {%- if takeaways and takeaways.length %}
-  <section class="takeaways" aria-labelledby="tk-h">
-    <div class="tk-head"><h2 id="tk-h">Key takeaways</h2><span>{{ takeaways.length }} points · 1 min</span></div>
-    <ol class="tk-cards">
-      {%- for t in takeaways %}
-      <li><span class="tk-n">{{ loop.index }}<small>/{{ takeaways.length }}</small></span><p>{{ t }}</p></li>
-      {%- endfor %}
-    </ol>
+    {%- if takeaways and takeaways.length %}
+    <details class="tk">
+      <summary>Key takeaways <span>· {{ takeaways.length }}</span></summary>
+      <ol class="tk-cards">
+        {%- for t in takeaways %}
+        <li><span class="tk-n">{{ loop.index }}<small>/{{ takeaways.length }}</small></span><p>{{ t }}</p></li>
+        {%- endfor %}
+      </ol>
+    </details>
+    {%- endif %}
   </section>
-  {%- endif %}
 
   {%- if hasText %}
-  {%- if fulltext_status == "proofread-needed" %}
-  <p class="notice"><strong>Web version not yet proofread.</strong> Converted from the published PDF; it may contain errors. Quote and cite from the <a href="{{ pdf }}">PDF</a>, the version of record.</p>
-  {%- endif %}
-  {%- if toc.length > 2 %}
-  <details class="toc-chip">
-    <summary>Contents</summary>
-    <ol>{% for h in toc %}<li class="lvl{{ h.level }}"><a href="#{{ h.id }}">{{ h.text }}</a></li>{% endfor %}</ol>
-  </details>
-  {%- endif %}
-  <div class="read-tools" role="toolbar" aria-label="Reading tools" hidden>
-    <button type="button" data-tool="display"><span aria-hidden="true">Aa</span> Display</button>
-    <button type="button" data-tool="listen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4zm12.5 3a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z" fill="currentColor"/></svg> Listen</button>
-    <button type="button" data-tool="focus"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg> Focus</button>
-  </div>
   <div class="fulltext prose" id="fulltext">
     {{ parts.main | safe }}
   </div>
@@ -79,12 +58,38 @@ layout: layouts/base.njk
   {%- endif %}
   {%- else %}
   <div class="mark-read" data-mark-read>
-    <p>This piece is online as a PDF. Read it there, then add it to your library.</p>
+    <p>This piece is online as a PDF.{% if pdf %} <a href="{{ pdf }}">Read it here</a>, then add it to your library.{% endif %}</p>
     <button class="btn sm alt" type="button" aria-pressed="false">Mark as read</button>
     <p class="mr-note off" hidden>Counted in your library as read. Badges count only articles read here on the page.</p>
   </div>
   {%- endif %}
 
+  {#- End matter: one quiet block. The full Cite and Share panels open in the sheet. -#}
+  <footer class="endmatter">
+    <div class="em-row">
+      <h2 class="em-lbl">Cite</h2>
+      <p class="em-cite" id="em-cite">{{ d | cite(site.short) }}</p>
+      <p class="em-acts"><button type="button" data-copy="#em-cite" data-copy-msg="Citation copied">Copy</button><a href="#cite" data-sheet="cite">More formats</a></p>
+    </div>
+    <div class="em-row">
+      <h2 class="em-lbl">Share</h2>
+      <p class="em-acts">
+        <a href="https://www.facebook.com/sharer/sharer.php?u={{ url | urlencode }}" target="_blank" rel="noopener">Facebook</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ url | urlencode }}" target="_blank" rel="noopener">LinkedIn</a>
+        <button type="button" data-copy-link>Copy link</button>
+        <button type="button" data-studio="classic" data-fmt="story" hidden>Make a Story</button>
+        <a href="#share" data-sheet="share">More</a>
+      </p>
+    </div>
+    {%- if keywords and keywords.length %}
+    <p class="em-topics">{% for k in keywords %}<a href="/search/?q={{ k | urlencode }}">{{ k }}</a>{% endfor %}</p>
+    {%- endif %}
+    <p class="em-pub">Published in <a href="{{ vol.url if vol else '/archive/' }}">Volume {{ volume }}</a> of the {{ site.title }}, {{ year }}{% if pages %}, pp. {{ pages }}{% endif %}.{% if site.issn_print %} ISSN {{ site.issn_print }}.{% endif %}
+      {%- if pdf %} <a href="{{ pdf }}">PDF</a>{% endif %}{% if vol and vol.data.pdf and pdf_page %} · <a href="{{ vol.data.pdf }}#page={{ pdf_page }}">Original volume</a>{% endif %}</p>
+  </footer>
+
+  {#- the full Cite and Share panels: shown in the sheet (and on the page only when scripts are off) -#}
+  <div class="sheet-src">
   <section class="citebox" id="cite" aria-labelledby="cite-h"
     data-authors="{{ author | splitAuthors | dump }}" data-title="{{ title }}" data-journal="{{ site.title }}"
     data-abbrev="{{ site.short }}" data-volume="{{ volume }}" data-year="{{ year }}"
@@ -184,43 +189,70 @@ Read it here: {{ url }}
     <p class="off">On your profile: <em>Add profile section → Recommended → Add publications</em>, then paste each field.</p>
     <div class="acts"><a class="btn sm alt" href="https://www.linkedin.com/in/me/" target="_blank" rel="noopener">Open my LinkedIn profile</a></div>
   </section>
-
-  <footer class="art-foot">
-    {%- if keywords and keywords.length %}
-    <p class="topics"><span>Topics</span>{% for k in keywords %}<a href="/search/?q={{ k | urlencode }}">{{ k }}</a>{% endfor %}</p>
-    {%- endif %}
-    <p class="published">Published in <a href="{{ vol.url if vol else '/archive/' }}">Volume {{ volume }}</a> of the {{ site.title }}, {{ year }}.{% if site.issn_print %} ISSN {{ site.issn_print }}.{% endif %}</p>
-  </footer>
+  </div>
 
   {%- set related = collections.articles | byArea(area) | exceptUrl(page.url) %}
   {%- if related.length %}
-  <aside class="related" aria-label="More in {{ area }}">
-    <h2>More in {{ area }}</h2>
+  <aside class="related" aria-label="Read next">
+    <h2>Read next</h2>
     <ul>
       {%- for r in related.slice(0, 3) %}
       <li><a href="{{ r.url }}">{{ r.data.title }}</a><span>{{ r.data.author }} · Vol. {{ r.data.volume }} ({{ r.data.year }})</span></li>
       {%- endfor %}
     </ul>
-    <p class="more"><a href="/areas/{{ area | slugify }}/">All {{ area | lower }} →</a></p>
+    <p class="more"><a href="/areas/{{ area | slugify }}/">More on {{ area | lower }} →</a></p>
   </aside>
   {%- endif %}
 </div></section>
 
-<nav class="actionbar" aria-label="Article actions">
-  {%- if pdf %}<a href="{{ pdf }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>PDF</a>{% else %}<a href="#main"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Top</a>{% endif %}
-  <a href="#cite" data-sheet="cite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Cite</a>
-  <a href="#share" data-sheet="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0-4 4m4-4 4 4M5 12v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Share</a>
-  {%- if hasText and parts.count %}<a href="#footnotes" data-open-footnotes><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 10h14M5 15h9M5 20h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Notes</a>
-  {%- elif toc and toc.length > 2 %}<a href="#fulltext"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 10h14M5 15h14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>Text</a>
-  {%- else %}<a href="/archive/volume-{{ volume }}/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10l4 4v12H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>Volume</a>{% endif %}
+{#- The reading dock: every tool in one place. A bottom bar on phones, a slim rail beside the text on desktop. -#}
+<nav class="actionbar dock" aria-label="Reading tools">
+  {%- if hasText %}
+  <button type="button" class="dk dk-prog" data-dock="progress" aria-label="Reading progress">
+    <span class="dk-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14"/><circle class="on" cx="18" cy="18" r="14"/></svg></span>
+    <span class="dk-l dk-pct">{{ minutes }} min</span>
+  </button>
+  {%- if toc.length > 2 %}
+  <button type="button" class="dk" data-dock="contents"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="dk-l">Contents</span></button>
+  {%- endif %}
+  <button type="button" class="dk" data-dock="display"><span class="dk-aa" aria-hidden="true">Aa</span><span class="dk-l">Display</span></button>
+  <button type="button" class="dk" data-dock="listen" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span class="dk-l">Listen</span></button>
+  <button type="button" class="dk" data-dock="discussion" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H9l-4 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><b class="dk-n" hidden></b><span class="dk-l">Discuss</span></button>
+  {%- else %}
+  {%- if pdf %}<a class="dk" href="{{ pdf }}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0-5-5m5 5 5-5M4 19h16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="dk-l">PDF</span></a>{% endif %}
+  <a class="dk" href="#cite" data-sheet="cite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="dk-l">Cite</span></a>
+  {%- endif %}
+  <a class="dk" href="#share" data-sheet="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3m0 0-4 4m4-4 4 4M5 12v7h14v-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="dk-l">Share</span></a>
+  <button type="button" class="dk" data-dock="more"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg><span class="dk-l">More</span></button>
+  {#- while listening, the dock becomes the player -#}
+  <div class="dk-player" role="group" aria-label="Listen" hidden>
+    <button type="button" data-l="prev" aria-label="Previous paragraph">⏮</button>
+    <button type="button" data-l="play" aria-label="Pause">❚❚</button>
+    <button type="button" data-l="next" aria-label="Next paragraph">⏭</button>
+    <button type="button" data-l="rate" aria-label="Speed">1×</button>
+    <button type="button" data-l="close" aria-label="Stop listening">✕</button>
+  </div>
 </nav>
+
+{#- contents and "more" menus, copied into the sheet when opened -#}
+{%- if hasText and toc.length > 2 %}
+<template id="tpl-contents"><ol class="sheet-toc">{% for h in toc %}<li class="lvl{{ h.level }}"><a href="#{{ h.id }}">{{ h.text }}</a></li>{% endfor %}</ol></template>
+{%- endif %}
+<template id="tpl-more"><ul class="sheet-menu">
+  <li><a href="#cite" data-sheet="cite">Cite this article</a></li>
+  {%- if pdf %}<li><a href="{{ pdf }}">Download the PDF</a></li>{% endif %}
+  {%- if vol and vol.data.pdf and pdf_page %}<li><a href="{{ vol.data.pdf }}#page={{ pdf_page }}">Open in the original volume</a></li>{% endif %}
+  {%- if hasText and parts.count %}<li><a href="#footnotes" data-open-footnotes>Footnotes ({{ parts.count }})</a></li>{% endif %}
+  {%- if hasText %}<li><button type="button" data-focus-on>Focus mode</button></li>{% endif %}
+  <li><a href="{{ vol.url if vol else '/archive/' }}">Volume {{ volume }} contents</a></li>
+</ul></template>
 
 {#- data for the share studio (drawn on the reader's device) -#}
 {%- set shareData = {
   slug: slug, title: title, authors: author | splitAuthors, kind: kind, url: url,
   host: site.url | replace("https://", "") | replace("http://", ""),
   volume: volume, roman: volume | roman, year: year, ay: vol.data.academic_year if vol else "",
-  pages: (first_page + ("–" + last_page if last_page and last_page != first_page else "")) if first_page else "",
+  pages: pages,
   pageCount: (last_page - first_page + 1) if (first_page and last_page) else 0,
   minutes: minutes or 0, notes: parts.count if hasText else 0
 } %}

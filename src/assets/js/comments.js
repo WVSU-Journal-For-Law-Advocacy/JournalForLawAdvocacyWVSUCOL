@@ -9,23 +9,53 @@ const slug = dataEl ? JSON.parse(dataEl.textContent).slug : null;
 const J = () => window.JLA || { say() {}, Sheet: { open() {}, close() {}, isOpen: () => false } };
 const FLAGS = 'jla:flags';
 
-let cloud, counts = {};
+let cloud, counts = {}, cloudReady = false;
 const icon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H9l-4 4z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>';
 const ago = (ms) => { const s = (Date.now() - ms) / 1000; if (s < 60) return 'just now'; if (s < 3600) return `${Math.floor(s / 60)}m`; if (s < 86400) return `${Math.floor(s / 3600)}h`; if (s < 2592000) return `${Math.floor(s / 86400)}d`; return new Date(ms).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }); };
 const initials = (n) => String(n || '?').split(/\s+/).filter((w) => /^[A-Za-z]/.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 const avatar = (c) => /^data:image\/|^https:\/\//.test(c.thumb || '') ? `<img class="cm-av" src="${esc(c.thumb)}" alt="" width="32" height="32">` : `<span class="cm-av">${esc(initials(c.name))}</span>`;
 
-/* ---------- bubbles ---------- */
+/* ---------- count pills: only on paragraphs that have comments ---------- */
 function bubbleFor(el) {
-  let b = el.querySelector(':scope > .pc-bubble');
-  if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'pc-bubble'; el.append(b); }
   const n = counts[el.dataset.pid] || 0;
-  b.innerHTML = `${icon}${n ? `<span>${n}</span>` : ''}`; b.classList.toggle('has', n > 0);
-  b.setAttribute('aria-label', n ? `${n} comment${n > 1 ? 's' : ''} on this paragraph` : 'Comment on this paragraph');
+  let b = el.querySelector(':scope > .pc-bubble');
+  if (!n) { if (b) b.remove(); return null; }
+  if (!b) { b = document.createElement('button'); b.type = 'button'; b.className = 'pc-bubble has'; el.append(b); }
+  b.innerHTML = `${icon}<span>${n}</span>`;
+  b.setAttribute('aria-label', `${n} comment${n > 1 ? 's' : ''} on this paragraph`);
   return b;
 }
 const paras = () => [...text.querySelectorAll('p[data-pid], li[data-pid], blockquote[data-pid]')];
-function drawBubbles() { paras().forEach(bubbleFor); }
+const total = () => Object.values(counts).reduce((a, b) => a + b, 0);
+function drawBubbles() {
+  paras().forEach(bubbleFor);
+  const d = document.querySelector('[data-dock="discussion"]'); if (!d) return;
+  d.hidden = false; const n = d.querySelector('.dk-n'); n.hidden = !total(); n.textContent = total();
+}
+
+/* ---------- tap a paragraph to comment: one small chip at its end ---------- */
+let addChip, addTimer;
+function offerComment(el) {
+  if (!addChip) {
+    addChip = document.createElement('button'); addChip.type = 'button'; addChip.className = 'pc-add';
+    addChip.innerHTML = `${icon}Comment`;
+    addChip.addEventListener('click', (e) => { e.stopPropagation(); const pid = addChip.parentElement && addChip.parentElement.dataset.pid; addChip.remove(); if (pid) openThread(pid); });
+  }
+  el.append(addChip); clearTimeout(addTimer); addTimer = setTimeout(() => addChip.remove(), 6000);
+}
+addEventListener('scroll', () => { if (addChip && addChip.isConnected && !addChip.matches(':hover')) { clearTimeout(addTimer); addTimer = setTimeout(() => addChip.remove(), 900); } }, { passive: true });
+
+/* ---------- the Discussion list (from the dock) ---------- */
+function openDiscussion() {
+  const live = paras().filter((el) => counts[el.dataset.pid]);
+  const excerpt = (el) => { const c = el.cloneNode(true); c.querySelectorAll('sup, .footnote-ref, .pc-bubble, .pc-add').forEach((x) => x.remove()); const t = c.textContent.replace(/\s+/g, ' ').trim(); return t.length > 140 ? t.slice(0, 140) + '…' : t; };
+  const node = document.createElement('div'); node.className = 'disc-list';
+  node.innerHTML = live.length
+    ? `<ul>${live.map((el) => `<li><button type="button" data-pid="${el.dataset.pid}"><span class="dl-q">${esc(excerpt(el))}</span><span class="dl-n">${icon}${counts[el.dataset.pid]}</span></button></li>`).join('')}</ul>`
+    : '<p class="off">No discussion yet. Tap any paragraph, or select a sentence, and choose <b>Comment</b> to start one.</p>';
+  node.addEventListener('click', (e) => { const b = e.target.closest('[data-pid]'); if (b) openThread(b.dataset.pid); });
+  J().Sheet.open({ title: total() ? `Discussion · ${total()}` : 'Discussion', node });
+}
 
 /* ---------- the thread ---------- */
 let me = null, editor = false, current = null; // current = { pid, list, replyTo }
@@ -52,7 +82,7 @@ async function myThumb() {
 
 async function openThread(pid) {
   const el = text.querySelector(`[data-pid="${pid}"]`); if (!el) return;
-  const quote = el.cloneNode(true); quote.querySelectorAll('sup, .footnote-ref, .pc-bubble, mark').forEach((x) => x.replaceWith(...(x.matches('mark') ? x.childNodes : [])));
+  const quote = el.cloneNode(true); quote.querySelectorAll('sup, .footnote-ref, .pc-bubble, .pc-add, mark').forEach((x) => x.replaceWith(...(x.matches('mark') ? x.childNodes : [])));
   const q = quote.textContent.replace(/\s+/g, ' ').trim();
   const node = document.createElement('div'); node.className = 'thread';
   node.innerHTML = `<blockquote class="th-quote">${esc(q.length > 220 ? q.slice(0, 220) + '…' : q)}</blockquote><div class="th-list"><p class="off">Loading the discussion…</p></div><div class="th-compose"></div>`;
@@ -116,7 +146,7 @@ async function post(e) {
     const id = await cloud.addComment({ slug, pid: current.pid, text: t, parent: current.replyTo, name: who.name, thumb: who.thumb });
     current.list.push({ id, slug, pid: current.pid, uid: me.uid, name: who.name, thumb: who.thumb, text: t, parent: current.replyTo, created: Date.now(), hidden: false, likedBy: [] });
     current.replyTo = null; counts[current.pid] = (counts[current.pid] || 0) + 1;
-    const el = text.querySelector(`[data-pid="${current.pid}"]`); if (el) bubbleFor(el);
+    drawBubbles();
     try { const fl = JSON.parse(localStorage.getItem(FLAGS) || '{}'); if (!fl.commented) { fl.commented = Date.now(); localStorage.setItem(FLAGS, JSON.stringify(fl)); J().say('Badge earned: Amicus Curiae'); } } catch (err) {}
     render();
   } catch (err) { J().say('Could not post. Please try again'); btn.disabled = false; }
@@ -141,12 +171,12 @@ async function onThreadClick(e) {
     if (b.dataset.a === 'delete') {
       if (!confirm('Delete this comment?')) return;
       await cloud.deleteComment(c); current.list = current.list.filter((x) => x.id !== c.id && x.parent !== c.id);
-      if (!c.hidden) { counts[c.pid] = Math.max(0, (counts[c.pid] || 1) - 1); const el = text.querySelector(`[data-pid="${c.pid}"]`); if (el) bubbleFor(el); }
+      if (!c.hidden) { counts[c.pid] = Math.max(0, (counts[c.pid] || 1) - 1); drawBubbles(); }
       render();
     }
     if (b.dataset.a === 'hide') {
       await cloud.setHidden(c, !c.hidden); c.hidden = !c.hidden;
-      counts[c.pid] = Math.max(0, (counts[c.pid] || 0) + (c.hidden ? -1 : 1)); const el = text.querySelector(`[data-pid="${c.pid}"]`); if (el) bubbleFor(el);
+      counts[c.pid] = Math.max(0, (counts[c.pid] || 0) + (c.hidden ? -1 : 1)); drawBubbles();
       render();
     }
   } catch (err) { J().say('That did not go through. Please try again'); }
@@ -156,10 +186,18 @@ async function onThreadClick(e) {
 if (text && slug) {
   (async () => {
     const mod = await import('./jla-cloud.js'); if (!mod.enabled) return;
-    drawBubbles(); // empty bubbles right away; counts fill in when they arrive
+    cloudReady = true;
     try { counts = await mod.threadCounts(slug); } catch (e) { counts = {}; }
     drawBubbles();
     if (local.me()) ensureCloud(); // signed-in readers: get ready to post
   })();
-  text.addEventListener('click', (e) => { const b = e.target.closest('.pc-bubble'); if (!b) return; e.preventDefault(); openThread(b.parentElement.dataset.pid); });
+  text.addEventListener('click', (e) => {
+    const b = e.target.closest('.pc-bubble'); if (b) { e.preventDefault(); return openThread(b.parentElement.dataset.pid); }
+    // a plain tap on a paragraph (not a link, footnote, highlight or a text selection) offers 'Comment'
+    if (e.target.closest('a, sup, mark, button, .pc-add')) return;
+    const sel = getSelection(); if (sel && !sel.isCollapsed) return;
+    const el = e.target.closest('p[data-pid], li[data-pid], blockquote[data-pid]'); if (el && cloudReady) offerComment(el);
+  });
+  document.addEventListener('jla:comment', (e) => { if (e.detail && e.detail.pid) openThread(e.detail.pid); });
+  document.addEventListener('click', (e) => { if (e.target.closest('[data-dock="discussion"]')) openDiscussion(); });
 }

@@ -7,7 +7,7 @@ const dataEl = document.getElementById('share-data');
 const slug = dataEl ? JSON.parse(dataEl.textContent).slug : null;
 const root = document.documentElement;
 const J = () => window.JLA || { say() {}, Sheet: { open() {}, close() {} } }; // from site.js
-const bar = document.querySelector('.read-tools');
+
 
 /* ---------- display settings ---------- */
 const PREFS = 'jla:prefs';
@@ -49,7 +49,6 @@ function openSettings() {
       savePrefs({ [b.dataset.pref]: v });
       node.querySelectorAll(`[data-pref="${b.dataset.pref}"]`).forEach((x) => x.setAttribute('aria-pressed', x === b));
     }
-    if (e.target.closest('[data-focus-on]')) { J().Sheet.close(); focus(true); }
   });
   J().Sheet.open({ title: 'Display', node });
 }
@@ -71,7 +70,7 @@ addEventListener('keydown', (e) => { if (e.key === 'Escape' && root.classList.co
 const synth = window.speechSynthesis;
 let player, queue = [], qi = 0, speaking = false, rate = 1;
 const paraEls = () => [...text.querySelectorAll('[data-pid]')];
-const cleanText = (el) => { const c = el.cloneNode(true); c.querySelectorAll('sup, .footnote-ref, .pc-bubble').forEach((x) => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
+const cleanText = (el) => { const c = el.cloneNode(true); c.querySelectorAll('sup, .footnote-ref, .pc-bubble, .pc-add').forEach((x) => x.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); };
 const sentences = (t) => t.match(/[^.!?]+[.!?]+["”’)]*\s*|[^.!?]+$/g) || [t]; // short pieces: some voices stop after ~15 s
 function voice() {
   const vs = synth.getVoices(); return vs.find((v) => /en-PH/i.test(v.lang)) || vs.find((v) => /^en/i.test(v.lang) && /Google|Natural|Samantha|Daniel/i.test(v.name)) || vs.find((v) => /^en/i.test(v.lang));
@@ -89,24 +88,27 @@ function speakPara(i) {
   });
   updatePlayer();
 }
+// while listening, the reading dock turns into the player (its .dk-player row)
+const dock = document.querySelector('.dock');
 function startListen() {
   if (!player) buildPlayer();
-  player.hidden = false; speaking = true;
+  player.hidden = false; speaking = true; if (dock) dock.classList.add('is-playing');
   // start from the first paragraph on screen
   const els = paraEls(); const i = Math.max(0, els.findIndex((x) => x.getBoundingClientRect().bottom > 80));
   speakPara(i);
 }
 function stopListen() {
   speaking = false; synth.cancel(); paraEls().forEach((x) => x.classList.remove('speaking'));
-  if (player) player.hidden = true;
+  if (player) player.hidden = true; if (dock) dock.classList.remove('is-playing');
 }
 function buildPlayer() {
-  player = document.createElement('div'); player.className = 'listen-bar'; player.setAttribute('role', 'region'); player.setAttribute('aria-label', 'Listen');
-  player.innerHTML = `<button type="button" data-l="prev" aria-label="Previous paragraph">⏮</button>
-    <button type="button" data-l="play" aria-label="Pause">❚❚</button>
-    <button type="button" data-l="next" aria-label="Next paragraph">⏭</button>
-    <button type="button" data-l="rate" aria-label="Speed">1×</button>
-    <button type="button" data-l="close" aria-label="Stop listening">✕</button>`;
+  player = dock && dock.querySelector('.dk-player');
+  if (!player) {
+    player = document.createElement('div'); player.className = 'dk-player'; player.setAttribute('role', 'group'); player.setAttribute('aria-label', 'Listen');
+    player.innerHTML = `<button type="button" data-l="prev" aria-label="Previous paragraph">⏮</button><button type="button" data-l="play" aria-label="Pause">❚❚</button>
+      <button type="button" data-l="next" aria-label="Next paragraph">⏭</button><button type="button" data-l="rate" aria-label="Speed">1×</button><button type="button" data-l="close" aria-label="Stop listening">✕</button>`;
+    document.body.append(player);
+  }
   player.addEventListener('click', (e) => {
     const b = e.target.closest('[data-l]'); if (!b) return;
     const a = b.dataset.l;
@@ -116,7 +118,6 @@ function buildPlayer() {
     if (a === 'rate') { const rs = [0.8, 1, 1.2, 1.5]; rate = rs[(rs.indexOf(rate) + 1) % rs.length]; b.textContent = rate + '×'; if (speaking) speakPara(qi); }
     if (a === 'close') stopListen();
   });
-  document.body.append(player);
 }
 function updatePlayer() { if (!player) return; const p = player.querySelector('[data-l=play]'); p.textContent = speaking ? '❚❚' : '▶'; p.setAttribute('aria-label', speaking ? 'Pause' : 'Play'); }
 addEventListener('pagehide', () => synth && synth.cancel());
@@ -138,7 +139,7 @@ let cloud = null, marks = [];
 // wrap the highlighted words inside paragraph `pid`, matching text with footnote numbers left out
 function paint(h) {
   const el = text.querySelector(`[data-pid="${h.pid}"]`); if (!el) return;
-  const nodes = []; const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement.closest('sup, .footnote-ref, .pc-bubble') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
+  const nodes = []; const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, { acceptNode: (n) => n.parentElement.closest('sup, .footnote-ref, .pc-bubble, .pc-add') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT });
   let full = '', n; while ((n = walk.nextNode())) { nodes.push([n, full.length]); full += n.data; }
   const norm = (s) => s.replace(/\s+/g, ' ');
   // map positions in the whitespace-collapsed text back to the raw text
@@ -189,16 +190,15 @@ function editNote(h, isNew) {
 
 /* ---------- start ---------- */
 if (text && slug) {
-  if (bar) {
-    bar.hidden = false;
-    bar.addEventListener('click', (e) => {
-      const b = e.target.closest('[data-tool]'); if (!b) return;
-      if (b.dataset.tool === 'display') openSettings();
-      if (b.dataset.tool === 'focus') focus(!root.classList.contains('focus-mode'));
-      if (b.dataset.tool === 'listen') (speaking ? stopListen : startListen)();
-    });
-    if (!synth || !window.SpeechSynthesisUtterance) bar.querySelector('[data-tool=listen]').hidden = true;
-  }
+  // the reading dock: Display and Listen (Focus is in Display and in More)
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-dock]'); if (!b) return;
+    if (b.dataset.dock === 'display') openSettings();
+    if (b.dataset.dock === 'listen') (speaking ? stopListen : startListen)();
+  });
+  document.addEventListener('jla:focus', () => focus(true));
+  const listenBtn = document.querySelector('[data-dock="listen"]');
+  if (listenBtn) listenBtn.hidden = !(synth && window.SpeechSynthesisUtterance);
   setTimeout(offerResume, 600); // after reader.js has numbered the paragraphs
   document.addEventListener('jla:highlight', onHighlight);
   text.addEventListener('click', (e) => {

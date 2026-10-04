@@ -51,29 +51,32 @@ if (text && slug) {
   const read = new Set(rec.read || []);
   paras.forEach((p) => { if (read.has(p.id)) p.el.classList.add('is-read'); });
 
-  /* ---------- the little "% read" pill ---------- */
-  const pill = document.createElement('button');
-  pill.type = 'button'; pill.className = 'read-pill'; pill.setAttribute('aria-live', 'polite');
-  pill.innerHTML = '<span class="rp-ring"><svg viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="15.5"/><circle class="rp-on" cx="18" cy="18" r="15.5"/></svg></span><span class="rp-txt"></span>';
-  const tip = document.createElement('div'); tip.className = 'read-tip'; tip.hidden = true;
-  tip.innerHTML = '<b>How reading is counted</b><p>A paragraph counts once it has been on your screen long enough to read it. Skimming or jumping to the end doesn\'t count. Finish 90% and reach the end to complete the article.</p><p class="rt-acc"></p>';
-  document.body.append(pill, tip);
-  pill.addEventListener('click', () => { tip.hidden = !tip.hidden; });
-  document.addEventListener('click', (e) => { if (!tip.hidden && !e.target.closest('.read-tip, .read-pill')) tip.hidden = true; });
-  const accLine = () => {
+  /* ---------- progress shows in the reading dock: a ring and "34%" (tap it for how reading is counted) ---------- */
+  const dockBtn = document.querySelector('[data-dock="progress"]');
+  const tipHtml = () => {
     const me = local.me();
-    tip.querySelector('.rt-acc').innerHTML = me ? `Saved to your account. <a href="/account/">My library →</a>` : `Saved in this browser. <a href="/account/">Sign in</a> to keep it, earn badges, and see your stats.`;
+    return `<p>A paragraph counts once it has been on your screen long enough to read it. Skimming or jumping to the end doesn't count. Read 90% and reach the end to finish the article.</p>
+      <p class="off">${me ? 'Saved to your account. <a href="/account/">My library →</a>' : 'Saved in this browser. <a href="/account/">Sign in</a> to keep it, earn badges, and see your stats.'}</p>`;
   };
-  accLine();
+  const accLine = () => {};
+  if (dockBtn) dockBtn.addEventListener('click', () => {
+    const J = window.JLA; if (!J) return;
+    const pct = rec.done ? 100 : pctNow();
+    J.Sheet.open({ title: rec.done ? 'You have read this article' : `${pct}% read · ${minsLeft()} min left`, html: tipHtml() });
+  });
 
   const pctNow = () => Math.round(100 * paras.filter((p) => read.has(p.id)).reduce((n, p) => n + p.words, 0) / totalWords);
   const minsLeft = () => Math.max(0, Math.ceil(paras.filter((p) => !read.has(p.id)).reduce((n, p) => n + p.words, 0) / 230));
   const lastId = paras[paras.length - 1].id;
   function render() {
     const pct = rec.done ? 100 : pctNow();
-    pill.querySelector('.rp-on').style.strokeDasharray = `${(pct / 100) * 97.4} 97.4`;
-    pill.querySelector('.rp-txt').textContent = rec.done ? 'Read ✓' : pct ? `${pct}% · ${minsLeft()} min left` : `${minsLeft()} min read`;
-    pill.classList.toggle('is-done', !!rec.done);
+    if (dockBtn) {
+      dockBtn.querySelector('.on').style.strokeDasharray = `${(pct / 100) * 88} 88`;
+      dockBtn.querySelector('.dk-pct').textContent = rec.done ? 'Read ✓' : pct ? `${pct}%` : `${minsLeft()} min`;
+      dockBtn.classList.toggle('is-done', !!rec.done);
+      dockBtn.setAttribute('aria-label', rec.done ? 'Article read' : `${pct}% read, ${minsLeft()} minutes left`);
+    }
+    document.dispatchEvent(new CustomEvent('jla:progress', { detail: { pct, minsLeft: minsLeft(), done: !!rec.done } }));
   }
   render();
 

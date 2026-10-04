@@ -170,6 +170,21 @@ document.addEventListener('click', (e) => {
   Sheet.open({ title: sheetSections[t.dataset.sheet], node: sec, closeHook: () => { marker.replaceWith(sec); if (heading) heading.hidden = false; } });
 });
 
+/* the reading dock: Contents and More open as sheets (Display, Listen, Discuss and progress are handled by the modules) */
+const fromTemplate = (id) => { const t = document.getElementById(id); return t ? t.content.cloneNode(true) : null; };
+document.addEventListener('click', (e) => {
+  const d = e.target.closest('[data-dock]');
+  if (d && d.dataset.dock === 'contents') { const n = fromTemplate('tpl-contents'); if (n) Sheet.open({ title: 'Contents', node: n }); }
+  if (d && d.dataset.dock === 'more') { const n = fromTemplate('tpl-more'); if (n) Sheet.open({ title: 'More', node: n }); }
+  if (e.target.closest('[data-focus-on]')) { Sheet.close(true); document.dispatchEvent(new Event('jla:focus')); }
+  // a link inside a sheet to a place on this page: close the sheet first, then go there
+  const a = e.target.closest('.sheet a[href^="#"]:not([data-sheet])');
+  if (a) {
+    e.preventDefault(); const target = document.getElementById(a.getAttribute('href').slice(1)); Sheet.close(true);
+    if (target) setTimeout(() => { if (target.tagName === 'DETAILS') target.open = true; scrollTo({ top: target.getBoundingClientRect().top + scrollY - 80, behavior: reduceMotion ? 'auto' : 'smooth' }); }, 40);
+  }
+});
+
 /* ---------- citation formats and BibTeX / RIS export ---------- */
 const citebox = $('.citebox');
 if (citebox) {
@@ -344,8 +359,8 @@ if (quoteZone.length && citebox) {
   // a small toolbar over the selection: Highlight and Note (saved by reading-tools.js) and Share quote
   const chip = document.createElement('div');
   chip.className = 'quote-chip'; chip.hidden = true; chip.setAttribute('role', 'toolbar'); chip.setAttribute('aria-label', 'Selected text');
-  chip.innerHTML = '<button type="button" data-q="highlight">Highlight</button><button type="button" data-q="note">Note</button>'
-    + '<button type="button" data-q="share"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7h4v4c0 3-1.5 5-4 6M14 7h4v4c0 3-1.5 5-4 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Share quote</button>';
+  chip.innerHTML = '<button type="button" data-q="highlight">Highlight</button><button type="button" data-q="note">Note</button><button type="button" data-q="comment">Comment</button>'
+    + '<button type="button" data-q="share">Share quote</button>';
   document.body.append(chip);
   const touch = matchMedia('(hover: none)').matches;
   let picked = '', pickedPid = '';
@@ -358,7 +373,8 @@ if (quoteZone.length && citebox) {
   chip.addEventListener('click', (e) => {
     const b = e.target.closest('[data-q]'); if (!b || b.dataset.q === 'share') return;
     chip.hidden = true;
-    document.dispatchEvent(new CustomEvent('jla:highlight', { detail: { text: picked, pid: pickedPid, note: b.dataset.q === 'note' } }));
+    if (b.dataset.q === 'comment') document.dispatchEvent(new CustomEvent('jla:comment', { detail: { pid: pickedPid } }));
+    else document.dispatchEvent(new CustomEvent('jla:highlight', { detail: { text: picked, pid: pickedPid, note: b.dataset.q === 'note' } }));
     getSelection().removeAllRanges();
   });
 
@@ -366,7 +382,7 @@ if (quoteZone.length && citebox) {
     const sel = getSelection(); if (!sel || sel.isCollapsed || !sel.rangeCount) return '';
     const range = sel.getRangeAt(0);
     if (!quoteZone.some((z) => z.contains(range.commonAncestorContainer))) return '';
-    const frag = range.cloneContents(); frag.querySelectorAll('.footnote-ref, sup, .pc-bubble').forEach((x) => x.remove());
+    const frag = range.cloneContents(); frag.querySelectorAll('.footnote-ref, sup, .pc-bubble, .pc-add').forEach((x) => x.remove());
     const div = document.createElement('div'); div.append(frag);
     return div.textContent.replace(/\s+/g, ' ').trim();
   };
@@ -380,7 +396,7 @@ if (quoteZone.length && citebox) {
       if (!canShare && !canMark) { chip.hidden = true; return; }
       picked = t; chip.hidden = false;
       $('[data-q=share]', chip).hidden = !canShare;
-      $$('[data-q=highlight], [data-q=note]', chip).forEach((x) => { x.hidden = !canMark; });
+      $$('[data-q=highlight], [data-q=note], [data-q=comment]', chip).forEach((x) => { x.hidden = !canMark; });
       if (touch) { chip.classList.add('dock'); return; } // docked above the action bar; the native menu covers the selection
       const r = getSelection().getRangeAt(0).getBoundingClientRect();
       chip.classList.remove('dock');

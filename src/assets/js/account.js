@@ -106,6 +106,16 @@ function wireSignIn() {
   const consent = $('#consent'), g = $('[data-google]'), form = $('[data-email]'), msg = $('.acct-signin .msg');
   const sync = () => { g.disabled = !consent.checked; form.querySelector('button').disabled = !consent.checked; };
   consent.addEventListener('change', sync); sync();
+  // inside Messenger / Facebook / Instagram: Google sign-in is blocked, so offer the real browser and the email link
+  const app = cloud.inAppBrowser();
+  if (app) {
+    const box = $('.inapp'); box.hidden = false; box.querySelector('[data-app]').textContent = app;
+    g.closest('.acts').hidden = true;
+    if (/Android/i.test(navigator.userAgent)) {
+      const o = box.querySelector('[data-open-browser]'); o.hidden = false;
+      o.href = `intent://${location.host}${location.pathname}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(location.href)};end`;
+    }
+  }
   g.addEventListener('click', async () => {
     try { await cloud.signInGoogle(); } catch (e) { if (e.code !== 'auth/popup-closed-by-user') msg.textContent = 'Google sign-in did not finish. Try again, or use the email link.'; }
   });

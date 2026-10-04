@@ -14,7 +14,7 @@
   "coming_soon_volumes": [2, 3],
   "firebase": {
     "apiKey": "AIzaSyA6bRA80mS4xUrj8xJ0UHG_mZeufq_D2-I",
-    "authDomain": "wvsu-jla.firebaseapp.com",
+    "authDomain": "journalforlawadvocacy.netlify.app",
     "projectId": "wvsu-jla",
     "messagingSenderId": "137438152268",
     "appId": "1:137438152268:web:bea8dbe9469821b484d6e9"

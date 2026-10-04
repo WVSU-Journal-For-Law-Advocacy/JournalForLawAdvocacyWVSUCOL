@@ -39,8 +39,20 @@ export const user = () => current;
 /* ---------- signing in ---------- */
 export async function signInGoogle() {
   const s = await load(); const p = new s.A.GoogleAuthProvider();
-  return s.A.signInWithPopup(s.auth, p);
+  try { return await s.A.signInWithPopup(s.auth, p); }
+  catch (e) {
+    // some phone browsers block the pop-up: go to Google and come back instead (works now that auth runs on our domain)
+    if (['auth/popup-blocked', 'auth/operation-not-supported-in-this-environment', 'auth/cancelled-popup-request'].includes(e.code)) return s.A.signInWithRedirect(s.auth, p);
+    throw e;
+  }
 }
+// Messenger, Facebook, Instagram and other in-app browsers: Google does not allow signing in inside them
+export const inAppBrowser = () => {
+  const ua = navigator.userAgent || '';
+  if (/Orca|MessengerForiOS|MessengerLite/i.test(ua)) return 'Messenger';
+  if (/FBAN|FBAV|FB_IAB|FBIOS|Messenger|Instagram|Line\/|MicroMessenger|TikTok|Snapchat|Twitter/i.test(ua)) return (ua.match(/Messenger|Instagram|Line|MicroMessenger|TikTok|Snapchat|Twitter/i) || ['Facebook'])[0].replace('MicroMessenger', 'WeChat');
+  return '';
+};
 export async function sendEmailLink(email, returnTo) {
   const s = await load();
   await s.A.sendSignInLinkToEmail(s.auth, email, { url: returnTo, handleCodeInApp: true });

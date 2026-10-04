@@ -30,3 +30,17 @@
   [headers.values]
     Cache-Control = "no-cache"
     X-Robots-Tag = "noindex"
+
+# Reader sign-in runs on the site's own domain: Firebase's auth pages are proxied here,
+# so browsers that partition storage between sites (Safari, in-app browsers) don't lose the sign-in state.
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://wvsu-jla.firebaseapp.com/__/auth/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/__/firebase/*"
+  to = "https://wvsu-jla.firebaseapp.com/__/firebase/:splat"
+  status = 200
+  force = true

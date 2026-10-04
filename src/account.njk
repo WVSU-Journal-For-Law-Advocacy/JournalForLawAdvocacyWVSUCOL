@@ -14,6 +14,11 @@ searchExclude: true
 
   {#- signed out -#}
   <div class="acct-signin card-box" data-when="out" hidden>
+    <div class="inapp" hidden>
+      <p><b>You're reading inside <span data-app>an app</span>.</b> Google doesn't allow signing in here. Open this page in your phone's browser, or use the email link below.</p>
+      <p class="acts"><a class="btn sm" data-open-browser hidden>Open in Chrome</a><button class="btn sm alt" type="button" data-copy-link>Copy link</button></p>
+      <p class="off inapp-how">Or tap <b>⋯</b> (top right), then <b>Open in browser</b>.</p>
+    </div>
     <h2>Sign in to keep your reading</h2>
     <p class="off">Track every article you finish, keep a weekly streak, earn badges, and pick up where you left off on any device.</p>
     <label class="consent"><input type="checkbox" id="consent"> I agree to the <a href="/privacy/">privacy notice</a>.</label>

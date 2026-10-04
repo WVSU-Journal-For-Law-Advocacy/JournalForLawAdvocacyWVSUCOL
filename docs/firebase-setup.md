@@ -19,6 +19,7 @@ About 10–15 minutes. Do it from the **journal's own Google account** so future
 3. **Settings → Authorized domains** → **Add domain**:
    - `journalforlawadvocacy.netlify.app`
    - `feature-accounts--journalforlawadvocacy.netlify.app` (the test copy of the site)
+4. **Sign-in on the site's own domain** (needed because `authDomain` is `journalforlawadvocacy.netlify.app`, proxied to Firebase in `netlify.toml`): in Google Cloud Console → APIs & Services → Credentials → *OAuth 2.0 Client IDs* → "Web client (auto created by Google Service)", add the Authorized redirect URI `https://journalforlawadvocacy.netlify.app/__/auth/handler` and Save.
    - your custom domain later, if the journal gets one.
 
 ## 3. Create the database

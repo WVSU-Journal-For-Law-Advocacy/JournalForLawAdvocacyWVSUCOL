@@ -955,3 +955,7 @@ body.has-actionbar{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
   font:600 .72em/1.2 var(--caps);letter-spacing:.08em;text-transform:lowercase;font-variant:small-caps;text-indent:0;animation:qIn .2s var(--ease)}
 .pc-add svg{width:1.1em;height:1.1em}
 @media print{.pc-add{display:none}}
+.inapp{text-align:left;background:color-mix(in srgb,var(--gold-3) 18%,var(--card));border:1px solid var(--gold-2);padding:var(--s4);margin-bottom:var(--s4);font-size:.95rem}
+.inapp p{margin:0 0 .6rem}
+.inapp .acts{justify-content:flex-start}
+.inapp-how{margin:0;font-size:.85rem}

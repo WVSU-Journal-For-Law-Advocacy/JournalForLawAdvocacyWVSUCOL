@@ -3,19 +3,19 @@
    installed app (html.is-app, set in base.njk; preview in a browser with ?app=1).
    The website itself is unchanged.
    ========================================================================== */
-.launch,.app-home,.app-tabbar,.app-back,.app-title{display:none}
+.launch-screen,.app-home,.app-tabbar,.app-back,.app-title{display:none}
 
 /* ---------- 1. Opening animation ---------- */
 /* continues the phone's own splash (deep plum, the seal in the middle): a gold ring draws around the seal,
    light passes over it, the name sets in below, then the whole screen lifts away */
 html.launching body{overflow:hidden}
-html.launching .launch{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;
+html.launching .launch-screen{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:env(safe-area-inset-top) 1.5rem env(safe-area-inset-bottom);text-align:center;color:#F7F3EA;cursor:default;
   background:radial-gradient(130% 75% at 50% 40%,#4F2A6B 0%,#2B1438 48%,#170A20 100%);
   transition:opacity .7s cubic-bezier(.4,0,.2,1),transform .9s cubic-bezier(.7,0,.2,1),filter .7s}
-html.launching .launch::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+html.launching .launch-screen::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
   background:repeating-radial-gradient(circle at 50% 40%,transparent 0 2px,rgba(255,255,255,.012) 2px 3px)}
-html.launched .launch{opacity:0;transform:scale(1.08);filter:blur(8px);pointer-events:none}
+html.launched .launch-screen{opacity:0;transform:scale(1.08);filter:blur(8px);pointer-events:none}
 .ln-mark{position:relative;width:132px;height:132px;animation:ln-lift 1s .55s cubic-bezier(.3,.7,.1,1) both}
 .ln-mark img{position:absolute;inset:6px;width:120px;height:120px;border-radius:50%;filter:drop-shadow(0 10px 28px rgba(0,0,0,.45));
   animation:ln-seal 1s cubic-bezier(.2,.7,.2,1) both}
@@ -228,9 +228,32 @@ html.is-app .app-home>*:nth-child(4){animation-delay:.15s}html.is-app .app-home>
 :root[data-theme=dark] .vol-hero{box-shadow:0 22px 50px rgba(0,0,0,.5)}
 :root[data-theme=dark] .cont-card{box-shadow:none}
 
-@media (prefers-reduced-motion:reduce){html.launching .launch{display:none}}
+@media (prefers-reduced-motion:reduce){html.launching .launch-screen{display:none}}
 .app-home [hidden]{display:none!important}
 .cc-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html.is-app .app-home section{padding:0;border:0;background:none}
 html.is-app body:not(.has-actionbar) #bar{display:none}
 .area-tile{padding-right:2.1rem}
+
+/* ---------- Explore and the article screen, as a reading app ---------- */
+html.is-app .entry{display:grid;grid-template-columns:76px minmax(0,1fr);grid-template-rows:auto 1fr;gap:.2rem 1rem;padding:var(--s4) 0;text-align:left}
+html.is-app .entry-cover{display:block;grid-row:1/3;align-self:start}
+html.is-app .entry-cover .cover{padding:.45rem .4rem .4rem .6rem;border-radius:3px 7px 7px 3px}
+html.is-app .entry-cover .cv-title{font-size:.6rem;-webkit-line-clamp:5}
+html.is-app .entry .tag{margin:0;font-size:.82rem}
+html.is-app .entry .tag small{display:inline;margin:0 0 0 .4rem;font-size:.8rem}
+html.is-app .entry .tag small br{display:none}
+html.is-app .entry h3{font-size:1.18rem;line-height:1.2}
+html.is-app .entry .by{margin:.25rem 0 0;font-size:.88rem}
+html.is-app .entry>div>p:last-child{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin:.35rem 0 0;font-size:.88rem;max-width:none}
+html.is-app .filters{position:sticky;top:calc(var(--appbar) + env(safe-area-inset-top));z-index:20;margin-inline:calc(-1 * var(--gutter));padding:.5rem var(--gutter);background:color-mix(in srgb,var(--paper) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+html.is-app .search{border-radius:12px}
+
+html.is-app .art-cover{display:block;width:150px;margin:var(--s2) auto var(--s5);perspective:900px}
+html.is-app .art-cover .cover{box-shadow:14px 18px 36px rgba(28,20,36,.3),2px 3px 6px rgba(28,20,36,.15);animation:vh-open .9s .05s cubic-bezier(.2,.7,.2,1) both}
+html.is-app .art-cover .cv-title{font-size:1.05rem}
+html.is-app .art-cta{display:flex;justify-content:center;gap:.6rem;margin:var(--s5) 0 0}
+html.is-app .art-cta .btn{min-width:9rem}
+.shelf-book{flex:none;width:132px;scroll-snap-align:start}
+html.is-app .entry .tag-sep br{display:none}
+html.is-app .entry .tag-sep::before{content:" · "}

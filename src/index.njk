@@ -53,13 +53,9 @@ layout: layouts/base.njk
   <section class="ah-sec">
     <div class="ah-row"><h2 class="ah-h">The archive</h2><a href="/archive/">All volumes</a></div>
     <div class="shelf vol-shelf">
-      {%- for i in collections.issues %}
-      {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
-      <a class="vol-card" href="{{ i.url }}">
-        <span class="vc-num">{{ i.data.volume | roman }}</span>
-        <span class="vc-t">{{ i.data.title }}</span>
-        <span class="vc-y">AY {{ i.data.academic_year }} · {{ n }} {{ "piece" if n == 1 else "pieces" }}</span>
-      </a>
+      {%- for v in collections.issues %}
+      {%- set n = (collections.articles | inIssue(v.data.volume, v.data.issue)).length %}
+      <a class="book-item shelf-book" href="{{ v.url }}">{%- include "vol-cover.njk" %}<span class="bi-title">{{ v.data.title }}</span><span class="bi-meta">AY {{ v.data.academic_year }} · {{ n }} pieces</span></a>
       {%- endfor %}
     </div>
   </section>
@@ -110,15 +106,10 @@ layout: layouts/base.njk
   <div class="orn" aria-hidden="true"><span>❦</span></div>
   {%- endif %}
 
-  <div class="toc">
-    <p class="meta">Contents</p>
-    <ol>
-      {%- for a in contents.slice(0, 10) %}
-      <li><a href="{{ a.url }}"><span class="tt">{{ a.data.title }}<small>{{ a.data.author }}</small></span><span class="dots"></span><span class="pg">{{ a.data.first_page }}</span></a></li>
-      {%- endfor %}
-    </ol>
+  <div class="ah-row web-row"><h3 class="shelf-h">In this volume</h3><a href="{{ cur.url }}#contents">All {{ contents.length }} pieces</a></div>
+  <div class="shelf web-shelf">
+    {%- for a in contents %}{% include "cover.njk" %}{% endfor %}
   </div>
-  {%- if contents.length > 10 %}<p class="more"><a href="{{ cur.url }}">All {{ contents.length }} pieces in {{ cur.data.title }} →</a></p>{% endif %}
 </div></section>
 {%- endif %}
 

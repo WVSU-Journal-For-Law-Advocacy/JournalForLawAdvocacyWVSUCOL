@@ -1232,3 +1232,83 @@ html.app-installed .get-app,html.app-installed .am-app,html.is-app .get-app,html
 .si-spin{display:block;width:34px;height:34px;margin:.8rem auto 1rem;border-radius:50%;border:2px solid var(--rule);border-top-color:var(--gold);animation:si-spin .8s linear infinite}
 @keyframes si-spin{to{transform:rotate(360deg)}}
 .si-local{margin:var(--s4) 0 0;font-size:.88rem;color:var(--muted)}
+
+/* ---------- Bound volumes: the archive shelf and the volume page ---------- */
+.vol-book{container-type:inline-size;padding:9% 8% 8% 11%;align-items:flex-start}
+.vol-book .cv-top{font-size:6.2cqi}
+.vb-num{margin-top:auto;font:600 31cqi/1 var(--display);color:#E2C67E;letter-spacing:.01em;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.vb-label{margin-top:.25em;font:600 7.4cqi/1 var(--caps);letter-spacing:.2em;text-transform:lowercase;font-variant:small-caps;color:rgba(247,243,234,.85)}
+.vb-theme{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin:.7em 0 auto;font:italic 600 8.6cqi/1.18 var(--display);color:rgba(247,243,234,.92)}
+.vol-book .cv-foot{font-size:5.6cqi}
+.vol-book.is-soon{filter:grayscale(.8);opacity:.6}
+
+.bookshelf{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(42vw,170px),1fr));gap:var(--s6) var(--s5);max-width:60rem;margin:0 auto;padding-top:var(--s3)}
+.book-item{position:relative;display:flex;flex-direction:column;gap:.3rem;color:var(--ink);text-decoration:none;perspective:900px}
+.book-item .cover{transform-origin:left center;transition:transform .45s var(--ease),box-shadow .45s var(--ease)}
+a.book-item:hover .cover,a.book-item:focus-visible .cover{transform:translateY(-6px) rotateY(-9deg);box-shadow:14px 18px 34px rgba(28,20,36,.28),0 1px 1px rgba(0,0,0,.12)}
+.bi-badge{position:absolute;top:-.55rem;right:-.4rem;z-index:2;padding:.2rem .6rem;border-radius:999px;background:var(--gold);color:#1C1424;font:600 .72rem/1 var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.bi-title{margin-top:.55rem;font:600 1.15rem/1.15 var(--display)}
+.bi-meta{font-size:.85rem;color:var(--muted)}
+
+.vol-head{padding:var(--s6) 0;border-bottom:1px solid var(--rule);
+  background:radial-gradient(80% 60% at 50% 0%,color-mix(in srgb,var(--gold-3) 24%,transparent),transparent 72%)}
+.vol-head .wrap{display:grid;justify-items:center;gap:var(--s5);max-width:62rem;text-align:center}
+.vh-book{width:min(200px,54vw);perspective:1000px}
+.vh-book .cover{transform:rotateY(-12deg) rotateX(2deg);transform-origin:left center;
+  box-shadow:18px 24px 44px rgba(28,20,36,.32),2px 3px 6px rgba(28,20,36,.18);animation:vh-open 1s .1s cubic-bezier(.2,.7,.2,1) both}
+@keyframes vh-open{from{transform:rotateY(-40deg) translateX(-8px);opacity:0}}
+.vol-head .crumb{margin:0 0 .5rem;font-size:1rem}
+.vol-head .crumb a{color:var(--gold)}
+.vh-kicker{margin:0;font:600 .95rem var(--caps);letter-spacing:.14em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+.vh-kicker b{color:var(--plum)}
+.vol-head h1{margin:.35rem 0 0;font-size:clamp(2.5rem,8vw,3.8rem);line-height:1}
+.vh-theme-line{max-width:34rem;margin:.7rem auto 0;font:italic 500 1.28rem/1.35 var(--display);color:var(--ink-2)}
+.vh-stats{display:grid;grid-template-columns:repeat(2,minmax(0,8rem));justify-content:center;gap:var(--s4) var(--s5);margin:var(--s5) 0 0}
+.vh-stats div{display:flex;flex-direction:column-reverse;align-items:center;gap:.25rem}
+.vh-stats dt{font:600 .78rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+.vh-stats dd{margin:0;font:600 2.2rem/1 var(--display);color:var(--ink)}
+.vh-stats dd.sm{font-size:1.1rem;line-height:2.2rem}
+.vh-btns{margin-top:var(--s5)}
+@media (min-width:600px){.vh-stats{grid-template-columns:repeat(4,auto);gap:0 2rem}}
+@media (min-width:860px){
+  .vol-head{padding:var(--s7) 0}
+  .vol-head .wrap{grid-template-columns:250px minmax(0,1fr);justify-items:start;align-items:center;gap:var(--s7);text-align:left}
+  .vh-book{width:250px}
+  .vh-theme-line{margin-left:0}
+  .vh-stats{justify-content:start}.vh-stats div{align-items:flex-start}
+  .vh-btns{justify-content:flex-start}
+}
+/* the launch kit: a quiet, folded section for the board and authors */
+section.launch{padding:var(--s5) 0 var(--s6)}
+.kit{max-width:46rem;margin:0 auto;padding:0 1.1rem;border:1px solid var(--rule);border-radius:14px;background:var(--card)}
+.kit>summary{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:.1rem 1rem;padding:1rem 0;cursor:pointer;list-style:none}
+.kit>summary::-webkit-details-marker{display:none}
+.kit>summary span{grid-column:1;font:600 .78rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.kit>summary b{grid-column:1;font:600 1.25rem/1.2 var(--display)}
+.kit>summary small{grid-column:1;color:var(--muted);font-size:.88rem}
+.kit>summary::after{content:"+";grid-column:2;grid-row:1/4;font-size:1.4rem;color:var(--muted)}
+.kit[open]>summary::after{content:"−"}
+.kit[open]{padding-bottom:1.2rem}
+
+/* home (website): the current volume as a shelf of covers */
+.web-row{max-width:60rem;margin:var(--s5) auto 0}
+.shelf-h{font-size:1.45rem}
+.web-shelf{max-width:calc(60rem + 2 * var(--gutter));margin-inline:auto}
+@media (min-width:900px){
+  .shelf.web-shelf{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s5) var(--s4);overflow:visible;padding-inline:0;max-width:60rem;margin-inline:auto}
+  .web-shelf .cover-card{width:auto}
+  .web-shelf .cover-card:nth-child(n+13){display:none}
+  .web-shelf .cover{transition:transform .35s var(--ease),box-shadow .35s var(--ease)}
+  .web-shelf .cover-card:hover .cover{transform:translateY(-5px);box-shadow:0 18px 32px rgba(28,20,36,.28)}
+}
+
+/* app-only parts of shared templates stay hidden on the website */
+.entry-cover,.art-cover,.art-cta{display:none}
+.cover{text-align:left}
+@media (max-width:859px){.vol-head .crumb{display:none}}
+/* authors index: a small portrait or monogram, coloured by the author's latest area of law */
+.authors a{grid-template-columns:40px minmax(0,1fr) auto}
+.authors .av{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;overflow:hidden;color:#F7F3EA;font:600 .95rem/1 var(--display);letter-spacing:.03em;
+  background:linear-gradient(150deg,var(--tone),color-mix(in srgb,var(--tone) 60%,#000));box-shadow:0 0 0 1px color-mix(in srgb,var(--gold) 45%,transparent),0 2px 6px rgba(28,20,36,.15)}
+.authors .av img{width:100%;height:100%;object-fit:cover}
+.authors .peek{grid-column:2/-1}

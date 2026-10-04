@@ -14,7 +14,9 @@ searchExclude: true
   <ul class="authors">
     {%- for p in collections.authors %}
     {%- set latest = p.articles | first %}
+    {%- set prof = p | profileFor(authorProfiles, board) %}
     <li style="--i:{{ loop.index0 }}"><a href="/authors/{{ p.slug }}/">
+      <span class="av" style="--tone:{{ site.area_tones[latest.data.area] or '#4A2466' }}" aria-hidden="true">{% if prof.photo %}<img src="{{ prof.photo }}" alt="" width="40" height="40" loading="lazy">{% else %}{{ p.name | monogram }}{% endif %}</span>
       <span class="nm"><span class="hl">{{ p.name }}</span></span>
       <span class="ct" aria-label="{{ p.articles.length }} {{ 'publication' if p.articles.length == 1 else 'publications' }}">{{ p.articles.length }}</span>
       {%- if latest %}<span class="peek">{{ latest.data.title }}<em>Vol. {{ latest.data.volume }} · {{ latest.data.year }}</em></span>{% endif %}

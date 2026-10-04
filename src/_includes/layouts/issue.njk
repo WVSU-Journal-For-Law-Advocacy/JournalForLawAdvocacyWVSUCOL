@@ -2,16 +2,31 @@
 layout: layouts/base.njk
 ---
 {%- set contents = collections.articles | inIssue(volume, issue) %}
-<header class="pagehead"><div class="wrap">
-  <p class="crumb"><a href="/archive/">Archive</a></p>
-  <h1>{{ title }}{% if theme %}: {{ theme }}{% endif %}</h1>
-  <p>Academic Year {{ academic_year }}{% if launched %} · Launched {{ launched | readableDate }}{% endif %}{% if status == "forthcoming" %} · Forthcoming{% elif status == "current" %} · Current volume{% endif %}</p>
+{%- set people = [] %}{%- set areas = [] %}
+{%- for a in contents %}{% for au in a.data.author | splitAuthors %}{% if not (au in people) %}{% set _ = people.push(au) %}{% endif %}{% endfor %}{% if not (a.data.area in areas) %}{% set _ = areas.push(a.data.area) %}{% endif %}{% endfor %}
+{%- set v = { data: { volume: volume, theme: theme, academic_year: academic_year } } %}
+<header class="vol-head"><div class="wrap">
+  <div class="vh-book">{%- include "vol-cover.njk" %}</div>
+  <div class="vh-text">
+    <p class="crumb"><a href="/archive/">Archive</a></p>
+    <p class="vh-kicker">Academic Year {{ academic_year }}{% if status == "current" %} · <b>Current</b>{% elif status == "forthcoming" %} · <b>Forthcoming</b>{% endif %}</p>
+    <h1>{{ title }}</h1>
+    {%- if theme %}<p class="vh-theme-line">{{ theme }}</p>{% endif %}
+    {%- if contents.length %}
+    <dl class="vh-stats">
+      <div><dt>Pieces</dt><dd>{{ contents.length }}</dd></div>
+      <div><dt>Authors</dt><dd>{{ people.length }}</dd></div>
+      <div><dt>Areas of law</dt><dd>{{ areas.length }}</dd></div>
+      {%- if launched %}<div><dt>Launched</dt><dd class="sm">{{ launched | readableDate }}</dd></div>{% endif %}
+    </dl>
+    {%- endif %}
+    <p class="btns vh-btns">{%- if contents.length %}<a class="btn" href="#contents">Contents</a>{% endif %}{%- if pdf %}<a class="btn alt" href="{{ pdf }}">Full volume (PDF)</a>{% endif %}</p>
+  </div>
 </div></header>
 
 <section><div class="wrap">
-  {%- if pdf %}<p class="btns" style="margin:0 0 2rem"><a class="btn" href="{{ pdf }}">Read the full volume (PDF)</a></p>{% endif %}
   {%- if contents.length %}
-  <div class="toc" style="max-width:46rem">
+  <div class="toc" id="contents" style="max-width:46rem">
     <h2>Contents</h2>
     <p class="meta">{{ contents.length }} {{ "item" if contents.length == 1 else "items" }}</p>
     <ol>
@@ -28,8 +43,9 @@ layout: layouts/base.njk
 {%- if contents.length %}
 {%- set nContents = ((contents.length + 4) / 5) | int %}
 {%- set nSlides = 2 + (nContents if nContents < 17 else 17) %}
-<section class="wash launch" id="launch-kit" data-volume="{{ volume }}"><div class="wrap">
-  <h2 class="title">Launch kit</h2>
+<section class="launch" id="launch-kit" data-volume="{{ volume }}"><div class="wrap">
+  <details class="kit">
+  <summary><span>For the board and authors</span><b>Launch kit</b><small>Instagram carousel and caption</small></summary>
   <p class="sub">A ready-made carousel for Instagram and Facebook: {{ nSlides }} slides announcing {{ title }}.</p>
   <div class="slides" role="list">
     {%- for k in range(1, nSlides + 1) %}
@@ -47,6 +63,7 @@ layout: layouts/base.njk
   <p class="caption-box" id="launch-caption" style="max-width:36rem;margin-inline:auto">{{ title }} of the {{ site.title }} is now online. {{ contents.length }} pieces of scholarship from the {{ site.institution }}, free to read, download, and cite.
 {{ site.url }}{{ page.url }}
 #JournalForLawAdvocacy #WVSULaw</p>
+  </details>
 </div></section>
 {%- endif %}
 

@@ -1,0 +1,9 @@
+{#- A volume as a bound book: expects `v` (an issue, or a "coming soon" stand-in with v.soon). Colour from site.volume_tones. -#}
+{%- set vn = v.data.volume | string %}
+<span class="cover vol-book{% if v.soon %} is-soon{% endif %}" style="--tone:{{ site.volume_tones[vn] or '#4A2466' }}">
+  <span class="cv-top">WVSU J.L. Advoc.</span>
+  <span class="vb-num">{{ v.data.volume | roman }}</span>
+  <span class="vb-label">Volume {{ v.data.volume }}</span>
+  {%- if v.data.theme %}<span class="vb-theme">{{ v.data.theme.split(":")[0] }}</span>{% endif %}
+  <span class="cv-foot"><i></i>{{ "Coming soon" if v.soon else ("AY " + v.data.academic_year) }}</span>
+</span>

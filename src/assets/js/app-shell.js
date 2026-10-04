@@ -112,3 +112,6 @@ if (home) {
   }).catch(() => {});
 }
 
+
+/* phones have no "/" key */
+const q = document.getElementById('q'); if (q) q.placeholder = 'Search articles';

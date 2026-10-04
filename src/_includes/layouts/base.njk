@@ -89,7 +89,7 @@ try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
 </head>
 {%- set appTabs = ["/", "/articles/", "/search/", "/account/"] %}
 <body{% if isArticle %} class="has-actionbar"{% endif %}{% if page.url in appTabs %} data-app-root{% endif %}>
-<div class="launch" aria-hidden="true">
+<div class="launch-screen" aria-hidden="true">
   <div class="ln-mark">
     <span class="ln-glow"></span>
     <svg class="ln-ring" viewBox="0 0 200 200"><circle cx="100" cy="100" r="96"/><circle class="r2" cx="100" cy="100" r="89"/></svg>
@@ -101,7 +101,7 @@ try{e.viewTransition.types.add(k)}catch(x){}})})();</script>
   <span class="ln-rule"></span>
   <p class="ln-est">Est. MMXXI · {{ site.city | replace(", Philippines", "") }}</p>
 </div>
-<script>(function(){var d=document.documentElement;if(!d.classList.contains("launching"))return;var gone=false,done=function(){if(gone)return;gone=true;d.classList.add("launched");setTimeout(function(){d.classList.remove("launching","launched")},900)};setTimeout(done,2500);document.querySelector("div.launch").addEventListener("click",done)})();</script>
+<script>(function(){var d=document.documentElement;if(!d.classList.contains("launching"))return;var gone=false,done=function(){if(gone)return;gone=true;d.classList.add("launched");setTimeout(function(){d.classList.remove("launching","launched")},900)};setTimeout(done,2500);document.querySelector(".launch-screen").addEventListener("click",done)})();</script>
 <a class="skip" href="#main">Skip to content</a>
 <div id="bar" aria-hidden="true"></div>
 {%- set volumeLinks = [["/archive/", "Every volume"]] %}

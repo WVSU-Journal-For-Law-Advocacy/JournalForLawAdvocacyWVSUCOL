@@ -13,7 +13,12 @@ searchExclude: true
 <section><div class="wrap">
   <ul class="authors">
     {%- for p in collections.authors %}
-    <li><a href="/authors/{{ p.slug }}/">{{ p.name }}</a> <span>{{ p.articles.length }}</span></li>
+    {%- set latest = p.articles | first %}
+    <li style="--i:{{ loop.index0 }}"><a href="/authors/{{ p.slug }}/">
+      <span class="nm"><span class="hl">{{ p.name }}</span></span>
+      <span class="ct" aria-label="{{ p.articles.length }} {{ 'publication' if p.articles.length == 1 else 'publications' }}">{{ p.articles.length }}</span>
+      {%- if latest %}<span class="peek">{{ latest.data.title }}<em>Vol. {{ latest.data.volume }} · {{ latest.data.year }}</em></span>{% endif %}
+    </a></li>
     {%- endfor %}
   </ul>
 </div></section>

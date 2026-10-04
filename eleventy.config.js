@@ -219,6 +219,16 @@ export default function (eleventyConfig) {
     new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
   );
   eleventyConfig.addFilter("isoDate", (d) => new Date(d).toISOString().slice(0, 10));
+  // Top-menu item is "current" when the page is under its URL or any of its sub-links
+  eleventyConfig.addFilter("navActive", (item, url = "") =>
+    [item.url, ...(item.sub || []).map((s) => s[0])].some((u) => url.startsWith(u))
+  );
+  // Archive plates: published issues plus placeholders for volumes not yet online, newest first
+  eleventyConfig.addFilter("withComingSoon", (issues, soon = []) => {
+    const have = new Set(issues.map((i) => num(i.data.volume)));
+    const placeholders = soon.map(num).filter((v) => !have.has(v)).map((v) => ({ soon: true, data: { volume: v, title: `Volume ${v}` } }));
+    return [...issues, ...placeholders].sort((a, b) => num(b.data.volume) - num(a.data.volume));
+  });
   // For posts whose exact day is unknown (date_approx: true)
   eleventyConfig.addFilter("monthYear", (d) =>
     new Date(d).toLocaleDateString("en-PH", { year: "numeric", month: "long", timeZone: "UTC" })
@@ -245,8 +255,10 @@ export default function (eleventyConfig) {
   eleventyConfig.on("eleventy.after", async ({ dir, runMode }) => {
     const site = JSON.parse(fs.readFileSync("src/_data/site.json", "utf8"));
     const byVolume = (v) => shareCardArticles.filter((a) => num(a.volume) === num(v));
+    // Certificates are switched off in site settings until the board approves them
+    const articles = site.certificates ? shareCardArticles : shareCardArticles.map((a) => ({ ...a, authors: [] }));
     await generateShareCards({
-      articles: shareCardArticles, issues: shareCardIssues.map((i) => ({ ...i, articles: byVolume(i.volume) })),
+      articles, issues: shareCardIssues.map((i) => ({ ...i, articles: byVolume(i.volume) })),
       site, outDir: `${dir.output}/og`, onlyMissing: runMode !== "build",
     });
   });

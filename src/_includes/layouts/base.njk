@@ -75,7 +75,16 @@
 <body{% if isArticle %} class="has-actionbar"{% endif %}>
 <a class="skip" href="#main">Skip to content</a>
 <div id="bar" aria-hidden="true"></div>
-{%- set nav = [["/articles/", "Articles"], ["/archive/", "Archive"], ["/authors/", "Authors"], ["/news/", "News"], ["/about/", "About"], ["/board/", "Board"], ["/submit/", "Submit"]] %}
+{%- set volumeLinks = [["/archive/", "Every volume"]] %}
+{%- for i in collections.issues %}{% set _ = volumeLinks.push([i.url, i.data.title + " · AY " + i.data.academic_year]) %}{% endfor %}
+{%- set nav = [
+  { url: "/articles/", label: "Articles", sub: [["/articles/", "All articles"], ["/search/", "Search the journal"]] },
+  { url: "/archive/", label: "Archive", sub: volumeLinks },
+  { url: "/authors/", label: "Authors" },
+  { url: "/news/", label: "News" },
+  { url: "/about/", label: "About", sub: [["/about/", "About the journal"], ["/about/history/", "History"], ["/board/", "Editorial board"], ["/about/numbers/", "By the numbers"], ["/policies/", "Policies"]] },
+  { url: "/submit/", label: "Submit", sub: [["/submit/", "Submission guidelines"], ["/call-for-papers/", "Call for papers"], ["/policies/peer-review/", "How we review"], ["/policies/how-to-cite/", "How to cite"]] }
+] %}
 {%- if site.announcement %}
 <div class="ribbon" id="ribbon" data-key="{{ site.announcement | slugify }}">
   <span>{{ site.announcement }}{% if site.deadline %} Deadline: {{ site.deadline }}.{% endif %} {% if cfp.active %}<a href="/call-for-papers/">See the {{ cfp.kind | lower }} →</a>{% else %}<a href="/submit/">How to submit →</a>{% endif %}</span>
@@ -107,7 +116,15 @@
   <nav class="primary" aria-label="Main">
     <ul>
       {%- for l in nav %}
-      <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
+      <li{% if l.sub %} class="has-sub"{% endif %}><a href="{{ l.url }}"{% if l | navActive(page.url) %} aria-current="page"{% endif %}>{{ l.label }}{% if l.sub %}<svg class="caret" viewBox="0 0 10 6" aria-hidden="true"><path d="M1 1l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>{% endif %}</a>
+        {%- if l.sub %}
+        <ul class="drop">
+          {%- for s in l.sub %}
+          <li><a href="{{ s[0] }}"{% if page.url == s[0] %} aria-current="page"{% endif %}>{{ s[1] }}</a></li>
+          {%- endfor %}
+        </ul>
+        {%- endif %}
+      </li>
       {%- endfor %}
     </ul>
   </nav>
@@ -130,7 +147,15 @@
     <ul>
       <li><a href="/"{% if page.url == "/" %} aria-current="page"{% endif %}>Home</a></li>
       {%- for l in nav %}
-      <li><a href="{{ l[0] }}"{% if page.url.indexOf(l[0]) == 0 %} aria-current="page"{% endif %}>{{ l[1] }}</a></li>
+      <li><a href="{{ l.url }}"{% if l | navActive(page.url) %} aria-current="page"{% endif %}>{{ l.label }}</a>
+        {%- if l.sub %}
+        <ul class="msub">
+          {%- for s in l.sub %}{% if s[0] != l.url %}
+          <li><a href="{{ s[0] }}"{% if page.url == s[0] %} aria-current="page"{% endif %}>{{ s[1] }}</a></li>
+          {%- endif %}{% endfor %}
+        </ul>
+        {%- endif %}
+      </li>
       {%- endfor %}
     </ul>
   </nav>

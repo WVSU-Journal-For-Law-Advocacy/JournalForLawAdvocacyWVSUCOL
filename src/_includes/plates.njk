@@ -1,6 +1,14 @@
-{#- Volume "plates": one card per volume, newest first. -#}
+{#- Volume "plates": one card per volume, newest first. Volumes not yet online (site.coming_soon_volumes) show as "Coming soon". -#}
 <div class="plates">
-  {%- for i in collections.issues %}
+  {%- for i in collections.issues | withComingSoon(site.coming_soon_volumes) %}
+  {%- if i.soon %}
+  <div class="plate soon">
+    <span class="badge">Coming soon</span>
+    <span class="numeral" aria-hidden="true">{{ i.data.volume | roman }}</span>
+    <span class="vol">{{ i.data.title }}</span>
+    <span class="yr">Coming soon to the online archive</span>
+  </div>
+  {%- else %}
   {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
   <a class="plate" href="{{ i.url }}">
     {%- if i.data.status == "current" %}<span class="badge">Current</span>{% elif i.data.status == "forthcoming" %}<span class="badge">Forthcoming</span>{% endif %}
@@ -10,5 +18,6 @@
     {%- if i.data.theme %}<span class="theme">{{ i.data.theme }}</span>{% endif %}
     <span class="count">{{ n }} {{ "piece" if n == 1 else "pieces" }}</span>
   </a>
+  {%- endif %}
   {%- endfor %}
 </div>

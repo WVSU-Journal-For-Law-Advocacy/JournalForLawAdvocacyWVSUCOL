@@ -116,7 +116,7 @@ Read it here: {{ url }}
 #JournalForLawAdvocacy #WVSULaw</p>
     <div class="acts"><button class="btn sm alt" type="button" data-copy="#share-caption" data-copy-msg="Caption copied">Copy caption</button></div>
 
-    {%- set certs = author | certificates(slug) %}
+    {%- set certs = (author | certificates(slug)) if site.certificates else [] %}
     {%- if certs.length %}
     <div class="orn" aria-hidden="true"><span>❦</span></div>
     <h2>Certificate of publication</h2>
@@ -138,8 +138,12 @@ Read it here: {{ url }}
     <div class="orn" aria-hidden="true"><span>❦</span></div>
     <h2>Add it to LinkedIn</h2>
     {%- set li = { volume: volume, year: year, first_page: first_page, slug: slug, url: url } %}
+    {%- if site.certificates %}
     <p class="off">Show it under <em>Licenses &amp; certifications</em> with one click, or list it under <em>Publications</em> with the details below.</p>
     <div class="acts"><a class="btn sm" href="{{ li | linkedinCert(site) }}" target="_blank" rel="noopener">Add certificate to LinkedIn</a></div>
+    {%- else %}
+    <p class="off">List it under <em>Publications</em> on your profile with the details below.</p>
+    {%- endif %}
     <dl class="li-fields">
       <div><dt>Title</dt><dd id="li-title">{{ title }}</dd><button class="chip" type="button" data-copy="#li-title" data-copy-msg="Title copied">Copy</button></div>
       <div><dt>Publisher</dt><dd id="li-pub">{{ site.title }} ({{ site.institution }})</dd><button class="chip" type="button" data-copy="#li-pub" data-copy-msg="Publisher copied">Copy</button></div>

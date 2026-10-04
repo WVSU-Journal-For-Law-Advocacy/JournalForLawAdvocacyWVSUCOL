@@ -246,6 +246,8 @@ collections:
           - { label: Academic year, name: academic_year, widget: string }
           - { label: Announcement banner, name: announcement, widget: string, required: false, hint: "Leave empty to hide the banner." }
           - { label: Submission deadline, name: deadline, widget: string, required: false }
+          - { label: Show certificates of publication, name: certificates, widget: boolean, default: false, required: false, hint: "Off until the board approves the certificates. When on, certificates are generated at build and shown on article and author pages." }
+          - { label: Volumes coming soon, name: coming_soon_volumes, widget: list, field: { label: Volume, name: volume, widget: number, value_type: int }, required: false, hint: "Volume numbers shown as Coming soon in the archive until they are added." }
           - { label: Areas of law, name: areas, widget: list, hint: "Also update the list in the Article form (ask the web admin)." }
           - { label: Kinds of work, name: kinds, widget: list }
           - { label: ISSN (print), name: issn_print, widget: string, required: false, hint: "Shown in the footer and article metadata once assigned." }

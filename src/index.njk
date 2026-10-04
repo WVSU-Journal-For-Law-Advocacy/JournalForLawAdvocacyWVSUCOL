@@ -80,7 +80,6 @@ layout: layouts/base.njk
 
 <div class="web-home">
 <header class="masthead"><div class="wrap">
-  {%- if cur %}{% set v = cur %}<a class="mast-book" href="{{ cur.url }}" aria-label="Open {{ cur.data.title }}">{%- include "vol-cover.njk" %}<span class="mb-cap">The current volume</span></a>{% endif %}
   <img class="seal" src="/assets/img/seal-240.png" width="120" height="120" alt="Seal of the WVSU Journal for Law Advocacy, WVSU College of Law, 2021">
   <h1>{{ site.title }}</h1>
   <p class="est">Est. MMXXI · {{ site.city }}</p>
@@ -107,10 +106,15 @@ layout: layouts/base.njk
   <div class="orn" aria-hidden="true"><span>❦</span></div>
   {%- endif %}
 
-  <div class="ah-row web-row"><h3 class="shelf-h">In this volume</h3><a href="{{ cur.url }}#contents">All {{ contents.length }} pieces</a></div>
-  <div class="shelf web-shelf">
-    {%- for a in contents %}{% include "cover.njk" %}{% endfor %}
+  <div class="toc">
+    <p class="meta">Contents</p>
+    <ol>
+      {%- for a in contents.slice(0, 10) %}
+      <li><a href="{{ a.url }}"><span class="tt">{{ a.data.title }}<small>{{ a.data.author }}</small></span><span class="dots"></span><span class="pg">{{ a.data.first_page }}</span></a></li>
+      {%- endfor %}
+    </ol>
   </div>
+  {%- if contents.length > 10 %}<p class="more"><a href="{{ cur.url }}#contents">All {{ contents.length }} pieces in {{ cur.data.title }} →</a></p>{% endif %}
 </div></section>
 {%- endif %}
 

@@ -1,5 +1,27 @@
-{#- The archive as a shelf of bound volumes, newest first. Volumes not yet online (site.coming_soon_volumes) show as "Coming soon". -#}
-<div class="bookshelf">
+{#- The archive: engraved plates on the website, a shelf of bound volumes in the app. "Coming soon" volumes show too. -#}
+<div class="plates web-only">
+  {%- for i in collections.issues | withComingSoon(site.coming_soon_volumes) %}
+  {%- if i.soon %}
+  <div class="plate soon">
+    <span class="badge">Coming soon</span>
+    <span class="numeral" aria-hidden="true">{{ i.data.volume | roman }}</span>
+    <span class="vol">{{ i.data.title }}</span>
+    <span class="yr">Coming soon to the online archive</span>
+  </div>
+  {%- else %}
+  {%- set n = (collections.articles | inIssue(i.data.volume, i.data.issue)).length %}
+  <a class="plate" href="{{ i.url }}">
+    {%- if i.data.status == "current" %}<span class="badge">Current</span>{% elif i.data.status == "forthcoming" %}<span class="badge">Forthcoming</span>{% endif %}
+    <span class="numeral" aria-hidden="true">{{ i.data.volume | roman }}</span>
+    <span class="vol">{{ i.data.title }}</span>
+    <span class="yr">AY {{ i.data.academic_year }}</span>
+    {%- if i.data.theme %}<span class="theme">{{ i.data.theme }}</span>{% endif %}
+    <span class="count">{{ n }} {{ "piece" if n == 1 else "pieces" }}</span>
+  </a>
+  {%- endif %}
+  {%- endfor %}
+</div>
+<div class="bookshelf app-only">
   {%- for v in collections.issues | withComingSoon(site.coming_soon_volumes) %}
   {%- if v.soon %}
   <div class="book-item is-soon" aria-label="Volume {{ v.data.volume }}, coming soon to the online archive">

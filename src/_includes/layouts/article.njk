@@ -230,7 +230,12 @@ Read it here: {{ url }}
   {%- if related.length %}
   <aside class="related" aria-label="Read next">
     <h2>Read next</h2>
-    <div class="related-shelf">
+    <ul class="web-only">
+      {%- for r in related.slice(0, 3) %}
+      <li><a href="{{ r.url }}">{{ r.data.title }}</a><span>{{ r.data.author }} · Vol. {{ r.data.volume }} ({{ r.data.year }})</span></li>
+      {%- endfor %}
+    </ul>
+    <div class="related-shelf app-only">
       {%- for a in related.slice(0, 3) %}{% include "cover.njk" %}{% endfor %}
     </div>
     <p class="more"><a href="/areas/{{ area | slugify }}/">More on {{ area | lower }} →</a></p>

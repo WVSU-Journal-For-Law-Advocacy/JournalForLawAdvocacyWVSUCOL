@@ -25,7 +25,7 @@ If you sign in, the Journal keeps:
 - your **reading record**: which articles you have opened, which paragraphs you have read, what you have finished, and the weeks you read;
 - the **badges** you have earned;
 - your **highlights and private notes**, which only you can see;
-- if you **claim an author page**: your note and sign-in email go to the editors who review it; once approved, the photo, bio, affiliation and links you add to that author page are **public**;
+- if you **claim an author page**: your note and sign-in email go to the editors who review it (or, if you use a personal invitation link from the board, the editors see the email you signed in with); once verified, your profile photo, bio, and school or office, and the links you add, appear on that author page and are **public**;
 - any **comments** you post on articles, which are **public**: they show your name and a small version of your profile photo. Reports you file on comments are seen only by the editors. If editors hide or delete a comment or mute an account, they keep a short record of it (the action, the comment's text, the name on it, and the reason), seen only by the editors.
 
 We use this only to run your library: to save your progress across devices, show your stats and badges, and suggest what to read next. We do not sell it, use it for advertising, or share it with anyone else.

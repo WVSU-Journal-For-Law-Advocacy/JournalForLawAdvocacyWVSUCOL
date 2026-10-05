@@ -360,6 +360,49 @@ export async function saveAuthorProfile(slug, fields) {
   const clean = Object.fromEntries(Object.entries(fields).filter(([k]) => AUTHOR_FIELDS.includes(k)).map(([k, v]) => [k, String(v || '').trim()]));
   await s.F.updateDoc(s.F.doc(s.db, 'authors', slug), { ...clean, updated: Date.now() });
 }
+// one profile, no duplicates: an author page shows its author's own profile photo, bio, and school or office.
+// Called after the profile changes and whenever My library opens; writes only what differs.
+export async function syncAuthorPages(profile) {
+  const pages = await myAuthorPages(); if (!pages.length || !profile) return 0;
+  const want = { photo: String(profile.photo || ''), bio: String(profile.bio || '').slice(0, 800), affiliation: String(profile.school || '').slice(0, 120) };
+  let n = 0;
+  for (const p of pages) {
+    const diff = Object.fromEntries(Object.entries(want).filter(([k, v]) => (p[k] || '') !== v));
+    if (Object.keys(diff).length) { await saveAuthorProfile(p.slug, diff); n++; }
+  }
+  return n;
+}
+// a personal invitation link from the board: redeemed on the server, it links this account to the author page at once
+export async function redeemInvite(token) { return callFunction('redeem-invite', { token }); }
+
+/* ---------- board outreach: invite past authors to claim their pages, and keep track ---------- */
+const randomToken = () => { const b = new Uint8Array(15); crypto.getRandomValues(b); return [...b].map((x) => 'abcdefghijkmnpqrstuvwxyz23456789'[x % 32]).join(''); };
+export async function outreachState() {
+  const s = await load();
+  const [a, o, i] = await Promise.all([s.F.getDocs(s.F.collection(s.db, 'authors')), s.F.getDocs(s.F.collection(s.db, 'outreach')), s.F.getDocs(s.F.query(s.F.collection(s.db, 'invites'), s.F.where('status', '==', 'open')))]);
+  const authors = {}, outreach = {}, invites = {};
+  a.forEach((d) => { authors[d.id] = d.data(); });
+  o.forEach((d) => { const x = d.data(); outreach[d.id] = { ...x, at: x.at && x.at.toMillis ? x.at.toMillis() : x.at || 0 }; });
+  i.forEach((d) => { const x = d.data(); if (!x.expires || x.expires > Date.now()) invites[x.slug] = { token: d.id, ...x }; });
+  return { authors, outreach, invites };
+}
+// an open invitation for this author (reused if one exists, so a link sent once keeps working)
+export async function inviteFor(slug, authorName) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  const open = await s.F.getDocs(s.F.query(s.F.collection(s.db, 'invites'), s.F.where('slug', '==', slug), s.F.where('status', '==', 'open')));
+  let found = null; open.forEach((d) => { const x = d.data(); if (!found && (!x.expires || x.expires > Date.now())) found = { token: d.id, ...x }; });
+  if (found) return found;
+  const token = randomToken(), inv = { slug, authorName: String(authorName).slice(0, 120), createdBy: u.uid, createdByName: (local.me() && local.me().name) || u.displayName || 'Editor', created: s.F.serverTimestamp(), status: 'open', expires: Date.now() + 90 * 864e5 };
+  await s.F.setDoc(s.F.doc(s.db, 'invites', token), inv);
+  return { token, ...inv };
+}
+export async function markContacted(slug, { channel, audience = '', note = '', token = '' }) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.setDoc(s.F.doc(s.db, 'outreach', slug), { status: 'contacted', channel: String(channel).slice(0, 20), audience: String(audience).slice(0, 20), note: String(note).slice(0, 300), token, by: u.uid,
+    byName: (local.me() && local.me().name) || u.displayName || 'Editor', at: s.F.serverTimestamp() }, { merge: true });
+}
+export async function revokeInvite(token) { const s = await load(); await s.F.updateDoc(s.F.doc(s.db, 'invites', token), { status: 'revoked' }); }
+
 // editors: review claims
 export async function pendingClaims() {
   const s = await load();

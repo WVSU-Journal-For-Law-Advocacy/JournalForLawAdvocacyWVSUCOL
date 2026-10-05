@@ -1,0 +1,81 @@
+---
+layout: layouts/base.njk
+title: Claim your author page
+permalink: /claim/
+description: Claim your author page on the WVSU Journal for Law Advocacy with the personal link the board sent you.
+searchExclude: true
+noindex: true
+eleventyExcludeFromCollections: true
+---
+{#- Where a board invitation lands: sign in with any email, and the author page is verified as yours at once. -#}
+<section class="claim-landing"><div class="wrap">
+  <div class="cl-card" data-claim-card>
+    <img src="/assets/img/seal-240.png" alt="" width="72" height="72">
+    <p class="cl-kicker">{{ site.title }}</p>
+    <h1>Claim your author page</h1>
+    <div data-step="checking"><p class="cl-lede">Checking your link…</p></div>
+
+    <div data-step="signin" hidden>
+      <p class="cl-lede">The Board of Editors has invited you to claim your author page. Sign in with <b>any email you like</b>, or your Google account, and the page will be verified as yours at once.</p>
+      <ul class="cl-perks">
+        <li>Your photo, a short bio, and links such as LinkedIn and ORCID on your author page</li>
+        <li>A public <b>record of publication</b> for each piece, for your CV</li>
+        <li>Readership figures, and an author kit to share your work</li>
+      </ul>
+      <p class="cl-acts"><a class="btn" href="/account/?claim=1">Sign in to continue</a></p>
+      <p class="cl-fine">You'll come straight back here after signing in.</p>
+    </div>
+
+    <div data-step="ready" hidden>
+      <p class="cl-lede">You're signed in as <b data-who></b>. Claim the author page the board set up for you:</p>
+      <p class="cl-acts"><button class="btn" type="button" data-redeem>Claim my author page</button></p>
+      <p class="cl-fine">Not you? <button type="button" class="linkish" data-signout>Sign in with another account</button></p>
+    </div>
+
+    <div data-step="done" hidden>
+      <p class="cl-ok"><span aria-hidden="true">✓</span> Verified</p>
+      <p class="cl-lede">Your author page, <a data-page></a>, is now yours. Add your photo, a short bio, and your links: they appear on your author page automatically.</p>
+      <p class="cl-acts"><a class="btn" href="/account/#settings">Set up my profile</a><a class="btn alt" data-page-btn>See my author page</a></p>
+    </div>
+
+    <div data-step="error" hidden>
+      <p class="cl-lede" data-error></p>
+      <p class="cl-fine">Write to the editors at <a href="mailto:{{ site.email }}">{{ site.email }}</a> and they'll send you a new link.</p>
+    </div>
+  </div>
+</div></section>
+
+<script type="module">
+  const $ = (s) => document.querySelector(s);
+  const step = (name) => document.querySelectorAll('[data-step]').forEach((el) => { el.hidden = el.dataset.step !== name; });
+  const KEY = 'jla:invite';
+  const params = new URLSearchParams(location.search);
+  let token = params.get('t'); try { if (token) localStorage.setItem(KEY, token); else token = localStorage.getItem(KEY); } catch (e) {}
+  const fail = (msg) => { $('[data-error]').textContent = msg; step('error'); };
+  if (!token) fail('This page needs the personal link the board sent you. Open the link from your email or message again.');
+  else {
+    const cloud = await import('/assets/js/jla-cloud.js');
+    // signed in by the email link, which brings them straight back here (even on another device)
+    if (cloud.enabled && await cloud.isEmailLink().catch(() => false)) {
+      try { await cloud.finishEmailLink(async () => prompt('To finish signing in, type the email address the link was sent to:')); }
+      catch (e) { fail('That sign-in link was already used or has expired. Sign in again to continue.'); }
+    }
+    history.replaceState(null, '', '/claim/?t=' + encodeURIComponent(token));
+    if (!cloud.enabled) fail('Author accounts are not switched on yet.');
+    else cloud.onUser((u) => {
+      if (!u) { step('signin'); return; }
+      $('[data-who]').textContent = u.email || u.displayName || 'your account'; step('ready');
+    });
+    $('[data-redeem]').addEventListener('click', async (e) => {
+      e.target.disabled = true; e.target.textContent = 'Claiming…';
+      try {
+        const r = await cloud.redeemInvite(token);
+        try { localStorage.removeItem(KEY); } catch (err) {}
+        const url = '/authors/' + r.slug + '/';
+        $('[data-page]').href = url; $('[data-page]').textContent = r.name || 'your author page'; $('[data-page-btn]').href = url;
+        step('done');
+      } catch (err) { fail(err.message || 'That did not work. Please try again.'); }
+    });
+    $('[data-signout]').addEventListener('click', async () => { await cloud.signOut(); location.href = '/account/?claim=1'; });
+  }
+</script>

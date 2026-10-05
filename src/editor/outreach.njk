@@ -1,0 +1,197 @@
+---
+layout: layouts/base.njk
+title: Author outreach
+permalink: /editor/outreach/
+description: Invite past authors to claim their author pages, and keep track of who has been reached (board members only).
+searchExclude: true
+noindex: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/editor/">Board</a></p>
+  <h1>Author outreach</h1>
+  <p>Invite past authors to claim their author pages. Each message carries a personal link: they sign in with any email they like, and the page is verified as theirs at once.</p>
+</div></header>
+
+<section class="acct outreach"><div class="wrap">
+  <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
+  <div data-tools hidden>
+    <div class="or-progress" data-progress></div>
+    <div class="or-bar">
+      <input type="search" placeholder="Search authors or titles" data-q aria-label="Search authors">
+      <div class="or-filters" role="group" aria-label="Show">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="none" aria-pressed="false">Not contacted</button>
+        <button type="button" data-f="contacted" aria-pressed="false">Contacted</button>
+        <button type="button" data-f="claimed" aria-pressed="false">Verified</button>
+      </div>
+    </div>
+    <ul class="or-list" data-list></ul>
+    <p class="more"><a href="/editor/claims/">Author claims</a> · <a href="/editor/announce/">Send an announcement</a></p>
+  </div>
+</div></section>
+
+<dialog class="or-compose" data-compose aria-labelledby="or-title">
+  <form method="dialog" class="or-c-in">
+    <p class="or-c-k">Message to</p>
+    <h2 id="or-title" data-c-name></h2>
+    <p class="or-c-works" data-c-works></p>
+    <div class="or-c-row">
+      <label>Writing to <select data-c-aud>
+        <option value="professor">A law professor</option>
+        <option value="alumni">An alumna or alumnus</option>
+        <option value="student">A current law student</option>
+        <option value="practitioner">A practitioner or guest author</option>
+      </select></label>
+      <label>Sent by <select data-c-ch>
+        <option value="email">Email</option>
+        <option value="messenger">Messenger or chat</option>
+      </select></label>
+    </div>
+    <label class="or-c-to" data-c-to-wrap>Their email (optional, only to open your mail app; it isn't saved) <input type="email" data-c-to placeholder="name@example.com"></label>
+    <label data-c-subj-wrap>Subject <input type="text" data-c-subj></label>
+    <label>Message <textarea rows="12" data-c-body></textarea></label>
+    <p class="or-c-link">Personal link: <code data-c-link>making a link…</code> <small data-c-exp></small></p>
+    <div class="or-c-acts">
+      <button type="button" class="btn sm" data-c-copy>Copy message</button>
+      <a class="btn sm alt" data-c-mail target="_blank" rel="noopener">Open in my email</a>
+      <button type="button" class="btn sm alt" data-c-sent>Mark as sent</button>
+      <button type="button" class="linkish" data-c-revoke>Withdraw this link</button>
+      <button class="linkish" value="close">Close</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="application/json" id="or-authors">[{% for p in collections.authors %}{"name":{{ p.name | jsonScript | safe }},"slug":{{ p.slug | jsonScript | safe }},"works":[{% for a in p.articles %}{"title":{{ a.data.title | jsonScript | safe }},"volume":{{ a.data.volume | jsonScript | safe }},"year":{{ a.data.year | jsonScript | safe }},"url":{{ a.url | jsonScript | safe }}}{% if not loop.last %},{% endif %}{% endfor %}]}{% if not loop.last %},{% endif %}{% endfor %}]</script>
+<script type="module">
+  const SITE = {{ site.url | jsonScript | safe }}, TITLE = {{ site.title | jsonScript | safe }}, JEMAIL = {{ site.email | jsonScript | safe }};
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const authors = JSON.parse($('#or-authors').textContent);
+  const gate = $('[data-gate]'), tools = $('[data-tools]'), list = $('[data-list]'), dlg = $('[data-compose]');
+  const cloud = await import('/assets/js/jla-cloud.js');
+  let state = { authors: {}, outreach: {}, invites: {} }, filter = 'all', me = 'The Board of Editors', cur = null, inv = null;
+
+  const statusOf = (a) => state.authors[a.slug] && state.authors[a.slug].uid ? 'claimed' : state.outreach[a.slug] && state.outreach[a.slug].status === 'contacted' ? 'contacted' : 'none';
+  const LABEL = { claimed: 'Verified', contacted: 'Contacted', none: 'Not contacted' };
+  const day = (ms) => ms ? new Date(ms).toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+  const firstName = (n) => n.replace(/^(Atty\.|Dr\.|Prof\.|Judge|Dean)\s+/i, '').split(/\s+/)[0];
+  const family = (n) => n.trim().split(/\s+/).filter((w) => !/^(jr\.?|sr\.?|ii|iii|iv)$/i.test(w)).pop();
+  const listTitles = (ws) => { const t = ws.map((w) => `"${w.title}" (Vol. ${w.volume}, ${w.year})`); return t.length < 2 ? t[0] : t.slice(0, -1).join(', ') + ' and ' + t[t.length - 1]; };
+  const defaultAudience = (a) => (state.outreach[a.slug] && state.outreach[a.slug].audience) || 'alumni';
+
+  function paint() {
+    const counts = { claimed: 0, contacted: 0, none: 0 }; authors.forEach((a) => counts[statusOf(a)]++);
+    const pct = Math.round(100 * counts.claimed / Math.max(1, authors.length));
+    $('[data-progress]').innerHTML = `<p><b>${counts.claimed}</b> of ${authors.length} authors have verified their pages · <b>${counts.contacted}</b> contacted and waiting · <b>${counts.none}</b> not yet contacted</p><span class="or-meter" style="--p:${pct}%"></span>`;
+    const q = $('[data-q]').value.trim().toLowerCase();
+    const rows = authors.filter((a) => (filter === 'all' || statusOf(a) === filter) && (!q || (a.name + ' ' + a.works.map((w) => w.title).join(' ')).toLowerCase().includes(q)));
+    list.innerHTML = rows.map((a) => {
+      const st = statusOf(a), o = state.outreach[a.slug], au = state.authors[a.slug];
+      const note = st === 'claimed' ? `Verified${au.approvedAt ? ' ' + day(au.approvedAt) : ''}${au.via === 'invite' ? ' through an invitation' : ''}`
+        : st === 'contacted' ? `${o.channel === 'messenger' ? 'Messaged' : 'Emailed'} by ${esc(o.byName || 'an editor')}${o.at ? ', ' + day(o.at) : ''}${state.invites[a.slug] ? ' · link open' : ''}` : '';
+      return `<li data-slug="${esc(a.slug)}">
+        <div class="or-who"><a href="/authors/${esc(a.slug)}/" target="_blank" rel="noopener">${esc(a.name)}</a>
+          <small>${[...new Set(a.works.map((w) => `Vol. ${esc(w.volume)} (${esc(w.year)})`))].join(' · ')} · ${a.works.length} ${a.works.length === 1 ? 'piece' : 'pieces'}</small>
+          ${note ? `<small class="or-note">${note}</small>` : ''}</div>
+        <span class="or-st or-${st}">${LABEL[st]}</span>
+        ${st === 'claimed' ? '' : `<button type="button" class="btn sm${st === 'contacted' ? ' alt' : ''}" data-write>${st === 'contacted' ? 'Write again' : 'Write message'}</button>`}
+      </li>`;
+    }).join('') || '<li class="off">No authors match.</li>';
+  }
+
+  function compose() {
+    const a = cur, aud = $('[data-c-aud]').value, ch = $('[data-c-ch]').value, link = inv ? `${SITE}/claim/?t=${inv.token}` : '[link]';
+    const page = `${SITE}/authors/${a.slug}/`, works = listTitles(a.works), many = a.works.length > 1;
+    const hello = { professor: `Dear Prof. ${family(a.name)},`, alumni: `Dear ${firstName(a.name)},`, student: `Hi ${firstName(a.name)},`, practitioner: `Dear Atty. ${family(a.name)},` }[aud];
+    const hi = { professor: `Good day, Prof. ${family(a.name)}!`, alumni: `Hi ${firstName(a.name)}!`, student: `Hi ${firstName(a.name)}!`, practitioner: `Good day, Atty. ${family(a.name)}!` }[aud];
+    const why = {
+      professor: `As one of the scholars whose work shaped the Journal's early volumes, we would be honoured to have your author page carry your current affiliation, a short bio, and your scholarly links.`,
+      alumni: `We'd love for your author page to show where you are now, as part of the record of the Journal's contributors from the College of Law.`,
+      student: `Your author page can show your photo, a short bio, and links like LinkedIn, and it gives you a citable record of publication for your CV.`,
+      practitioner: `We'd be glad for your author page to carry your current affiliation, a short bio, and your professional links.`,
+    }[aud];
+    $('[data-c-subj]').value = `Your author page on the ${TITLE}`;
+    const email = `${hello}
+
+Greetings from the Board of Editors of the ${TITLE}.
+
+Your ${many ? 'works' : 'work'}, ${works}, ${many ? 'are' : 'is'} now online in the Journal's digital archive, free to read and cite, with ${many ? 'their' : 'its'} own record of publication. Your author page is here:
+${page}
+
+${why}
+
+To claim it, open your personal link below and sign in with any email address you prefer, or your Google account. The page is verified as yours at once; no form or review is needed.
+${link}
+
+The link is for you alone and works once. Once you're in, you can add your photo and a few lines about yourself, and see how often your work is read and downloaded.
+
+If you have any questions, just reply to this message or write to us at ${JEMAIL}.
+
+Respectfully,
+${me}
+For the Board of Editors
+${TITLE}`;
+    const chat = `${hi} This is ${me} from the Board of Editors of the ${TITLE}.
+
+Your ${many ? 'works' : 'work'}, ${works}, ${many ? 'are' : 'is'} now online in our digital archive, and you have an author page: ${page}
+
+You can claim it with this personal link. Just sign in with any email you like and it's verified as yours right away, so you can add your photo, a short bio, and your links:
+${link}
+
+Thank you for writing for the Journal!`;
+    $('[data-c-body]').value = ch === 'email' ? email : chat;
+    $('[data-c-subj-wrap]').hidden = $('[data-c-to-wrap]').hidden = $('[data-c-mail]').hidden = ch !== 'email';
+    mailto();
+  }
+  function mailto() { $('[data-c-mail]').href = `mailto:${encodeURIComponent($('[data-c-to]').value.trim())}?subject=${encodeURIComponent($('[data-c-subj]').value)}&body=${encodeURIComponent($('[data-c-body]').value)}`; }
+
+  async function open(slug) {
+    cur = authors.find((a) => a.slug === slug); inv = null; if (!cur) return;
+    $('[data-c-name]').textContent = cur.name;
+    $('[data-c-works]').textContent = cur.works.map((w) => `${w.title} (Vol. ${w.volume}, ${w.year})`).join(' · ');
+    $('[data-c-aud]').value = defaultAudience(cur);
+    if (state.outreach[slug] && state.outreach[slug].channel) $('[data-c-ch]').value = state.outreach[slug].channel;
+    $('[data-c-link]').textContent = 'making a link…'; $('[data-c-exp]').textContent = ''; $('[data-c-revoke]').hidden = true;
+    compose(); dlg.showModal();
+    try {
+      inv = state.invites[slug] || await cloud.inviteFor(slug, cur.name); state.invites[slug] = inv;
+      $('[data-c-link]').textContent = `${SITE}/claim/?t=${inv.token}`;
+      $('[data-c-exp]').textContent = inv.expires ? `works once, until ${day(inv.expires)}` : '';
+      $('[data-c-revoke]').hidden = false; compose();
+    } catch (e) { $('[data-c-link]').textContent = 'Could not make a link: ' + e.message; }
+  }
+
+  if (!cloud.enabled) gate.innerHTML = '<p class="off">Reader accounts are not switched on.</p>';
+  else cloud.onUser(async (u) => {
+    if (!u) { gate.innerHTML = '<p class="off">Board members only. <a href="/account/">Sign in</a> first.</p>'; tools.hidden = true; return; }
+    if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only.</p>'; tools.hidden = true; return; }
+    me = u.displayName || me;
+    try { state = await cloud.outreachState(); } catch (e) { gate.innerHTML = `<p class="off">Could not load the tracker: ${esc(e.message)}. Have the latest Firestore rules been published?</p>`; return; }
+    gate.hidden = true; tools.hidden = false; paint();
+  });
+
+  $('[data-q]').addEventListener('input', paint);
+  document.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => {
+    filter = b.dataset.f; document.querySelectorAll('[data-f]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); paint();
+  }));
+  list.addEventListener('click', (e) => { const li = e.target.closest('[data-write]') && e.target.closest('[data-slug]'); if (li) open(li.dataset.slug); });
+  $('[data-c-aud]').addEventListener('change', compose); $('[data-c-ch]').addEventListener('change', compose);
+  ['[data-c-to]', '[data-c-subj]', '[data-c-body]'].forEach((s) => $(s).addEventListener('input', mailto));
+  $('[data-c-copy]').addEventListener('click', async (e) => {
+    const ch = $('[data-c-ch]').value, text = (ch === 'email' ? `Subject: ${$('[data-c-subj]').value}\n\n` : '') + $('[data-c-body]').value;
+    try { await navigator.clipboard.writeText(text); e.target.textContent = 'Copied ✓'; setTimeout(() => { e.target.textContent = 'Copy message'; }, 1600); }
+    catch (err) { $('[data-c-body]').select(); document.execCommand('copy'); }
+  });
+  $('[data-c-sent]').addEventListener('click', async () => {
+    try {
+      await cloud.markContacted(cur.slug, { channel: $('[data-c-ch]').value, audience: $('[data-c-aud]').value, token: inv ? inv.token : '' });
+      state.outreach[cur.slug] = { ...(state.outreach[cur.slug] || {}), status: 'contacted', channel: $('[data-c-ch]').value, audience: $('[data-c-aud]').value, byName: me, at: Date.now() };
+      dlg.close(); paint();
+    } catch (e) { alert('Could not save: ' + e.message); }
+  });
+  $('[data-c-revoke]').addEventListener('click', async () => {
+    if (!inv || !confirm('Withdraw this link? It will stop working, and the next message will carry a new one.')) return;
+    try { await cloud.revokeInvite(inv.token); delete state.invites[cur.slug]; dlg.close(); paint(); } catch (e) { alert('Could not withdraw: ' + e.message); }
+  });
+</script>

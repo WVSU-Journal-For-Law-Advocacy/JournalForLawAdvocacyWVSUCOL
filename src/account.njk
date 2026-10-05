@@ -158,6 +158,7 @@ searchExclude: true
       <p class="lib-note">You're an editor: you can hide or delete comments in any discussion.</p>
       <ul class="lib-menu">
         <li><a href="/editor/moderation/"><b>Moderation</b><span>Reported comments, muted readers, the log</span></a></li>
+        <li><a href="/editor/outreach/"><b>Author outreach</b><span>Invite past authors to claim their pages, and track who has been reached</span></a></li>
         <li><a href="/editor/claims/"><b>Author claims</b><span>Approve readers who claim author pages</span><span class="dk-count" data-claim-count hidden></span></a></li>
         <li><a href="/editor/announce/"><b>Send an announcement</b><span>New volume or call for papers, to readers who opted in</span></a></li>
         <li><a href="/editor/editors/"><b>Manage editors</b><span>Who can moderate and announce</span></a></li>
@@ -171,8 +172,8 @@ searchExclude: true
       <h2 class="lib-h">Profile</h2>
       <form data-profile>
         <div class="field"><label for="pf-name">Name</label><input id="pf-name" name="name" maxlength="80" required></div>
-        <div class="field"><label for="pf-school">School or office</label><input id="pf-school" name="school" maxlength="80" placeholder="e.g. WVSU College of Law, 2L"></div>
-        <div class="field"><label for="pf-bio">Bio</label><textarea id="pf-bio" name="bio" maxlength="280" rows="3" placeholder="A line about you and the law you care about"></textarea></div>
+        <div class="field"><label for="pf-school">School or office <small>(also shown on your author page)</small></label><input id="pf-school" name="school" maxlength="80" placeholder="e.g. WVSU College of Law, 2L"></div>
+        <div class="field"><label for="pf-bio">Bio</label><textarea id="pf-bio" name="bio" maxlength="600" rows="4" placeholder="A few lines about you and your work. If you are a published author, this also appears on your author page."></textarea></div>
         <label class="consent"><input type="checkbox" name="public"> Show my profile, badges and reading count publicly</label>
         <div class="acts"><button class="btn sm" type="submit">Save profile</button></div>
       </form>

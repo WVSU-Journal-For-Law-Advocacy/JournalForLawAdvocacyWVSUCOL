@@ -8,7 +8,9 @@ const show = (state) => $$('[data-when]').forEach((el) => { el.hidden = el.datas
 const fmt = (n) => n >= 10000 ? `${Math.round(n / 1000)}k` : n.toLocaleString('en-PH');
 const initials = (n) => String(n || '?').split(/\s+/).filter((w) => /^[A-Z]/i.test(w)).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 
-let cloud = null, profile = null;
+let cloud = null, profile = null, lastUser = null;
+// arrived from a board invitation (/claim/): after signing in, go straight back to claim the author page
+const CLAIM = (() => { try { return new URLSearchParams(location.search).has('claim') && localStorage.getItem('jla:invite'); } catch (e) { return null; } })();
 
 /* ---------- the dashboard (works signed in or out) ---------- */
 async function paint() {
@@ -80,13 +82,13 @@ async function shrink(file, px = 256) {
 function wireProfile(u) {
   $('[data-profile]').addEventListener('submit', async (e) => {
     e.preventDefault(); const f = e.target;
-    const data = { name: f.name.value.trim().slice(0, 80), school: f.school.value.trim().slice(0, 80), bio: f.bio.value.trim().slice(0, 280), public: f.public.checked };
-    try { await cloud.saveProfile(data); profile = { ...profile, ...data }; paintProfile(u); say('Profile saved'); }
+    const data = { name: f.name.value.trim().slice(0, 80), school: f.school.value.trim().slice(0, 80), bio: f.bio.value.trim().slice(0, 600), public: f.public.checked };
+    try { await cloud.saveProfile(data); profile = { ...profile, ...data }; paintProfile(u); say('Profile saved'); syncAuthor(); }
     catch (err) { say('Could not save. Please try again'); }
   });
   $('.ap-photo input').addEventListener('change', async (e) => {
     const file = e.target.files && e.target.files[0]; if (!file) return;
-    try { const photo = await shrink(file), thumb = await shrink(file, 64); await cloud.saveProfile({ photo, thumb }); profile = { ...profile, photo, thumb }; paintProfile(u); say('Photo updated'); }
+    try { const photo = await shrink(file), thumb = await shrink(file, 64); await cloud.saveProfile({ photo, thumb }); profile = { ...profile, photo, thumb }; paintProfile(u); say('Photo updated'); syncAuthor(); }
     catch (err) { say('That photo could not be used'); }
   });
   $('[data-signout]').addEventListener('click', async () => { await cloud.signOut(); location.reload(); });
@@ -180,7 +182,7 @@ function wireSignIn() {
     if (!valid(email)) { step('start'); form.email.focus(); return fail({ code: 'auth/invalid-email' }); }
     step('busy', 'Sending your link…');
     try {
-      await cloud.sendEmailLink(email, location.origin + '/account/');
+      await cloud.sendEmailLink(email, location.origin + (CLAIM ? '/claim/?t=' + encodeURIComponent(CLAIM) : '/account/'));
       try { localStorage.setItem(SENT, JSON.stringify({ email, at: Date.now() })); } catch (e) {}
       showSent(email);
     } catch (e) { step('start'); fail(e, "Couldn't send the link. Check the address and try again."); }
@@ -213,6 +215,7 @@ async function paintAuthor() {
   const box = $('[data-author-box]');
   const open = claims.filter((c) => c.status !== 'approved' || !pages.some((p) => p.slug === c.slug));
   box.hidden = !pages.length && !open.length; if (box.hidden) return;
+  if (pages.length) syncAuthor(pages);
   const STATUS = { pending: 'Waiting for the board to review', declined: 'Not approved', approved: 'Approved' };
   $('[data-claims]').innerHTML = open.map((c) => `<li><a href="/authors/${esc(c.slug)}/">${esc(c.authorName)}</a><span class="cl-st cl-${esc(c.status)}">${STATUS[c.status] || esc(c.status)}</span>${c.decisionNote ? `<small>${esc(c.decisionNote)}</small>` : ''}</li>`).join('');
   if (pages.length) { try { const fl = JSON.parse(localStorage.getItem('jla:flags') || '{}'); if (!fl.author) { fl.author = Date.now(); localStorage.setItem('jla:flags', JSON.stringify(fl)); paint(); } } catch (e) {} }
@@ -226,29 +229,33 @@ async function paintAuthor() {
     <form class="author-form" data-slug="${esc(p.slug)}">
       <p class="af-head"><a href="/authors/${esc(p.slug)}/">${esc(p.name || p.slug)}</a> <span class="cl-st cl-approved">Verified</span></p>
       ${kitLinks(p, index)}
-      <label class="ap-photo af-photo" title="Change photo"><img alt="" width="96" height="96"${p.photo ? ` src="${esc(p.photo)}"` : ' hidden'}><span class="monogram"${p.photo ? ' hidden' : ''}>${esc(initials(p.name))}</span><input type="file" accept="image/*" hidden><span class="ap-edit">Change</span></label>
-      <div class="field"><label>Affiliation</label><input name="affiliation" maxlength="120" value="${esc(p.affiliation)}" placeholder="e.g. Associate, Law Firm · WVSU College of Law, JD 2024"></div>
-      <div class="field"><label>Bio</label><textarea name="bio" maxlength="800" rows="4" placeholder="A few lines about you and your work">${esc(p.bio)}</textarea></div>
+      <p class="af-synced">Your photo, bio, and school or office come from <a href="#settings" data-goto="settings">your profile</a> and appear on this page automatically. Add your links here.</p>
       <div class="field"><label>LinkedIn</label><input name="linkedin" maxlength="200" value="${esc(p.linkedin)}" placeholder="linkedin.com/in/…"></div>
       <div class="field"><label>ORCID</label><input name="orcid" maxlength="40" value="${esc(p.orcid)}" placeholder="0000-0000-0000-0000"></div>
       <div class="field"><label>Facebook</label><input name="facebook" maxlength="200" value="${esc(p.facebook)}" placeholder="facebook.com/…"></div>
       <div class="field"><label>Website</label><input name="website" maxlength="200" value="${esc(p.website)}" placeholder="https://…"></div>
       <p class="acts"><button class="btn sm" type="submit">Save author page</button></p>
     </form>`).join('');
-  $$('.author-form').forEach((f) => {
-    let photo = null;
-    f.querySelector('input[type=file]').addEventListener('change', async (e) => {
-      const file = e.target.files && e.target.files[0]; if (!file) return;
-      try { photo = await shrink(file); const img = f.querySelector('.af-photo img'); img.src = photo; img.hidden = false; f.querySelector('.af-photo .monogram').hidden = true; }
-      catch (err) { say('That photo could not be used'); }
-    });
+  $('.author-form').forEach((f) => {
     f.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const data = Object.fromEntries(['affiliation', 'bio', 'linkedin', 'orcid', 'facebook', 'website'].map((k) => [k, f.elements[k].value]));
-      if (photo) data.photo = photo;
+      const data = Object.fromEntries(['linkedin', 'orcid', 'facebook', 'website'].map((k) => [k, f.elements[k].value]));
       try { await cloud.saveAuthorProfile(f.dataset.slug, data); say('Author page saved'); } catch (err) { say('Could not save. Please try again'); }
     });
   });
+}
+
+// one profile for everything: the reader profile (photo, bio, school or office) is copied to their verified author pages.
+// The first time, details an author page already has fill any blanks in the profile, so nothing written there is lost.
+async function syncAuthor(pages) {
+  if (!cloud || !profile) return;
+  try {
+    pages = pages || await cloud.myAuthorPages(); if (!pages.length) return;
+    const fill = {}, from = { photo: 'photo', bio: 'bio', school: 'affiliation' };
+    for (const [k, pk] of Object.entries(from)) { if (!profile[k]) { const hit = pages.find((p) => p[pk]); if (hit) fill[k] = k === 'school' ? hit[pk].slice(0, 80) : k === 'bio' ? hit[pk].slice(0, 600) : hit[pk]; } }
+    if (Object.keys(fill).length) { await cloud.saveProfile(fill); profile = { ...profile, ...fill }; if (lastUser) paintProfile(lastUser); }
+    await cloud.syncAuthorPages(profile);
+  } catch (e) {}
 }
 
 /* ---------- notifications: opt in per kind, on this device ---------- */
@@ -337,13 +344,14 @@ paint();
   let wired = false;
   mod.onUser(async (u) => {
     if (!u) { profile = null; show('out'); $('[data-push-box]').hidden = true; $('[data-board]').hidden = true; $('[data-author-box]').hidden = true; paint(); return; }
-    try { localStorage.removeItem('jla:email-sent'); } catch (e) {}
+    lastUser = u; try { localStorage.removeItem('jla:email-sent'); } catch (e) {}
     const synced = await mod.sync().catch(() => null);
     profile = (synced && synced.profile) || null;
     if (!profile) { // first sign-in: create the profile
       profile = { name: u.displayName || (u.email || 'Reader').split('@')[0], joined: Date.now(), public: false, consent: Date.now() };
       await mod.saveProfile(profile).catch(() => {});
     }
+    if (CLAIM) { location.replace('/claim/?t=' + encodeURIComponent(CLAIM)); return; }
     show('in'); paintProfile(u); if (!wired) { wireProfile(u); wirePush(); wired = true; } paint(); paintHighlights();
     mod.isEditor().then(async (ed) => {
       $('[data-board]').hidden = !ed;

@@ -143,6 +143,25 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
+    // Invitations to claim an author page (personal links the board sends). Editors create, read and revoke them;
+    // they are redeemed only by the server function, so readers never see the list.
+    match /invites/{token} {
+      allow read, delete: if isEditor();
+      allow create: if isEditor()
+        && request.resource.data.keys().hasOnly(['slug', 'authorName', 'createdBy', 'createdByName', 'created', 'status', 'expires'])
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.slug is string && request.resource.data.slug.size() <= 120
+        && request.resource.data.expires is number;
+      allow update: if isEditor() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status == 'revoked';
+    }
+
+    // The board's outreach tracker: who has been contacted, how, and by whom. Editors only.
+    match /outreach/{slug} {
+      allow read, write: if isEditor();
+    }
+
     // Article metrics (views, full reads, PDF downloads): public to read; only the site's server function counts.
     match /stats/{slug} {
       allow read: if true;
@@ -167,7 +186,7 @@ service cloud.firestore {
         && (!('prefs' in d) || (d.prefs is map && d.prefs.size() <= 20))
         && (!('follows' in d) || (d.follows is list && d.follows.size() <= 50))
         && (!('name' in d) || (d.name is string && d.name.size() <= 80))
-        && (!('bio' in d) || (d.bio is string && d.bio.size() <= 280))
+        && (!('bio' in d) || (d.bio is string && d.bio.size() <= 600))
         && (!('school' in d) || (d.school is string && d.school.size() <= 80))
         && (!('photo' in d) || (d.photo is string && d.photo.size() <= 90000))
         && (!('public' in d) || d.public is bool)

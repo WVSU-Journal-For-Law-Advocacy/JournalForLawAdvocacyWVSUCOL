@@ -403,6 +403,35 @@ export async function markContacted(slug, { channel, audience = '', note = '', t
 }
 export async function revokeInvite(token) { const s = await load(); await s.F.updateDoc(s.F.doc(s.db, 'invites', token), { status: 'revoked' }); }
 
+/* ---------- proofreading (board): corrections proposed paragraph by paragraph, and where each piece stands ---------- */
+const editorName = (u) => (local.me() && local.me().name) || u.displayName || 'Editor';
+const millis = (t) => (t && t.toMillis ? t.toMillis() : t || 0);
+export async function proposeCorrection(slug, pid, original, proposed, note = '') {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.addDoc(s.F.collection(s.db, 'corrections'), { slug, pid: String(pid).slice(0, 20), original: String(original).slice(0, 6000), proposed: String(proposed).slice(0, 6000),
+    note: String(note).slice(0, 500), by: u.uid, byName: editorName(u), at: s.F.serverTimestamp(), status: 'open' });
+}
+// all corrections (optionally for one piece), newest first
+export async function corrections(slug) {
+  const s = await load(); const c = s.F.collection(s.db, 'corrections');
+  const snap = await s.F.getDocs(slug ? s.F.query(c, s.F.where('slug', '==', slug)) : c);
+  const out = []; snap.forEach((d) => { const x = d.data(); out.push({ id: d.id, ...x, at: millis(x.at) }); });
+  return out.sort((a, b) => b.at - a.at);
+}
+export async function setCorrection(id, status) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.updateDoc(s.F.doc(s.db, 'corrections', id), { status, doneBy: u.uid, doneByName: editorName(u), doneAt: Date.now() });
+}
+export async function proofState() {
+  const s = await load(); const snap = await s.F.getDocs(s.F.collection(s.db, 'proofread'));
+  const out = {}; snap.forEach((d) => { const x = d.data(); out[d.id] = { ...x, at: millis(x.at) }; }); return out;
+}
+// status: 'in-progress' (an editor is on it), 'done' (proofread; the notice on the page goes away), or '' (back in the queue)
+export async function setProofread(slug, status) {
+  const s = await load(); const u = current; if (!u) throw new Error('Not signed in');
+  await s.F.setDoc(s.F.doc(s.db, 'proofread', slug), { status, by: u.uid, byName: editorName(u), at: s.F.serverTimestamp() });
+}
+
 // editors: review claims
 export async function pendingClaims() {
   const s = await load();

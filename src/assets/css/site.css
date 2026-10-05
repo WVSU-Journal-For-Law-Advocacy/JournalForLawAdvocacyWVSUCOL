@@ -1632,3 +1632,49 @@ html:not(.is-app) .vol-head .crumb{display:block}
 .or-c-link code{font-size:.82rem}
 .or-c-link small{color:var(--muted)}
 .or-c-acts{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem}
+
+/* ---------- Proofreading (board): on the article page, and the queue ---------- */
+.editor-only{display:none}
+html.is-editor .editor-only{display:list-item}
+.sheet-menu .editor-only small{margin-left:.4rem;font:600 .7rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+body.proofreading{padding-top:4.2rem}
+body.proofreading .ribbon{display:none}
+body.proofreading #fulltext :is(p,li,blockquote)[data-pid],body.proofreading .footnotes li[id]{cursor:text;border-radius:6px;transition:background .15s,box-shadow .15s}
+body.proofreading #fulltext :is(p,li,blockquote)[data-pid]:hover,body.proofreading .footnotes li[id]:hover{background:color-mix(in srgb,var(--gold-3) 16%,transparent);box-shadow:0 0 0 6px color-mix(in srgb,var(--gold-3) 16%,transparent)}
+body.proofreading .pr-has{box-shadow:inset 3px 0 0 var(--gold);padding-left:.6rem}
+.pr-mark{float:right;display:inline-grid;place-items:center;min-width:1.3rem;height:1.3rem;margin:0 0 .3rem .5rem;border-radius:999px;background:var(--gold);color:#1C1424;font:600 .72rem var(--serif)}
+.pr-bar{position:fixed;z-index:60;left:0;right:0;top:0;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem 1rem;padding:.6rem max(16px,env(safe-area-inset-left)) .6rem;
+  padding-top:max(.6rem,env(safe-area-inset-top));background:var(--plum);color:#fff;box-shadow:0 6px 20px rgba(28,20,36,.25)}
+.pr-bar p{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:.2rem .6rem;font-size:.92rem}
+.pr-bar b{font:600 .85rem var(--caps);letter-spacing:.12em;text-transform:lowercase;font-variant:small-caps;color:#E2C67E}
+.pr-bar small{width:100%;opacity:.8;font-size:.8rem}
+.pr-bar div{display:flex;gap:.5rem}
+.pr-bar .btn{background:#E2C67E;color:#1C1424;border-color:#E2C67E}
+.pr-bar .btn.alt{background:transparent;color:#fff;border-color:rgba(255,255,255,.5)}
+.pr-sheet{display:grid;gap:.8rem;text-align:left}
+.pr-sheet label{display:grid;gap:.3rem;font-size:.86rem;color:var(--ink-2)}
+.pr-sheet textarea,.pr-sheet input{width:100%;padding:.6rem .7rem;border:1px solid var(--rule-2);border-radius:10px;background:var(--paper);font:inherit;font-size:.95rem;line-height:1.55;color:var(--ink)}
+.pr-help{margin:0;font-size:.82rem;color:var(--muted)}
+.pr-prev{padding:.6rem .8rem;border-radius:10px;background:color-mix(in srgb,var(--gold-3) 14%,transparent);font-size:.88rem}
+.pr-prev p{margin:.35rem 0 0}.pr-prev small{display:block;color:var(--muted)}
+.proofq .wrap{max-width:54rem}
+.pq-list{list-style:none;margin:0;padding:0}
+.pq-list>li{padding:.85rem 0;border-top:1px solid var(--rule)}
+.pq-list>li:last-child{border-bottom:1px solid var(--rule)}
+.pq-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:.4rem .8rem;align-items:center}
+@media (max-width:620px){.pq-row{grid-template-columns:minmax(0,1fr) auto}.pq-row .btn{justify-self:start}}
+.pq-todo{background:var(--rule);color:var(--ink-2)}
+.pq-doing{background:color-mix(in srgb,var(--gold-3) 35%,transparent);color:#5a4212}
+.pq-done{background:#e3f0e2;color:#2f6b3a}
+.pq-fx{justify-self:start;padding:.2rem .6rem;border:1px solid var(--gold-2);border-radius:999px;background:transparent;color:var(--plum);font:600 .8rem var(--serif);white-space:nowrap}
+.pq-fixes{display:grid;gap:.7rem;margin:.8rem 0 .2rem}
+.pq-fix{padding:.8rem 1rem;border:1px solid var(--rule);border-radius:12px;background:var(--paper)}
+.pq-meta{margin:0 0 .4rem;font-size:.82rem;color:var(--muted)}
+.pq-diff{margin:0;font-size:.95rem;line-height:1.6;overflow-wrap:anywhere}
+.pq-diff del{color:#9a2b2b;background:#f6e3e3;text-decoration:line-through}
+.pq-diff ins{color:#2f6b3a;background:#e3f0e2;text-decoration:none}
+.pq-fix .acts{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem;margin:.6rem 0 0}
+.pq-cms,.pq-end{margin:.3rem 0 0;font-size:.9rem}
+.pq-how{margin-top:var(--s5);color:var(--ink-2)}
+.pq-how summary{cursor:pointer;font-weight:600}
+.pq-how li{margin:.4rem 0}

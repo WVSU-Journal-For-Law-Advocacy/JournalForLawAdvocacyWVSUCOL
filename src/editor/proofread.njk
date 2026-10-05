@@ -1,0 +1,141 @@
+---
+layout: layouts/base.njk
+title: Proofreading
+permalink: /editor/proofread/
+description: The board's proofreading queue for web texts converted from the PDF (board members only).
+searchExclude: true
+noindex: true
+eleventyExcludeFromCollections: true
+---
+<header class="pagehead"><div class="wrap">
+  <p class="crumb"><a href="/editor/">Board</a></p>
+  <h1>Proofreading</h1>
+  <p>Web texts converted from the printed PDFs, checked against the PDF by the board. Open a piece, tap any paragraph or footnote that differs from the PDF, and send a correction. Apply corrections in the CMS, then mark the piece proofread.</p>
+</div></header>
+
+<section class="acct proofq"><div class="wrap">
+  <div class="card-box" data-gate><p class="off">Checking your access…</p></div>
+  <div data-tools hidden>
+    <div class="or-progress" data-progress></div>
+    <div class="or-bar">
+      <input type="search" placeholder="Search titles or authors" data-q aria-label="Search pieces">
+      <div class="or-filters" role="group" aria-label="Show">
+        <button type="button" data-f="all" aria-pressed="true">All</button>
+        <button type="button" data-f="todo" aria-pressed="false">To do</button>
+        <button type="button" data-f="fixes" aria-pressed="false">Corrections waiting</button>
+        <button type="button" data-f="done" aria-pressed="false">Proofread</button>
+      </div>
+    </div>
+    <ul class="pq-list" data-list></ul>
+    <details class="pq-how">
+      <summary>How corrections are applied</summary>
+      <ol>
+        <li>On the piece, choose <b>More → Proofread this piece</b>, compare with the PDF, and tap anything that differs to send a correction.</li>
+        <li>Here, <b>Copy</b> the corrected text and open the piece in the <a href="/admin/">CMS</a>. Find the paragraph in "Full text", paste the correction, and publish. The site rebuilds in about a minute.</li>
+        <li>Mark each correction <b>Applied</b>. When the piece is clean, <b>Mark proofread</b>; the notice goes away for readers at once. Also set "Full text status" to <i>Proofread</i> in the CMS when you next edit it.</li>
+      </ol>
+    </details>
+  </div>
+</div></section>
+
+<script type="application/json" id="pq-pieces">[{% set first = true %}{% for a in collections.articles %}{% if a.data.fulltext_status %}{% if not first %},{% endif %}{% set first = false %}{"slug":{{ a.page.fileSlug | jsonScript | safe }},"title":{{ a.data.title | jsonScript | safe }},"author":{{ a.data.author | jsonScript | safe }},"volume":{{ a.data.volume | jsonScript | safe }},"url":{{ a.url | jsonScript | safe }},"pdf":{{ (a.data.pdf or "") | jsonScript | safe }},"source":{{ a.data.fulltext_status | jsonScript | safe }}}{% endif %}{% endfor %}]</script>
+<script type="module">
+  const $ = (s, r = document) => r.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const pieces = JSON.parse($('#pq-pieces').textContent).sort((a, b) => a.volume - b.volume || a.title.localeCompare(b.title));
+  const gate = $('[data-gate]'), tools = $('[data-tools]'), list = $('[data-list]');
+  const cloud = await import('/assets/js/jla-cloud.js');
+  let state = {}, fixes = [], filter = 'all', openSlug = null;
+  const day = (ms) => ms ? new Date(ms).toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }) : '';
+
+  // proofread in the source (CMS) or marked done here; in progress; or still to do
+  const statusOf = (p) => p.source === 'proofread' || (state[p.slug] && state[p.slug].status === 'done') ? 'done' : state[p.slug] && state[p.slug].status === 'in-progress' ? 'doing' : 'todo';
+  const LABEL = { done: 'Proofread', doing: 'In progress', todo: 'To do' };
+  const openFixes = (slug) => fixes.filter((c) => c.slug === slug && c.status === 'open');
+
+  // word-level difference: removed words struck through, added words highlighted
+  function diff(a, b) {
+    const A = a.split(/(\s+)/), B = b.split(/(\s+)/), n = A.length, m = B.length;
+    if (n * m > 4e6) return `<del>${esc(a)}</del> <ins>${esc(b)}</ins>`;
+    const L = Array.from({ length: n + 1 }, () => new Uint16Array(m + 1));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) L[i][j] = A[i] === B[j] ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+    let i = 0, j = 0, out = '';
+    while (i < n && j < m) {
+      if (A[i] === B[j]) { out += esc(A[i]); i++; j++; }
+      else if (L[i + 1][j] >= L[i][j + 1]) out += `<del>${esc(A[i++])}</del>`;
+      else out += `<ins>${esc(B[j++])}</ins>`;
+    }
+    while (i < n) out += `<del>${esc(A[i++])}</del>`; while (j < m) out += `<ins>${esc(B[j++])}</ins>`;
+    return out.replace(/<\/del><del>/g, '').replace(/<\/ins><ins>/g, '');
+  }
+
+  function paint() {
+    const c = { done: 0, doing: 0, todo: 0 }; pieces.forEach((p) => c[statusOf(p)]++);
+    const waiting = fixes.filter((x) => x.status === 'open').length;
+    $('[data-progress]').innerHTML = `<p><b>${c.done}</b> of ${pieces.length} pieces proofread · <b>${c.doing}</b> in progress · <b>${waiting}</b> ${waiting === 1 ? 'correction' : 'corrections'} waiting to be applied</p><span class="or-meter" style="--p:${Math.round(100 * c.done / Math.max(1, pieces.length))}%"></span>`;
+    const q = $('[data-q]').value.trim().toLowerCase();
+    const rows = pieces.filter((p) => (filter === 'all' || (filter === 'fixes' ? openFixes(p.slug).length : filter === 'done' ? statusOf(p) === 'done' : statusOf(p) !== 'done'))
+      && (!q || (p.title + ' ' + p.author).toLowerCase().includes(q)));
+    list.innerHTML = rows.map((p) => {
+      const st = statusOf(p), s = state[p.slug], f = openFixes(p.slug), isOpen = openSlug === p.slug;
+      const who = s && s.status && s.byName ? `${st === 'done' ? 'Marked proofread' : 'Started'} by ${esc(s.byName)}${s.at ? ', ' + day(s.at) : ''}` : st === 'done' ? 'Proofread in the CMS' : '';
+      return `<li data-slug="${esc(p.slug)}"${isOpen ? ' class="open"' : ''}>
+        <div class="pq-row">
+          <div class="or-who"><a href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.title)}</a>
+            <small>${esc(p.author)} · Vol. ${esc(p.volume)}</small>${who ? `<small class="or-note">${who}</small>` : ''}</div>
+          <span class="or-st pq-${st}">${LABEL[st]}</span>
+          ${f.length ? `<button type="button" class="pq-fx" data-toggle aria-expanded="${isOpen}">${f.length} ${f.length === 1 ? 'correction' : 'corrections'}</button>` : '<span></span>'}
+          <a class="btn sm${st === 'done' ? ' alt' : ''}" href="${esc(p.url)}?proofread=1" target="_blank" rel="noopener">${st === 'done' ? 'Open' : st === 'doing' ? 'Continue' : 'Proofread'}</a>
+        </div>
+        ${isOpen ? `<div class="pq-fixes">
+          ${f.map((c) => `<article class="pq-fix" data-id="${esc(c.id)}">
+            <p class="pq-meta">${c.pid.startsWith('fn:') ? `Footnote ${esc(c.pid.slice(3))}` : 'Paragraph'} · ${esc(c.byName)}, ${day(c.at)}${c.note ? ` · <i>${esc(c.note)}</i>` : ''}</p>
+            <p class="pq-diff">${diff(c.original, c.proposed)}</p>
+            <p class="acts"><button type="button" class="btn sm" data-copy>Copy corrected text</button><button type="button" class="btn sm alt" data-applied>Applied</button><button type="button" class="linkish" data-dismiss>Dismiss</button></p>
+          </article>`).join('')}
+          <p class="pq-cms"><a href="/admin/#/collections/articles/entries/${esc(p.slug)}" target="_blank" rel="noopener">Open “${esc(p.title.split(':')[0])}” in the CMS</a>${p.pdf ? ` · <a href="${esc(p.pdf)}" target="_blank" rel="noopener">PDF</a>` : ''}</p>
+        </div>` : ''}
+        ${st !== 'done' && !f.length && st === 'doing' ? `<p class="pq-end"><button type="button" class="linkish" data-done>Mark proofread</button></p>` : ''}
+      </li>`;
+    }).join('') || '<li class="off">Nothing here.</li>';
+  }
+
+  async function load() {
+    [state, fixes] = await Promise.all([cloud.proofState(), cloud.corrections()]);
+    paint();
+  }
+  if (!cloud.enabled) gate.innerHTML = '<p class="off">Reader accounts are not switched on.</p>';
+  else cloud.onUser(async (u) => {
+    if (!u) { gate.innerHTML = '<p class="off">Board members only. <a href="/account/">Sign in</a> first.</p>'; tools.hidden = true; return; }
+    if (!(await cloud.isEditor())) { gate.innerHTML = '<p class="off">Board members only.</p>'; tools.hidden = true; return; }
+    try { await load(); } catch (e) { gate.innerHTML = `<p class="off">Could not load the queue: ${esc(e.message)}. Have the latest Firestore rules been published?</p>`; return; }
+    gate.hidden = true; tools.hidden = false;
+  });
+
+  $('[data-q]').addEventListener('input', paint);
+  document.querySelectorAll('[data-f]').forEach((b) => b.addEventListener('click', () => {
+    filter = b.dataset.f; document.querySelectorAll('[data-f]').forEach((x) => x.setAttribute('aria-pressed', String(x === b))); paint();
+  }));
+  list.addEventListener('click', async (e) => {
+    const li = e.target.closest('[data-slug]'); if (!li) return; const slug = li.dataset.slug;
+    if (e.target.closest('[data-toggle]')) { openSlug = openSlug === slug ? null : slug; paint(); return; }
+    if (e.target.closest('[data-done]')) {
+      if (!confirm('Mark this piece proofread? The "not yet proofread" notice goes away for readers.')) return;
+      try { await cloud.setProofread(slug, 'done'); state[slug] = { status: 'done', byName: 'you', at: Date.now() }; paint(); } catch (err) { alert('Could not save: ' + err.message); }
+      return;
+    }
+    const card = e.target.closest('[data-id]'); if (!card) return;
+    const c = fixes.find((x) => x.id === card.dataset.id); if (!c) return;
+    if (e.target.closest('[data-copy]')) {
+      try { await navigator.clipboard.writeText(c.proposed); e.target.textContent = 'Copied ✓'; setTimeout(() => { e.target.textContent = 'Copy corrected text'; }, 1500); } catch (err) { prompt('Copy the corrected text:', c.proposed); }
+      return;
+    }
+    const to = e.target.closest('[data-applied]') ? 'applied' : e.target.closest('[data-dismiss]') ? 'dismissed' : '';
+    if (!to) return;
+    try {
+      await cloud.setCorrection(c.id, to); c.status = to;
+      if (!openFixes(slug).length) openSlug = null;
+      paint();
+    } catch (err) { alert('Could not save: ' + err.message); }
+  });
+</script>

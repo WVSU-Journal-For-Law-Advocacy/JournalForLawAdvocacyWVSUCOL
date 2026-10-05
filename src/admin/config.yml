@@ -3,7 +3,7 @@
 # which makes Netlify rebuild the site (about a minute).
 backend:
   name: github
-  repo: elmoadorjr/JournalForLawAdvocacyWVSUCOL
+  repo: WVSU-Journal-For-Law-Advocacy/JournalForLawAdvocacyWVSUCOL
   branch: main
   commit_messages:
     create: "Add {{collection}} “{{slug}}”"

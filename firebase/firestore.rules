@@ -162,6 +162,33 @@ service cloud.firestore {
       allow read, write: if isEditor();
     }
 
+    // Proofreading: editors propose corrections paragraph by paragraph and mark them applied or dismissed.
+    match /corrections/{id} {
+      allow read, delete: if isEditor();
+      allow create: if isEditor()
+        && request.resource.data.keys().hasOnly(['slug', 'pid', 'original', 'proposed', 'note', 'by', 'byName', 'at', 'status'])
+        && request.resource.data.by == request.auth.uid
+        && request.resource.data.status == 'open'
+        && request.resource.data.slug is string && request.resource.data.slug.size() <= 120
+        && request.resource.data.original is string && request.resource.data.original.size() <= 6000
+        && request.resource.data.proposed is string && request.resource.data.proposed.size() <= 6000
+        && request.resource.data.note is string && request.resource.data.note.size() <= 500
+        && request.resource.data.at == request.time;
+      allow update: if isEditor()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'doneBy', 'doneByName', 'doneAt'])
+        && request.resource.data.status in ['open', 'applied', 'dismissed'];
+    }
+
+    // Where each converted piece stands in proofreading. Public to read (a piece marked done drops its
+    // "not yet proofread" notice at once); only editors write.
+    match /proofread/{slug} {
+      allow read: if true;
+      allow write: if isEditor()
+        && request.resource.data.keys().hasOnly(['status', 'by', 'byName', 'at'])
+        && request.resource.data.status in ['', 'in-progress', 'done']
+        && request.resource.data.by == request.auth.uid;
+    }
+
     // Article metrics (views, full reads, PDF downloads): public to read; only the site's server function counts.
     match /stats/{slug} {
       allow read: if true;

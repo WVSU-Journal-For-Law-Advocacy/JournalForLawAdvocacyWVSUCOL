@@ -74,7 +74,7 @@ if (acctBtn) {
   // editors get a Board menu (the pages themselves check access again)
   if (me && me.editor) {
     const here = location.pathname.startsWith('/editor/');
-    const subs = [['/editor/', 'Board home'], ['/editor/moderation/', 'Moderation'], ['/editor/outreach/', 'Author outreach'], ['/editor/claims/', 'Author claims'], ['/editor/announce/', 'Send an announcement'], ['/editor/editors/', 'Manage editors']];
+    const subs = [['/editor/', 'Board home'], ['/editor/moderation/', 'Moderation'], ['/editor/proofread/', 'Proofreading'], ['/editor/outreach/', 'Author outreach'], ['/editor/claims/', 'Author claims'], ['/editor/announce/', 'Send an announcement'], ['/editor/editors/', 'Manage editors']];
     const top = $('.primary > ul');
     if (top) {
       const li = document.createElement('li'); li.className = 'has-sub nav-board';

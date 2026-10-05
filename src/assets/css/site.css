@@ -206,6 +206,8 @@ h2.title::after{content:"❦";display:block;font:400 1rem/1 var(--serif);color:v
 .prose blockquote p{text-align:left}
 .prose strong{font-weight:600}
 .prose a{word-break:break-word}
+/* long bare URLs (bibliographies converted from print) wrap instead of widening the page */
+.prose :is(p,li,blockquote,td){overflow-wrap:anywhere}
 .prose hr{border:0;text-align:center;margin:2em 0}.prose hr::after{content:"❦";color:var(--gold)}
 
 /* ---------- 8. Forms ---------- */

@@ -1499,3 +1499,11 @@ html:not(.is-app) .vol-head .crumb{display:block}
   html.side-open main{padding-right:calc(min(26rem,34vw) + 32px);transition:padding-right .35s var(--ease)}
   html.side-open .sidenotes{display:none!important}
 }
+
+/* search (website): the areas of law as a typeset list, two columns on wider screens */
+.area-list{list-style:none;margin:0;padding:0;columns:1;column-gap:2.5rem}
+@media (min-width:600px){.area-list{columns:2}}
+.area-list li{break-inside:avoid;border-bottom:1px solid var(--rule)}
+.area-list a{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.65rem .2rem;color:var(--ink);font:600 1.1rem/1.25 var(--display)}
+.area-list a:hover{color:var(--plum)}
+.area-list span{font:600 .85rem var(--caps);color:var(--gold);font-variant-numeric:lining-nums}

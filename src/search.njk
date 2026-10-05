@@ -19,7 +19,11 @@ searchExclude: true
       {%- for t in ["Data Privacy Act", "artificial intelligence", "freedom of expression", "cybercrime", "COMELEC", "Writ of Kalikasan", "mangroves", "legal ethics"] %}<button type="button" data-q="{{ t }}">{{ t }}</button>{% endfor %}
     </p>
     <h2 class="ss-h">Or browse an area of law</h2>
-    <div class="area-grid">
+    {#- the website: a typeset list; the app: coloured tiles -#}
+    <ul class="area-list web-only">
+      {%- for ar in site.areas %}{% set n = (collections.articles | byArea(ar)).length %}{% if n %}<li><a href="/areas/{{ ar | slugify }}/">{{ ar }}<span>{{ n }}</span></a></li>{% endif %}{% endfor %}
+    </ul>
+    <div class="area-grid app-only">
       {%- for ar in site.areas %}<a class="area-tile" href="/areas/{{ ar | slugify }}/" style="--tone:{{ site.area_tones[ar] or '#4A2466' }}"><span>{{ ar }}</span></a>{% endfor %}
     </div>
   </div>

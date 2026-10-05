@@ -12,39 +12,65 @@ searchExclude: true
 ---
 {%- set prof = person | profileFor(authorProfiles, board) %}
 {%- set first = person.articles | last %}
-<header class="pagehead"><div class="wrap profile" id="author-head" data-slug="{{ person.slug }}" data-name="{{ person.name }}">
+{%- set service = (collections.editors | where("slug", person.slug)) | first %}
+{%- set vols = [] %}{% for a in person.articles %}{% set vr = a.data.volume | roman %}{% if not (vr in vols) %}{% set _ = vols.push(vr) %}{% endif %}{% endfor %}
+{#- A scholar's profile: who they are, then their work set like a bibliography. Verified details arrive from author-page.js. -#}
+<header class="author-head"><div class="wrap" id="author-head" data-slug="{{ person.slug }}" data-name="{{ person.name }}">
   <p class="crumb"><a href="/authors/">Authors</a></p>
-  {%- if prof.photo %}
-  <img class="portrait" src="{{ prof.photo }}" alt="Portrait of {{ person.name }}" width="132" height="132">
-  {%- else %}
-  <div class="portrait monogram" aria-hidden="true">{{ person.name | monogram }}</div>
-  {%- endif %}
-  <h1>{{ person.name }}<span class="verified" hidden title="This author has verified their profile with the Journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1L2.7 15.6l1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.4z" fill="currentColor"/><path d="M8 12.2l2.6 2.6L16.2 9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Verified author</span></span></h1>
-  <p class="aff" data-aff{% if not prof.affiliation %} hidden{% endif %}>{{ prof.affiliation }}</p>
-  {%- if prof.role %}<p class="aff">{{ prof.role }}, {{ site.title }}</p>{% endif %}
-  <div class="stats">
-    <div><b>{{ person.articles.length }}</b><span>{{ "publication" if person.articles.length == 1 else "publications" }}</span></div>
-    {%- if first %}<div><b>{{ first.data.year }}</b><span>first published</span></div>{% endif %}
+  <div class="ah-id">
+    {%- if prof.photo %}
+    <img class="portrait" src="{{ prof.photo }}" alt="Portrait of {{ person.name }}" width="112" height="112">
+    {%- else %}
+    <div class="portrait monogram" aria-hidden="true">{{ person.name | monogram }}</div>
+    {%- endif %}
+    <div class="ah-name">
+      <h1>{{ person.name }}<span class="verified" hidden title="This author has verified their profile with the Journal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l2.4 2.1 3.2-.4.9 3.1 2.8 1.6-1.2 3 1.2 3-2.8 1.6-.9 3.1-3.2-.4L12 22l-2.4-2.1-3.2.4-.9-3.1L2.7 15.6l1.2-3-1.2-3 2.8-1.6.9-3.1 3.2.4z" fill="currentColor"/><path d="M8 12.2l2.6 2.6L16.2 9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="sr">Verified author</span></span></h1>
+      <p class="aff" data-aff{% if not prof.affiliation %} hidden{% endif %}>{{ prof.affiliation }}</p>
+      {%- if service %}<p class="ah-role">{{ (service.roles | first) | roleLine }}, {{ site.title }}{% if service.roles.length > 1 %} · {{ service.roles.length }} years of service{% endif %}</p>{% endif %}
+    </div>
   </div>
   <p class="bio"{% if not prof.bio %} hidden{% endif %}>{{ prof.bio }}</p>
-  <div class="btns links">
-    <button class="btn sm" type="button" data-copy-link>Copy profile link</button>
-    {%- if prof.facebook %}<a class="btn sm alt" href="{{ prof.facebook }}" rel="noopener">Facebook</a>{% endif %}
-    {%- if prof.linkedin %}<a class="btn sm alt" href="{{ prof.linkedin }}" rel="noopener">LinkedIn</a>{% endif %}
-    {%- if prof.orcid %}<a class="btn sm alt" href="https://orcid.org/{{ prof.orcid }}" rel="noopener">ORCID</a>{% endif %}
-  </div>
+  <ul class="ah-facts">
+    <li><b>{{ person.articles.length }}</b> {{ "publication" if person.articles.length == 1 else "publications" }}</li>
+    {%- if first %}<li>since <b>{{ first.data.year }}</b></li>{% endif %}
+    <li>{{ "Volume" if vols.length == 1 else "Volumes" }} <b>{{ vols | join(", ") }}</b></li>
+  </ul>
+  <p class="links ah-links">
+    <button type="button" data-copy-link>Copy profile link</button>
+    {%- if prof.linkedin %}<a href="{{ prof.linkedin }}" rel="noopener">LinkedIn</a>{% endif %}
+    {%- if prof.orcid %}<a href="https://orcid.org/{{ prof.orcid }}" rel="noopener">ORCID</a>{% endif %}
+    {%- if prof.facebook %}<a href="{{ prof.facebook }}" rel="noopener">Facebook</a>{% endif %}
+  </p>
   <div class="claim-box" id="claim" data-claim hidden></div>
 </div></header>
 
-<section><div class="wrap">
+<section class="author-work"><div class="wrap">
   <h2 class="title">Publications</h2>
   {%- set mslugs = [] %}{% for a in person.articles %}{% set _ = mslugs.push(a.page.fileSlug) %}{% endfor %}
   <p class="readership" data-metrics-sum="{{ mslugs | join(',') }}" hidden>Readership on this site{% if person.articles.length > 1 %}, across {{ person.articles.length }} pieces{% endif %}: <b data-m="views"></b> views · <b data-m="reads"></b> full reads · <b data-m="downloads"></b> PDF downloads</p>
-  <div class="list">
+  <ol class="biblio">
     {%- for a in person.articles %}
-    {%- include "entry.njk" %}
+    {%- set pg = (a.data.first_page + ("–" + a.data.last_page if a.data.last_page and a.data.last_page != a.data.first_page else "")) if a.data.first_page else "" %}
+    {%- set co = a.data.author | coauthors(person.name) %}
+    <li>
+      <span class="bib-yr">{{ a.data.year }}</span>
+      <div class="bib-body">
+        <a class="bib-title" href="{{ a.url }}">{{ a.data.title }}</a>
+        {%- if a.data.honors and a.data.honors.length %}<span class="bib-honor">{{ a.data.honors | join(" · ") }}</span>{% endif %}
+        <p class="bib-meta"><i>{{ site.short }}</i> Vol. {{ a.data.volume | roman }}{% if pg %}, {{ "p." if pg == (a.data.first_page | string) else "pp." }} {{ pg }}{% endif %} · {{ a.data.kind }} · <a href="/areas/{{ a.data.area | slugify }}/">{{ a.data.area }}</a>{% if co.length %} · with {{ co | join(" and ") }}{% endif %}</p>
+        <p class="bib-acts"><a href="{{ a.url }}">Read</a>{% if a.data.pdf %}<a href="{{ a.data.pdf }}">PDF</a>{% endif %}<a href="/verify/{{ a.page.fileSlug }}/">Record of publication</a></p>
+        {%- if a.data.abstract %}<details class="bib-abs"><summary>Abstract</summary><p>{{ a.data.abstract }}</p></details>{% endif %}
+      </div>
+    </li>
     {%- endfor %}
-  </div>
+  </ol>
+  {%- if service %}
+  <h2 class="title ah-service-h">Editorial service</h2>
+  <ul class="ah-service">
+    {%- for r in service.roles %}<li><b>{{ r | roleLine }}</b><span>Academic Year {{ r.year }}</span></li>{% endfor %}
+  </ul>
+  <p class="more"><a href="/verify/editor/{{ person.slug }}/">Record of editorial service →</a></p>
+  {%- endif %}
 </div></section>
 
 {#- for the author themself (verified) and the Board: every piece as a CV line with its public record -#}

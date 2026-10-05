@@ -1507,3 +1507,69 @@ html:not(.is-app) .vol-head .crumb{display:block}
 .area-list a{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;padding:.65rem .2rem;color:var(--ink);font:600 1.1rem/1.25 var(--display)}
 .area-list a:hover{color:var(--plum)}
 .area-list span{font:600 .85rem var(--caps);color:var(--gold);font-variant-numeric:lining-nums}
+
+/* ---------- Author pages: a scholar's profile, then the work set like a bibliography ---------- */
+.author-head{padding:var(--s6) 0 var(--s5);border-bottom:1px solid var(--rule);background:radial-gradient(80% 60% at 50% 0%,color-mix(in srgb,var(--gold-3) 20%,transparent),transparent 72%)}
+.author-head .wrap{max-width:46rem}
+.author-head .crumb{margin:0 0 var(--s4);font-size:1rem;text-align:center}
+.author-head .crumb a{color:var(--gold)}
+.ah-id{display:flex;flex-direction:column;align-items:center;gap:var(--s3);text-align:center}
+.author-head .portrait{width:112px;height:112px;margin:0;border-radius:50%;object-fit:cover;box-shadow:0 0 0 3px var(--paper),0 0 0 4px var(--gold-2),0 10px 26px rgba(28,20,36,.14)}
+.author-head .portrait.monogram{display:grid;place-items:center;background:linear-gradient(150deg,var(--plum-2),var(--plum));color:#E2C67E;font:600 2.4rem/1 var(--display)}
+.ah-name h1{font-size:clamp(2rem,6.5vw,2.8rem);line-height:1.05}
+.ah-name .aff{margin:.35rem 0 0;font:italic 500 1.08rem/1.35 var(--display);color:var(--ink-2)}
+.ah-role{margin:.35rem 0 0;font:600 .86rem/1.4 var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--gold)}
+.author-head .bio{max-width:36rem;margin:var(--s4) auto 0;color:var(--ink-2);text-align:center}
+.author-head .bio[hidden],.author-head .aff[hidden]{display:none}
+.ah-facts{list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.4rem;margin:var(--s4) 0 0;padding:0;color:var(--muted);font-size:.95rem}
+.ah-facts b{font:600 1.15em/1 var(--display);color:var(--ink);font-variant-numeric:lining-nums}
+.ah-links{display:flex;flex-wrap:wrap;justify-content:center;gap:.3rem 1.2rem;margin:var(--s4) 0 0}
+.ah-links a,.ah-links button{padding:0;font:600 .88rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--plum);
+  text-decoration:underline;text-decoration-color:var(--gold-2);text-underline-offset:4px;transition:color .2s,text-decoration-color .2s}
+.ah-links a:hover,.ah-links button:hover{color:var(--plum-2);text-decoration-color:var(--plum)}
+.author-head .claim-box{margin:var(--s4) auto 0;text-align:center}
+@media (min-width:760px){
+  .ah-id{flex-direction:row;align-items:center;gap:var(--s5);text-align:left;justify-content:center}
+  .author-head .bio{text-align:left}
+}
+
+.author-work .wrap{max-width:46rem}
+.author-work .readership{margin:-.6rem auto var(--s4)}
+.biblio{list-style:none;margin:0;padding:0;counter-reset:bib}
+.biblio>li{display:grid;grid-template-columns:3.4rem minmax(0,1fr);gap:0 1rem;padding:1.1rem 0;border-top:1px solid var(--rule)}
+.biblio>li:last-child{border-bottom:1px solid var(--rule)}
+.bib-yr{padding-top:.2rem;font:600 1.15rem/1 var(--display);color:var(--gold);font-variant-numeric:lining-nums}
+.bib-title{display:block;font:600 1.22rem/1.25 var(--display);color:var(--ink);text-wrap:balance}
+.bib-title:hover{color:var(--plum)}
+.bib-honor{display:inline-block;margin-top:.35rem;padding:.1rem .6rem;border-radius:999px;font:600 .74rem var(--caps);letter-spacing:.08em;text-transform:lowercase;font-variant:small-caps;color:#5a4212;background:linear-gradient(135deg,#F4E2A8,#E2C67E)}
+.bib-meta{margin:.3rem 0 0;font-size:.92rem;color:var(--ink-2)}
+.bib-meta i{font-style:italic}
+.bib-meta a{color:inherit;text-decoration:underline;text-decoration-color:var(--rule-2);text-underline-offset:3px}
+.bib-acts{display:flex;flex-wrap:wrap;gap:.2rem 1rem;margin:.4rem 0 0}
+.bib-acts a{font:600 .8rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--plum)}
+.bib-abs{margin-top:.45rem}
+.bib-abs summary{cursor:pointer;width:max-content;font:600 .8rem var(--caps);letter-spacing:.1em;text-transform:lowercase;font-variant:small-caps;color:var(--muted)}
+.bib-abs p{margin:.4rem 0 0;font-size:.94rem;line-height:1.6;color:var(--ink-2)}
+.ah-service-h{margin-top:var(--s7)}
+.ah-service{list-style:none;max-width:30rem;margin:0 auto;padding:0}
+.ah-service li{display:flex;justify-content:space-between;gap:1rem;padding:.6rem 0;border-bottom:1px solid var(--rule)}
+.ah-service b{font:600 1.05rem var(--display)}
+.ah-service span{color:var(--muted);font-size:.9rem}
+
+/* authors index: calmer motion. Nothing changes size on hover (no layout shift between columns); the latest piece
+   is always shown on one line; the highlight sweep and the count's colour are the only animation. */
+.authors .nm{transition:color .25s}
+.authors a:hover .nm{letter-spacing:normal}
+.authors .peek{max-height:none;opacity:1;transform:none;grid-column:2/-1;margin-top:.1rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.84rem;transition:none}
+.authors .peek em{display:inline;margin:0 0 0 .4rem}
+.authors .ct{transition:background .25s,color .25s,border-color .25s}
+.authors a:hover .ct,.authors a:focus-visible .ct{transform:none;box-shadow:none}
+.authors .av{transition:transform .3s var(--ease)}
+.authors a:hover .av{transform:scale(1.06)}
+@media (prefers-reduced-motion:reduce){.authors a::before{transition:none}}
+.biblio details.bib-abs{margin:.45rem 0 0;padding:0;border:0;background:none}
+.biblio .bib-abs summary{padding:0;border:0;list-style:none}
+.biblio .bib-abs summary::-webkit-details-marker{display:none}
+.biblio .bib-abs summary::after{content:" +";color:var(--gold)}
+.biblio .bib-abs[open] summary::after{content:" −"}
+.biblio .bib-abs summary::before{content:none}

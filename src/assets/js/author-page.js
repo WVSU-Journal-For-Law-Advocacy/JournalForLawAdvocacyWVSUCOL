@@ -15,13 +15,13 @@ if (head) (async () => {
     head.querySelector('.verified').hidden = false;
     if (p.photo && /^data:image\/|^https:\/\//.test(p.photo)) {
       const old = head.querySelector('.portrait'), img = document.createElement('img');
-      img.className = 'portrait'; img.src = p.photo; img.alt = `Portrait of ${name}`; img.width = img.height = 132; old.replaceWith(img);
+      img.className = 'portrait'; img.src = p.photo; img.alt = `Portrait of ${name}`; img.width = img.height = 112; old.replaceWith(img);
     }
     if (p.affiliation) { const a = head.querySelector('[data-aff]'); a.textContent = p.affiliation; a.hidden = false; }
     if (p.bio) { const b = head.querySelector('.bio'); b.textContent = p.bio; b.hidden = false; }
     const links = head.querySelector('.links'), add = (href, label) => {
       if (!href || links.querySelector(`a[href="${CSS.escape(href)}"]`)) return;
-      const a = document.createElement('a'); a.className = 'btn sm alt'; a.href = href; a.rel = 'noopener'; a.textContent = label; links.append(a);
+      const a = document.createElement('a'); a.href = href; a.rel = 'noopener'; a.textContent = label; links.append(a);
     };
     const url = (v) => (/^https?:\/\//.test(v) ? v : v ? `https://${v}` : '');
     add(url(p.linkedin), 'LinkedIn'); add(url(p.facebook), 'Facebook'); add(url(p.website), 'Website');

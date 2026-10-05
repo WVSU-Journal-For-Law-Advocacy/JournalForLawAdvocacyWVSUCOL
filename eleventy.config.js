@@ -16,6 +16,8 @@ export default function (eleventyConfig) {
   });
 
   const num = (v) => Number(v) || 0;
+  // "Contribution Editor" + "Contribution Editors" is one role, not "Contribution Editor, Contribution Editors"
+  const roleWithGroup = (r) => { const g = String(r.group || "").replace(/s$/, "").toLowerCase(); return !r.group || r.role.toLowerCase().includes(g) ? r.role : `${r.role}, ${r.group}`; };
   const slugify = (s) => eleventyConfig.getFilter("slugify")(s);
 
   // ---- Full-text articles: footnotes ([^1]) and a table of contents from h2/h3 ----
@@ -75,7 +77,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("profileFor", (person, profiles, board) => {
     const p = ((profiles && profiles.profiles) || []).find((x) => x.slug === person.slug) || {};
     const member = ((board && board.boards) || []).flatMap((b) => b.members).find((m) => canonical(m.name) === person.name);
-    const role = !member ? "" : member.role.includes(member.group) ? member.role : `${member.role}, ${member.group}`;
+    const role = !member ? "" : roleWithGroup(member);
     return { ...p, photo: p.photo || (member && member.photo) || "", role };
   });
   eleventyConfig.addFilter("monogram", (name) => {
@@ -306,7 +308,9 @@ export default function (eleventyConfig) {
   // a short, stable record number: JLA-V5-120 (volume and first page), or the slug when there's no page
   eleventyConfig.addFilter("recordId", (d) => `JLA-V${num(d.volume)}-${d.first_page || String(d.slug || "").slice(0, 12).toUpperCase()}`);
   // the role as one CV line: "Member, Board of Editors" stays; "Executive Editor" stays; otherwise "Role, Group"
-  eleventyConfig.addFilter("roleLine", (r) => (r.role.includes(r.group) || !r.group ? r.role : `${r.role}, ${r.group}`));
+  eleventyConfig.addFilter("roleLine", roleWithGroup);
+  // the other authors of a piece, seen from one author's page
+  eleventyConfig.addFilter("coauthors", (author, name) => splitAuthors(author).filter((a) => canonical(a) !== name));
 
   // Facebook / social share images, written straight into _site/og/
   eleventyConfig.on("eleventy.after", async ({ dir, runMode }) => {

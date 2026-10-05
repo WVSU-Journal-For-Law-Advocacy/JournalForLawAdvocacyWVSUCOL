@@ -7,6 +7,9 @@ volume: 1
 issue: 1
 year: 2022
 order: 5
+first_page: 75
+last_page: 88
+pdf_page: 87
 pdf: "/uploads/articles/v1/substitution-of-candidates.pdf"
 keywords:
   - "substitution of candidates"

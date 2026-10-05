@@ -7,6 +7,9 @@ volume: 1
 issue: 1
 year: 2022
 order: 1
+first_page: 11
+last_page: 28
+pdf_page: 19
 pdf: "/uploads/articles/v1/back-to-the-futures-past.pdf"
 keywords:
   - "2022 national elections"

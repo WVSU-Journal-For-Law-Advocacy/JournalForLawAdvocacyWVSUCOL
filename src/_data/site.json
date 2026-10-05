@@ -12,7 +12,7 @@
   "deadline": "",
   "metrics_since": "October 2026",
   "certificates": false,
-  "coming_soon_volumes": [2, 3],
+  "coming_soon_volumes": [3],
   "firebase": {
     "apiKey": "AIzaSyA6bRA80mS4xUrj8xJ0UHG_mZeufq_D2-I",
     "authDomain": "wvsujournalforlawadvocacy.netlify.app",
@@ -21,9 +21,9 @@
     "appId": "1:137438152268:web:bea8dbe9469821b484d6e9",
     "vapidKey": "BIzWOWjxl2YkbM4no7nlzNQGb69MzeQGMlv2kzqYnxLvwu09f-TzJKID2Z-pMdZ84QGKsp8RsCQhRyAoEXJoZ9k"
   },
-  "areas": ["Constitutional law", "Privacy and data protection", "Technology and the law", "Election law", "Criminal law", "Environmental law", "Civil law", "Taxation", "Legal ethics and the profession"],
+  "areas": ["Constitutional law", "Privacy and data protection", "Technology and the law", "Election law", "Criminal law", "Environmental law", "Civil law", "Taxation", "Legal ethics and the profession", "Labor law", "International law", "Remedial law"],
   "volume_tones": {"1": "#6E2231", "2": "#1E3A50", "3": "#5C3F1F", "4": "#2E4B32", "5": "#4A2466", "6": "#2C2A36", "7": "#3A3360", "8": "#1F4A4C"},
-  "area_tones": {"Constitutional law": "#4A2466", "Privacy and data protection": "#1E3A50", "Technology and the law": "#1F4A4C", "Election law": "#6E2231", "Criminal law": "#2C2A36", "Environmental law": "#2E4B32", "Civil law": "#5C3F1F", "Taxation": "#3A3360", "Legal ethics and the profession": "#5E2E4D"},
+  "area_tones": {"Constitutional law": "#4A2466", "Privacy and data protection": "#1E3A50", "Technology and the law": "#1F4A4C", "Election law": "#6E2231", "Criminal law": "#2C2A36", "Environmental law": "#2E4B32", "Civil law": "#5C3F1F", "Taxation": "#3A3360", "Legal ethics and the profession": "#5E2E4D", "Labor law": "#8A3B12", "International law": "#24456E", "Remedial law": "#555128"},
   "kinds": ["Article", "Essay", "Comment", "Editorial", "Student note"],
   "issn_print": "1908-532X",
   "issn_online": "",

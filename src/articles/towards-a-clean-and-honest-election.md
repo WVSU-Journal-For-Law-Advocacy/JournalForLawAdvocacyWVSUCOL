@@ -7,6 +7,9 @@ volume: 1
 issue: 1
 year: 2022
 order: 4
+first_page: 54
+last_page: 74
+pdf_page: 65
 pdf: "/uploads/articles/v1/towards-a-clean-and-honest-election.pdf"
 keywords:
   - "election offenses"

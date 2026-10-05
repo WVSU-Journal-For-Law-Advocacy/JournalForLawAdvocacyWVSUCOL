@@ -174,7 +174,7 @@ export default function (eleventyConfig) {
   // Titles and credentials are dropped, then src/_data/authorAliases.json maps variants to one name.
   const aliases = JSON.parse(fs.readFileSync("src/_data/authorAliases.json", "utf8"));
   const canonical = (raw) => {
-    const bare = raw.replace(/^(Atty|Judge|Prosec|Dr|Justice|Hon)\.?\s+/i, "").replace(/,\s*(JD|RN|MAN|LLM|PhD)\b.*$/i, "").trim();
+    const bare = raw.replace(/^(Atty|Judge|Prosec|Dr|Justice|Hon)\.?\s+/i, "").replace(/,\s*(JD|RN|MAN|LLM|PhD|CPA|MPG|MBA)\b.*$/i, "").trim();
     return aliases[bare] || bare;
   };
   const familyName = (name) => name.replace(/,?\s+(Jr\.|Sr\.|III|II|IV)$/, "").split(/\s+/).pop();

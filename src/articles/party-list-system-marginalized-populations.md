@@ -7,6 +7,9 @@ volume: 1
 issue: 1
 year: 2022
 order: 3
+first_page: 43
+last_page: 53
+pdf_page: 53
 pdf: "/uploads/articles/v1/party-list-system-marginalized-populations.pdf"
 keywords:
   - "party-list system"

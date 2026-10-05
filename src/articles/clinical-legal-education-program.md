@@ -7,6 +7,9 @@ volume: 1
 issue: 1
 year: 2022
 order: 6
+first_page: 89
+last_page: 91
+pdf_page: 102
 pdf: "/uploads/articles/v1/clinical-legal-education-program.pdf"
 keywords:
   - "clinical legal education"

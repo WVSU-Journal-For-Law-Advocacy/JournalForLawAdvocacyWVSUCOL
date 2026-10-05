@@ -7,6 +7,9 @@ volume: 1
 issue: 1
 year: 2022
 order: 2
+first_page: 29
+last_page: 42
+pdf_page: 38
 pdf: "/uploads/articles/v1/no-time-runs-against-families.pdf"
 keywords:
   - "political dynasties"

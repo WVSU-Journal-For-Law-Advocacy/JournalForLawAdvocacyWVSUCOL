@@ -67,17 +67,30 @@
     },
     {
       "academic_year": "2021–2022",
-      "label": "Year 1 · Batch Banaag",
-      "note": "The founding editors, as named in the journal's public announcements. They co-wrote the opening chapter of Volume 1. The list may be incomplete.",
-      "groups": ["Board of Editors", "Contribution Editors"],
+      "label": "Year 1 · Batch Banaag · Volumes 1 and 2",
+      "note": "The founding board, as printed in the masthead of the inaugural book (Volumes 1 and 2, December 2022), with the faculty Executive Committee that selected and advised it. The editors took their oath on December 2, 2021.",
+      "groups": [
+        "Board of Editors",
+        "Contribution Editors",
+        "Executive Committee"
+      ],
       "members": [
-        { "name": "Clyde Ben Gacayan", "role": "Executive Editor", "group": "Board of Editors" },
-        { "name": "Vanessa Silla", "role": "Manuscript Editor", "group": "Board of Editors" },
-        { "name": "Edson Chase Yap", "role": "Editor", "group": "Board of Editors" },
-        { "name": "Kirby Aguaras", "role": "Editor", "group": "Board of Editors" },
-        { "name": "Theda Gumban", "role": "Editor", "group": "Board of Editors" },
-        { "name": "Mike Guillem", "role": "Editor", "group": "Board of Editors" },
-        { "name": "Rene Aviles", "role": "Executive Contribution Editor", "group": "Contribution Editors" }
+        { "name": "Clyde Ben A. Gacayan", "role": "Executive Editor", "group": "Board of Editors" },
+        { "name": "Edson Chase H. Yap", "role": "Member, Board of Editors", "group": "Board of Editors" },
+        { "name": "Kirby V. Aguaras", "role": "Member, Board of Editors", "group": "Board of Editors" },
+        { "name": "Rene M. Aviles, Jr.", "role": "Executive Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Clint Deo N. Genciana", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Theda Grace S. Gumban", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Mike Gabriel G. Guillem", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Vanessa G. Silla", "role": "Contribution Editor", "group": "Contribution Editors" },
+        { "name": "Enrique Z. Trespeces", "role": "Adviser", "group": "Executive Committee" },
+        { "name": "Pauline Grace B. Alfuente", "role": "Dean, ex officio member", "group": "Executive Committee" },
+        { "name": "Jeremy V. Bionat", "role": "Member", "group": "Executive Committee" },
+        { "name": "Tina Marie D. Coo", "role": "Member", "group": "Executive Committee" },
+        { "name": "Caryl Kate Fabella-Genova", "role": "Member", "group": "Executive Committee" },
+        { "name": "Victoria G. Heler", "role": "Member", "group": "Executive Committee" },
+        { "name": "Felix Glenn C. Mendoza", "role": "Member", "group": "Executive Committee" },
+        { "name": "Paolo M. Segubre", "role": "Member", "group": "Executive Committee" }
       ]
     }
   ]
